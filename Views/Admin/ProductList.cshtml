@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Notifico.Models.Product>
+
+
+<h1>Products</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Description</th>
+            <th scope="col">Price</th>
+            <th scope="col">Stock</th>
+            <th scope="col">Category</th>
+            <th scope="col">Date Added</th>
+            <th scope="col">Image</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Name</td>
+                <td>@p.Description</td>
+                <td>@($"{p.Price:C}")</td>
+                <td>@p.Stock</td>
+                <td>@p.Category</td>
+                <td>@p.DateAdded.ToString("dd.MM.yyyy")</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(p.ImageUrl))
+                    {
+                        <img src="@p.ImageUrl" alt="Product Image" style="width:40px; height:40px;" />
+                    }
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+

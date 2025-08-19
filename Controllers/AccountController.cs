@@ -56,8 +56,9 @@ namespace Notifico.Controllers
             var user = _context.Users.FirstOrDefault(u => u.Email == Email && u.PasswordHash == hashed);
             if(user != null)
             {
-                TempData["UserName"] = user.UserName;
-                return RedirectToAction("Index","Product");
+                HttpContext.Session.SetString("UserName", user.UserName);
+
+                return RedirectToAction("Index", "Product");
             }
             else
             {
@@ -65,6 +66,12 @@ namespace Notifico.Controllers
                 return View();
             }
 
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Account");
         }
 
 
