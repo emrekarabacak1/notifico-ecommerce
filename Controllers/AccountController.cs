@@ -49,9 +49,22 @@ namespace Notifico.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login()
+        public IActionResult Login(string Email, string Password)
         {
-            return View();
+            string hashed = HashPassword(Password);
+
+            var user = _context.Users.FirstOrDefault(u => u.Email == Email && u.PasswordHash == hashed);
+            if(user != null)
+            {
+                TempData["UserName"] = user.UserName;
+                return RedirectToAction("Index","Product");
+            }
+            else
+            {
+                ViewBag.Error = "Email veya Sifre Hatalı";
+                return View();
+            }
+
         }
 
 
@@ -65,7 +78,7 @@ namespace Notifico.Controllers
                 var sb = new StringBuilder();
                 foreach (var b in hash)
                     sb.Append(b.ToString("x2"));
-                return sb.ToString(); // <--- return burada!
+                return sb.ToString(); 
             }
         }
 

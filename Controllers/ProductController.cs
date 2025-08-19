@@ -16,8 +16,12 @@ namespace Notifico.Controllers
 
         public IActionResult Index()
         {
-            var products = _context.Products.ToList();
-            return View(products);
+            if(TempData["UserName"] != null)
+            {
+                var products = _context.Products.ToList();
+                return View(products);
+            }
+            return RedirectToAction("Login","Account");
         }
     }
 }
