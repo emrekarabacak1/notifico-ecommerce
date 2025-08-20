@@ -33,13 +33,13 @@ namespace Notifico.Controllers
                 Email = Email,
                 PasswordHash = passwordHash,
                 Role = "User",
-                DateCreated = DateTime.Now,
+                DateCreated = DateTime.UtcNow,
             };
 
             _context.Users.Add(user);
             _context.SaveChanges();
 
-            return RedirectToAction("Login","Account");
+            return RedirectToAction("Login", "Account");
         }
 
         [HttpGet]
@@ -49,11 +49,28 @@ namespace Notifico.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login()
+        public IActionResult Login(string Email, string Password)
         {
-            return View();
+            string hashed = HashPassword(Password);
+
+            var user = _context.Users.FirstOrDefault(u => u.Email == Email && u.PasswordHash == hashed);
+            if (user != null)
+            {
+                HttpContext.Session.SetString("UserName", user.UserName);
+                return RedirectToAction("Index", "Product");
+            }
+            else
+            {
+                ViewBag.Error = "Email veya Şifre Hatalı";
+                return View();
+            }
         }
 
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserName");
+            return RedirectToAction("Login", "Account");
+        }
 
         public static string HashPassword(string password)
         {
