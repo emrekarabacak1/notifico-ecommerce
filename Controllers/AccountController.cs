@@ -54,16 +54,27 @@ namespace Notifico.Controllers
             string hashed = HashPassword(Password);
 
             var user = _context.Users.FirstOrDefault(u => u.Email == Email && u.PasswordHash == hashed);
+
             if (user != null)
             {
                 HttpContext.Session.SetString("UserName", user.UserName);
+
                 return RedirectToAction("Index", "Product");
             }
             else
             {
-                ViewBag.Error = "Email veya Şifre Hatalı";
+
+                ViewBag.Error = "Email veya Sifre Hatalı";
                 return View();
             }
+
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Account");
+
         }
 
         public IActionResult Logout()
@@ -82,7 +93,7 @@ namespace Notifico.Controllers
                 var sb = new StringBuilder();
                 foreach (var b in hash)
                     sb.Append(b.ToString("x2"));
-                return sb.ToString(); // <--- return burada!
+                return sb.ToString(); 
             }
         }
 

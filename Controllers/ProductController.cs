@@ -16,8 +16,18 @@ namespace Notifico.Controllers
 
         public IActionResult Index()
         {
-            var products = _context.Products.ToList();
-            return View(products);
+            var userName = HttpContext.Session.GetString("UserName");
+            if (!string.IsNullOrEmpty(userName))
+            {
+                var user = _context.Users.FirstOrDefault(x => x.UserName == userName);
+                if (user != null)
+                {
+                    ViewBag.Role = user.Role;
+                    var products = _context.Products.ToList();
+                    return View(products);
+                }
+            }
+            return RedirectToAction("Login", "Account");
         }
     }
 }

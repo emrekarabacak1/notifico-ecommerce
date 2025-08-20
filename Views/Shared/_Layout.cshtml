@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Http
+
 @inject Notifico.Data.ApplicationDbContext db
 
 @{
@@ -11,6 +12,7 @@
         role = user?.Role;
     }
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,19 +40,21 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Product" asp-action="Index">Ürünler</a>
                         </li>
+
                         @if (!string.IsNullOrEmpty(userName))
                         {
                             <li class="nav-item">
                                 <span class="nav-link text-success">Hoş Geldin, @userName!</span>
                             </li>
-                            @if (role == "Admin")
+
+                            @if (userRole == "Admin")
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="ProductList">Admin Paneli</a>
+                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="Index">Admin Paneli</a>
                                 </li>
                             }
                             <li class="nav-item">
-                                <a class="btn btn-outline-danger ms-2" asp-controller="Account" asp-action="Logout">Çıkış Yap</a>
+                                <a class="nav-link text-danger" asp-controller="Account" asp-action="Logout">Çıkış Yap</a>
                             </li>
                         }
                         else
