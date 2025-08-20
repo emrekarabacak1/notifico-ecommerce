@@ -1,1 +1,10 @@
-﻿<h1>Admin Paneline Hoş Geldiniz!</h1>
+﻿@{
+    ViewData["Title"] = "Admin Paneli";
+}
+
+<h2>Admin Paneline Hoş Geldiniz!</h2>
+<p>Buradan ürünleri ekleyebilir, düzenleyebilir veya silebilirsiniz.</p>
+
+<a class="btn btn-primary mt-3" asp-controller="Admin" asp-action="ProductList">
+    Ürünler Tablosuna Git
+</a>

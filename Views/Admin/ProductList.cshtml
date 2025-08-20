@@ -1,8 +1,12 @@
 ﻿@model IEnumerable<Notifico.Models.Product>
-
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
 
 <h1>Products</h1>
 
+<a asp-controller="Admin" asp-action="AddProduct" class="btn btn-success mb-3">Yeni Ürün Ekle</a>
 <table class="table">
     <thead>
         <tr>
@@ -13,6 +17,8 @@
             <th scope="col">Category</th>
             <th scope="col">Date Added</th>
             <th scope="col">Image</th>
+           
+            
 
         </tr>
     </thead>
@@ -32,7 +38,12 @@
                         <img src="@p.ImageUrl" alt="Product Image" style="width:40px; height:40px;" />
                     }
                 </td>
-
+                <td>
+                    <a asp-controller="Admin" asp-action="EditProduct" asp-route-id="@p.Id" class="btn btn-warning btn-sm">Edit</a>
+                </td>
+                <td>
+                    <a asp-controller="Admin" asp-action="DeleteProduct" asp-route-id="@p.Id" class="btn btn-danger btn-sm">Sil</a>
+                </td>
             </tr>
         }
 
