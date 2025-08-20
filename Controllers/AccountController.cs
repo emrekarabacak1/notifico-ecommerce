@@ -33,7 +33,7 @@ namespace Notifico.Controllers
                 Email = Email,
                 PasswordHash = passwordHash,
                 Role = "User",
-                DateCreated = DateTime.Now,
+                DateCreated = DateTime.UtcNow,
             };
 
             _context.Users.Add(user);
