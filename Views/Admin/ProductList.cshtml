@@ -1,24 +1,21 @@
 ﻿@model IEnumerable<Notifico.Models.Product>
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
 
-<h1>Products</h1>
 
-<a asp-controller="Admin" asp-action="AddProduct" class="btn btn-success mb-3">Yeni Ürün Ekle</a>
-<table class="table">
+<h2>Ürünler</h2>
+
+<a class="btn btn-primary mb-3" asp-controller="Admin" asp-action="AddProduct">Yeni Ürün Ekle</a>
+
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Description</th>
-            <th scope="col">Price</th>
-            <th scope="col">Stock</th>
-            <th scope="col">Category</th>
-            <th scope="col">Date Added</th>
-            <th scope="col">Image</th>
-           
-            
+            <th>Adı</th>
+            <th>Açıklama</th>
+            <th>Fiyat</th>
+            <th>Stok</th>
+            <th>Kategori</th>
+            <th>Tarih</th>
+            <th>Resim</th>
+            <th>İşlemler</th>
 
         </tr>
     </thead>
@@ -35,18 +32,17 @@
                 <td>
                     @if (!string.IsNullOrEmpty(p.ImageUrl))
                     {
-                        <img src="@p.ImageUrl" alt="Product Image" style="width:40px; height:40px;" />
+
+                        <img src="@p.ImageUrl" alt="Ürün Resmi" style="width:40px; height:40px;" />
                     }
                 </td>
                 <td>
-                    <a asp-controller="Admin" asp-action="EditProduct" asp-route-id="@p.Id" class="btn btn-warning btn-sm">Edit</a>
-                </td>
-                <td>
-                    <a asp-controller="Admin" asp-action="DeleteProduct" asp-route-id="@p.Id" class="btn btn-danger btn-sm">Sil</a>
+                    <a class="btn btn-warning btn-sm" asp-action="EditProduct" asp-route-id="@p.Id">Edit</a>
+                    <a class="btn btn-danger btn-sm" asp-action="DeleteProduct" asp-route-id="@p.Id"
+                       onclick="return confirm('Bu ürünü silmek istediğinize emin misiniz?');">Delete</a>
                 </td>
             </tr>
         }
-
     </tbody>
 </table>
 
