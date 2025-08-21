@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
 using Notifico.Models;
 
@@ -59,5 +60,60 @@ namespace Notifico.Controllers
             return RedirectToAction("Index","Product");
         }
 
+        [HttpGet]
+        public IActionResult MyCart()
+        {
+            var UserName = HttpContext.Session.GetString("UserName");
+            if (string.IsNullOrEmpty(UserName))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.UserName == UserName);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Id);
+            if (cart == null)
+            {
+                return View(new List<CartItem>());
+            }
+
+            
+            var cartItems = _context.CartItems
+                .Where(ci => ci.CartId == cart.Id)
+                .Include(ci => ci.Product)   
+                .ToList();
+
+            if (cartItems == null || !cartItems.Any())
+            {
+                return View(new List<CartItem>());
+            }
+            else
+            {
+                return View(cartItems);
+            }
+        }
+
+        public IActionResult RemoveFromCart(int id)
+        {
+            var UserName = HttpContext.Session.GetString("UserName");
+            if (string.IsNullOrEmpty(UserName))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cartItem = _context.CartItems.FirstOrDefault(x => x.Id == id);
+            if(cartItem != null)
+            {
+                _context.CartItems.Remove(cartItem);
+                _context.SaveChanges();
+            }
+
+            
+            return RedirectToAction("MyCart", "Cart");
+        }
     }
 }
