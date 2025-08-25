@@ -175,5 +175,30 @@ namespace Notifico.Controllers
             return RedirectToAction("MyCart", "Cart");
             
         }
+
+        [HttpPost]
+        public IActionResult ClearCart()
+        {
+            var UserName = HttpContext.Session.GetString("UserName");
+            if (string.IsNullOrEmpty(UserName))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = _context.Users.FirstOrDefault(p => p.UserName == UserName);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Id);
+            if (cart == null) return RedirectToAction("MyCart", "Cart");
+
+            var cartItems = _context.CartItems.Where(ci => ci.CartId == cart.Id).ToList();
+            if (cartItems.Any())
+            {
+                _context.CartItems.RemoveRange(cartItems);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("MyCart", "Cart");
+        }
     }
 }

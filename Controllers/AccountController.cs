@@ -77,11 +77,6 @@ namespace Notifico.Controllers
 
         }
 
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Remove("UserName");
-            return RedirectToAction("Login", "Account");
-        }
 
         public static string HashPassword(string password)
         {
