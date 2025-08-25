@@ -32,6 +32,12 @@
                         <img src="@p.ImageUrl" alt="Product Image" style="width:40px; height:40px;" />
                     }
                 </td>
+                <td>
+                    <form asp-action="AddToCart" asp-controller="Cart" method="post" style="display:inline;">
+                        <input type="hidden" name="productId" value="@p.Id" />
+                        <button type="submit" class="btn btn-success btn-sm">Sepete Ekle</button>
+                    </form>
+                </td>
 
             </tr>
         }
