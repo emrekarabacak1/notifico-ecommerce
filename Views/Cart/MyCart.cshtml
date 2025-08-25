@@ -15,6 +15,14 @@
 }
 else
 {
+    <!-- Sepeti Boşalt butonu -->
+    <form asp-action="ClearCart" asp-controller="Cart" method="post" class="mb-3">
+        <button type="submit" class="btn btn-danger"
+                onclick="return confirm('Sepeti tamamen boşaltmak istediğinizden emin misiniz?');">
+            <i class="bi bi-trash"></i> Sepeti Boşalt
+        </button>
+    </form>
+
     <table class="table table-bordered table-striped mt-4">
         <thead>
             <tr>
@@ -33,7 +41,6 @@ else
                 <tr>
                     <td>@item.Product?.Name</td>
                     <td>@(item.Product != null ? $"{item.Product.Price:C}" : "-")</td>
-
                     <td>
                         <form asp-action="DecreaseQuantity" asp-controller="Cart" method="post" style="display:inline;">
                             <input type="hidden" name="id" value="@item.Id" />
@@ -51,7 +58,6 @@ else
                             </button>
                         </form>
                     </td>
-
                     <td>@satirTutar.ToString("C")</td>
                     <td>
                         <form asp-action="RemoveFromCart" asp-controller="Cart" method="post" style="display:inline;">

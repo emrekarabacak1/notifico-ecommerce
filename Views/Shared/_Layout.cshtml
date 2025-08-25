@@ -4,12 +4,12 @@
 
 @{
     var userName = Context.Session.GetString("UserName");
-    string role = null;
+    string userRole = null; // Değişken adı düzeltildi
 
     if (!string.IsNullOrEmpty(userName))
     {
         var user = db.Users.FirstOrDefault(u => u.UserName == userName);
-        role = user?.Role;
+        userRole = user?.Role;
     }
 }
 
