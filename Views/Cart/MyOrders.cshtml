@@ -28,10 +28,10 @@ else
                 <tr>
                     <td>@order.Id</td>
                     <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
-                    <td>@order.TotalAmount.ToString("C")</td>
+                    <td>@order.TotalAmount.ToString("C", new System.Globalization.CultureInfo("tr-TR"))</td>
                     <td>@order.Status</td>
                     <td>
-                        <a asp-action="OrderDetails" asp-route-id="@order.Id" class="btn btn-primary btn-sm">
+                        <a asp-action="OrderDetail" asp-route-id="@order.Id" class="btn btn-primary btn-sm">
                             Detay
                         </a>
                     </td>
