@@ -1,0 +1,47 @@
+﻿@model Notifico.Models.Order
+
+@{
+    ViewData["Title"] = "Sipariş Detayı";
+}
+
+@if (Model == null)
+{
+    <div class="alert alert-warning">Sipariş detayları bulunamadı.</div>
+}
+else
+{
+    <h3>Sipariş No: @Model.Id</h3>
+    <p><strong>Tarih:</strong> @Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</p>
+    <p><strong>Durum:</strong> @Model.Status</p>
+    <p><strong>Toplam Tutar:</strong> @Model.TotalAmount.ToString("C", new System.Globalization.CultureInfo("tr-TR"))</p>
+    <hr />
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Görsel</th>
+                <th>Ürün</th>
+                <th>Adet</th>
+                <th>Birim Fiyat</th>
+                <th>Toplam</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderItems)
+            {
+                <tr>
+                    <td>
+                        <img src="@(!string.IsNullOrEmpty(item.Product?.ImageUrl) ? item.Product.ImageUrl : "/images/noimage.png")"
+                             alt="Görsel"
+                             style="width:64px; height:64px; object-fit:cover; border-radius:8px;" />
+                    </td>
+                    <td>
+                        <strong>@item.Product?.Name</strong>
+                    </td>
+                    <td>@item.Quantity</td>
+                    <td>@item.UnitPrice.ToString("C", new System.Globalization.CultureInfo("tr-TR"))</td>
+                    <td>@((item.UnitPrice * item.Quantity).ToString("C", new System.Globalization.CultureInfo("tr-TR")))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

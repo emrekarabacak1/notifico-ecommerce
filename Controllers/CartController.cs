@@ -293,5 +293,33 @@ namespace Notifico.Controllers
             return View(orders);
         }
 
+        [HttpGet]
+        public IActionResult OrderDetail(int id)
+        {
+            var userName = HttpContext.Session.GetString("UserName");
+            if (string.IsNullOrEmpty(userName))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = _context.Users.FirstOrDefault(o => o.UserName == userName);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var order = _context.Orders
+                .Include(x => x.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .FirstOrDefault(o => o.Id == id && o.UserId == user.Id);
+
+            if (order == null)
+            {
+                return NotFound(); 
+            }
+
+            return View(order);
+        }
+
     }
 }
