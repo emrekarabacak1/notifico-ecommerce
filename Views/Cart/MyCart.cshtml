@@ -15,7 +15,6 @@
 }
 else
 {
-    <!-- Sepeti Boşalt butonu -->
     <form asp-action="ClearCart" asp-controller="Cart" method="post" class="mb-3">
         <button type="submit" class="btn btn-danger"
                 onclick="return confirm('Sepeti tamamen boşaltmak istediğinizden emin misiniz?');">
@@ -76,4 +75,10 @@ else
     <div class="mt-3 text-end">
         <strong>Sepet Toplamı: @toplamTutar.ToString("C")</strong>
     </div>
+
+    <form asp-action="Checkout" asp-controller="Cart" method="post" class="text-end mt-4">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-bag-check"></i> Sipariş Ver
+        </button>
+    </form>
 }

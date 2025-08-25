@@ -43,14 +43,21 @@
 
                         @if (!string.IsNullOrEmpty(userName))
                         {
+                            
                             <li class="nav-item">
-                                <span class="nav-link text-success">Hoş Geldin, @userName!</span>
+                                <a class="nav-link text-primary" asp-controller="Cart" asp-action="MyOrders">Siparişlerim</a>
                             </li>
 
                             @if (userRole == "Admin")
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="Index">Admin Paneli</a>
+                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="ProductList">Admin Paneli</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <span class="nav-link text-success">Hoş Geldin, @userName!</span>
                                 </li>
                             }
                             <li class="nav-item">
