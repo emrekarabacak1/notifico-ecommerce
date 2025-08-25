@@ -115,5 +115,65 @@ namespace Notifico.Controllers
             
             return RedirectToAction("MyCart", "Cart");
         }
+
+        public IActionResult DecreaseQuantity(int id)
+        {
+
+            var UserName = HttpContext.Session.GetString("UserName");
+            if (string.IsNullOrEmpty(UserName))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cartItem = _context.CartItems.FirstOrDefault(x => x.Id == id);
+            if(cartItem == null ) 
+            {
+                return RedirectToAction("MyCart", "Cart");
+            }
+            
+            
+            if(cartItem.Quantity > 1)
+            {
+                cartItem.Quantity--;
+                _context.SaveChanges();
+            }
+            else
+            {
+                _context.SaveChanges();
+                _context.CartItems.Remove(cartItem);
+            }
+            return RedirectToAction("MyCart", "Cart");
+        }
+
+        public IActionResult IncreaseQuantity(int id) 
+        {
+            var UserName = HttpContext.Session.GetString("UserName");
+            if (string.IsNullOrEmpty(UserName))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cartItem = _context.CartItems.FirstOrDefault(x=>x.Id == id);
+            if(cartItem == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            
+            
+            var product = _context.Products.FirstOrDefault(p => p.Id == cartItem.ProductId);
+            if(product == null)
+            {
+                return RedirectToAction("MyCart", "Cart");
+            }
+            
+            if(cartItem.Quantity < product.Stock) 
+            {
+                cartItem.Quantity++;
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("MyCart", "Cart");
+            
+        }
     }
 }
