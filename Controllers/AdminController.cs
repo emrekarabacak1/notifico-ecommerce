@@ -4,6 +4,7 @@ using Notifico.Data;
 using Notifico.Models;
 
 
+
 public class AdminController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -312,4 +313,37 @@ public class AdminController : Controller
 
 
     }
+
+    public IActionResult Dashboard()
+    {
+        var userName = HttpContext.Session.GetString("UserName");
+        if (string.IsNullOrEmpty(userName))
+        {
+            return RedirectToAction("Login","Account");
+        }
+
+        var user = _context.Users.FirstOrDefault(o => o.UserName == userName);
+        if(user == null || user.Role != "Admin")
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var totalOrderCount = _context.Orders.Count();
+        var totalSales = _context.Orders.Sum(o=>o.TotalAmount);
+        var totalCustomerCount = _context.Users.Count(u=>u.Role=="User");
+
+        var recentOrders = _context.Orders.Include(o => o.User).OrderByDescending(o => o.OrderDate).Take(5).ToList();
+
+        var dashboardView = new ViewModel
+        {
+            TotalOrderCount = totalOrderCount,
+            TotalSales = totalSales,
+            TotalCustomerCount = totalCustomerCount,
+            RecentOrders = recentOrders,
+        };
+
+
+        return View(dashboardView);
+    }
+
 }
