@@ -153,7 +153,7 @@ public class AdminController : Controller
     }
 
     
-    public IActionResult OrderList()
+    public IActionResult OrderList(string search, OrderStatus? status)
     {
         var userName = HttpContext.Session.GetString("UserName");
         if(string.IsNullOrEmpty(userName))
@@ -167,9 +167,21 @@ public class AdminController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        var orders = _context.Orders.Include(o => o.User).OrderByDescending(o => o.OrderDate).ToList();
+        var orders = _context.Orders.Include(o => o.User).OrderByDescending(o => o.OrderDate).AsQueryable();
+        if(!string.IsNullOrEmpty(search))
+        {
+            orders = orders.Where(o=> o.User.UserName.ToLower().Contains(search.ToLower()));
+        }
 
-        return View(orders);
+        if(status.HasValue)
+        {
+            orders = orders.Where(o=>o.Status== status.Value);
+        }
+
+        var filteredOrders = orders.ToList();
+        
+
+        return View(filteredOrders);
     }
 
     public IActionResult OrderDetail(int id)
