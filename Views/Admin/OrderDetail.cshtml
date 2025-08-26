@@ -1,0 +1,147 @@
+﻿@using Notifico.Models
+@using System.Globalization
+@model Order
+
+@{
+    ViewData["Title"] = "Sipariş Detayı";
+    var tr = new CultureInfo("tr-TR");
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Sipariş Detayı</h2>
+        <a asp-controller="Admin" asp-action="OrderList" class="btn btn-outline-secondary btn-sm">
+            ← Listeye Dön
+        </a>
+    </div>
+
+    @if (TempData["StatusMessage"] is string msg && !string.IsNullOrWhiteSpace(msg))
+    {
+        <div class="alert alert-success" role="alert">@msg</div>
+    }
+
+    @if (Model is null)
+    {
+        <div class="alert alert-warning" role="alert">
+            Sipariş bulunamadı.
+        </div>
+    }
+    else
+    {
+        <div class="card mb-4">
+            <div class="card-header fw-semibold">Temel Bilgiler</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="small text-muted">Sipariş No</div>
+                        <div class="fw-semibold">#@Model.Id</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="small text-muted">Tarih</div>
+                        <div class="fw-semibold">@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="small text-muted">Toplam Tutar</div>
+                        <div class="fw-semibold">@Model.TotalAmount.ToString("C", tr)</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="small text-muted">Kullanıcı</div>
+                        <div class="fw-semibold">
+                            @(Model.User?.UserName ?? Model.UserId.ToString())
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="small text-muted">Statü</div>
+                        <div class="badge bg-info-subtle text-dark border">@Model.Status.ToString()</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header fw-semibold">Ürünler</div>
+            <div class="card-body">
+                @if (Model.OrderItems == null || !Model.OrderItems.Any())
+                {
+                    <div class="alert alert-light">Bu siparişte ürün yok.</div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Görsel</th>
+                                    <th>Ürün</th>
+                                    <th class="text-end">Adet</th>
+                                    <th class="text-end">Birim Fiyat</th>
+                                    <th class="text-end">Satır Toplam</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var it in Model.OrderItems)
+                            {
+                                var unit = it.UnitPrice;
+                                var qty = it.Quantity;
+                                var line = unit * qty;
+                                var img = it.Product?.ImageUrl;
+                                <tr>
+                                    <td style="width:84px">
+                                        <img src="@(string.IsNullOrWhiteSpace(img) ? "/images/no-image.png" : img)"
+                                             alt="@(it.Product?.Name ?? "Ürün")"
+                                             class="img-thumbnail"
+                                             style="width:64px;height:64px;object-fit:cover" />
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">@it.Product?.Name</div>
+                                    </td>
+                                    <td class="text-end">@qty</td>
+                                    <td class="text-end">@unit.ToString("C", tr)</td>
+                                    <td class="text-end fw-semibold">@line.ToString("C", tr)</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card mb-5">
+            <div class="card-header fw-semibold">Statü Güncelle</div>
+            <div class="card-body">
+                <form asp-controller="Admin" asp-action="UpdateOrderStatus" method="post" class="row gy-2 gx-3 align-items-center">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <div class="col-md-6">
+                        <label for="status" class="form-label">Yeni Statü</label>
+                        <select id="status" name="status" class="form-select">
+                            @{
+                                foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
+                                {
+                                    var selected = Model.Status == s ? "selected" : "";
+                                    @:<option value="@( (int)s )" @selected>@s</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 d-flex align-items-end justify-content-end">
+                        <button type="submit" class="btn btn-primary">
+                            Güncelle
+                        </button>
+                    </div>
+                </form>
+                <div class="form-text mt-2">
+                    Mevcut statü: <strong>@Model.Status.ToString()</strong>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

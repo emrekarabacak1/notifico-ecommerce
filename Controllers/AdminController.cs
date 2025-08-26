@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
 using Notifico.Models;
 
@@ -149,6 +150,84 @@ public class AdminController : Controller
         _context.SaveChanges();
 
         return RedirectToAction("ProductList");
+    }
+
+    
+    public IActionResult OrderList()
+    {
+        var userName = HttpContext.Session.GetString("UserName");
+        if(string.IsNullOrEmpty(userName))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var user = _context.Users.FirstOrDefault(x => x.UserName == userName);
+        if (user == null || user.Role != "Admin")
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var orders = _context.Orders.Include(o => o.User).OrderByDescending(o => o.OrderDate).ToList();
+
+        return View(orders);
+    }
+
+    public IActionResult OrderDetail(int id)
+    {
+        var userName = HttpContext.Session.GetString("UserName");
+        if(string.IsNullOrEmpty(userName))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var user = _context.Users.FirstOrDefault(o => o.UserName == userName);
+        if (user == null || user.Role != "Admin")
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var order = _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.Product).Include(u=>u.User).FirstOrDefault(p=>p.Id == id);
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        return View(order);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult UpdateOrderStatus(int id, int status)
+    {
+        var userName = HttpContext.Session.GetString("UserName");
+        if (string.IsNullOrEmpty(userName))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+        if (user == null || user.Role != "Admin")
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        if (!Enum.IsDefined(typeof(OrderStatus), status))
+        {
+            TempData["StatusMessage"] = "Geçersiz statü!";
+            return RedirectToAction("OrderDetail", new { id = order.Id });
+        }
+
+        order.Status = (OrderStatus)status;
+        _context.SaveChanges();
+
+        TempData["StatusMessage"] = "Sipariş statüsü güncellendi.";
+        return RedirectToAction("OrderDetail", new { id = order.Id });
     }
 
 
