@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
 using Notifico.Models;
 
@@ -149,6 +150,26 @@ public class AdminController : Controller
         _context.SaveChanges();
 
         return RedirectToAction("ProductList");
+    }
+
+    
+    public IActionResult OrderList()
+    {
+        var userName = HttpContext.Session.GetString("UserName");
+        if(string.IsNullOrEmpty(userName))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var user = _context.Users.FirstOrDefault(x => x.UserName == userName);
+        if (user == null || user.Role != "Admin")
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var orders = _context.Orders.Include(o => o.User).OrderByDescending(o => o.OrderDate).ToList();
+
+        return View(orders);
     }
 
 
