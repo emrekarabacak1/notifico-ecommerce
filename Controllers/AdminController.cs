@@ -242,5 +242,74 @@ public class AdminController : Controller
         return RedirectToAction("OrderDetail", new { id = order.Id });
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult CancelOrder(int id)
+    {
+        var userName = HttpContext.Session.GetString("UserName");
+        if (string.IsNullOrEmpty(userName))
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
+        var user = _context.Users.FirstOrDefault(u=>u.UserName==userName);
+        if (user == null || user.Role != "Admin")
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+        if(order == null)
+        {
+            TempData["StatusMessage"] = "Sipariş Bulunamadı"; 
+            return RedirectToAction("OrderList");
+        }
+
+        if (order.Status == OrderStatus.IptalEdildi || order.Status == OrderStatus.TeslimEdildi)
+        {
+            TempData["StatusMessage"] = "Bu sipariş iptal veya teslim edilmiş.";
+            return RedirectToAction("OrderList");
+        }
+        order.Status = OrderStatus.IptalEdildi;
+        _context.SaveChanges();
+        TempData["StatusMessage"] = "Sipariş başarıyla iptal edildi.";
+        return RedirectToAction("OrderList");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteOrder(int id)
+    {
+        var userName = HttpContext.Session.GetString("UserName");
+        if(string.IsNullOrEmpty(userName)) 
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+        if (user == null || user.Role != "Admin")
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var order = _context.Orders.Include(o => o.OrderItems).FirstOrDefault(o => o.Id == id);
+        if (order == null)
+        {
+            TempData["StatusMessage"] = "Sipariş bulunamadı!";
+            return RedirectToAction("OrderList");
+        }
+
+        if (order.OrderItems != null && order.OrderItems.Any())
+        {
+            _context.OrderItems.RemoveRange(order.OrderItems);
+        }
+
+        _context.Orders.Remove(order);
+        _context.SaveChanges();
+
+        TempData["StatusMessage"] = "Sipariş başarıyla silindi.";
+        return RedirectToAction("OrderList");
+
+
+    }
 }
