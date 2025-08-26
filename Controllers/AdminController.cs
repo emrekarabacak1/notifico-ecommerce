@@ -172,5 +172,63 @@ public class AdminController : Controller
         return View(orders);
     }
 
+    public IActionResult OrderDetail(int id)
+    {
+        var userName = HttpContext.Session.GetString("UserName");
+        if(string.IsNullOrEmpty(userName))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var user = _context.Users.FirstOrDefault(o => o.UserName == userName);
+        if (user == null || user.Role != "Admin")
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var order = _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.Product).Include(u=>u.User).FirstOrDefault(p=>p.Id == id);
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        return View(order);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult UpdateOrderStatus(int id, int status)
+    {
+        var userName = HttpContext.Session.GetString("UserName");
+        if (string.IsNullOrEmpty(userName))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+        if (user == null || user.Role != "Admin")
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        if (!Enum.IsDefined(typeof(OrderStatus), status))
+        {
+            TempData["StatusMessage"] = "Geçersiz statü!";
+            return RedirectToAction("OrderDetail", new { id = order.Id });
+        }
+
+        order.Status = (OrderStatus)status;
+        _context.SaveChanges();
+
+        TempData["StatusMessage"] = "Sipariş statüsü güncellendi.";
+        return RedirectToAction("OrderDetail", new { id = order.Id });
+    }
+
 
 }
