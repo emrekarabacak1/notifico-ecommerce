@@ -1,6 +1,120 @@
-﻿namespace Notifico.Views.Admin
-{
-    public class Dashboard
-    {
-    }
+﻿@model Notifico.Models.ViewModel
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    var tr = new CultureInfo("tr-TR");
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Yönetici Paneli</h2>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card text-bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Toplam Sipariş</h5>
+                    <p class="card-text display-6">@Model.TotalOrderCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Toplam Satış</h5>
+                    <p class="card-text display-6">@Model.TotalSales.ToString("C", tr)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Toplam Müşteri</h5>
+                    <p class="card-text display-6">@Model.TotalCustomerCount</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Aylık Satış Grafiği</div>
+        <div class="card-body">
+            <canvas id="salesChart" height="120"></canvas>
+        </div>
+    </div>
+
+    <div class="card mb-5">
+        <div class="card-header fw-semibold">Son 5 Sipariş</div>
+        <div class="card-body p-0">
+            @if (Model.RecentOrders == null || !Model.RecentOrders.Any())
+            {
+                <div class="alert alert-light m-3">Kayıt yok.</div>
+            }
+            else
+            {
+                <table class="table mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sipariş No</th>
+                            <th>Kullanıcı</th>
+                            <th>Tarih</th>
+                            <th>Tutar</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var o in Model.RecentOrders)
+                        {
+                            <tr>
+                                <td>@o.Id</td>
+                                <td>@(o.User?.UserName ?? o.UserId.ToString())</td>
+                                <td>@o.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@o.TotalAmount.ToString("C", tr)</td>
+                                <td>@o.Status.ToString()</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const chartLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartLabels));
+        const chartData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartData));
+
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Aylık Satış (₺)',
+                    data: chartData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return value.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 }

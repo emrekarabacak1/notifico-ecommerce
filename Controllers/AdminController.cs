@@ -333,6 +333,27 @@ public class AdminController : Controller
         var totalCustomerCount = _context.Users.Count(u=>u.Role=="User");
 
         var recentOrders = _context.Orders.Include(o => o.User).OrderByDescending(o => o.OrderDate).Take(5).ToList();
+        
+        var chartLabels = new List<string>();
+        var chartData = new List<decimal>();
+
+
+        for (int i = 5; i >= 0; i--)
+        {
+            var monthStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1)
+                                .AddMonths(-i);
+            monthStart = DateTime.SpecifyKind(monthStart, DateTimeKind.Utc);
+
+            var monthEnd = monthStart.AddMonths(1);
+            monthEnd = DateTime.SpecifyKind(monthEnd, DateTimeKind.Utc);
+
+            string label = monthStart.ToString("MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"));
+            chartLabels.Add(label);
+
+            decimal total = _context.Orders.Where(o => o.OrderDate >= monthStart && o.OrderDate < monthEnd).Sum(o => (decimal?)o.TotalAmount) ?? 0;
+            chartData.Add(total);
+        }
+
 
         var dashboardView = new ViewModel
         {
@@ -340,8 +361,9 @@ public class AdminController : Controller
             TotalSales = totalSales,
             TotalCustomerCount = totalCustomerCount,
             RecentOrders = recentOrders,
+            ChartLabels = chartLabels,
+            ChartData = chartData
         };
-
 
         return View(dashboardView);
     }
