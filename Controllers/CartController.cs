@@ -233,7 +233,7 @@ namespace Notifico.Controllers
             {
                 UserId = user.Id,
                 OrderDate = DateTime.UtcNow,
-                Status = "Beklemede",
+                Status = OrderStatus.Beklemede,
                 TotalAmount = cartItems.Sum(i => i.Product.Price * i.Quantity)
             };
             _context.Orders.Add(order);
