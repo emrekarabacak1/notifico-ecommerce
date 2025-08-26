@@ -5,12 +5,37 @@
 @{
     ViewData["Title"] = "Tüm Siparişler";
     var tr = new CultureInfo("tr-TR");
+    string currentSearch = Context.Request.Query["search"];
+    string currentStatus = Context.Request.Query["status"];
 }
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Tüm Siparişler</h2>
     </div>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" class="form-control" name="search" placeholder="Kullanıcı adı ile ara"
+                   value="@currentSearch" />
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">Tüm Statüler</option>
+                @{
+                    foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
+                    {
+                        var isSelected = currentStatus == ((int)s).ToString() ? "selected" : "";
+                        @:<option value="@( (int)s )" @isSelected>@s</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-center">
+            <button type="submit" class="btn btn-primary me-2">Filtrele</button>
+            <a href="@Url.Action("OrderList", "Admin")" class="btn btn-outline-secondary">Temizle</a>
+        </div>
+    </form>
 
     @if (Model == null || !Model.Any())
     {
@@ -37,32 +62,12 @@
                     {
                         <tr>
                             <td>@order.Id</td>
-
                             <td>
-                                @{
-                                    var userName = order?.User?.UserName ?? order?.User?.UserName;
-                                    if (!string.IsNullOrWhiteSpace(userName))
-                                    {
-                                        @userName
-                                    }
-                                    else
-                                    {
-                                        @order?.UserId
-                                    }
-                                }
+                                @(order?.User?.UserName ?? order?.UserId.ToString())
                             </td>
-
                             <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
-
                             <td>@order.TotalAmount.ToString("C", tr)</td>
-
-                            <td>
-                                @{
-                                    var statusText = order.Status.ToString();
-                                }
-                                @statusText
-                            </td>
-
+                            <td>@order.Status.ToString()</td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-primary"
                                    asp-controller="Admin"
