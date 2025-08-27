@@ -14,6 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddSession();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -39,5 +40,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapHub<Notifico.Hubs.NotificationHub>("/notificationHub");
 
 app.Run();
