@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
+using Notifico.Hubs;
 using Notifico.Models;
+
 
 namespace Notifico.Controllers
 {
@@ -9,9 +12,13 @@ namespace Notifico.Controllers
     {
         
         private readonly ApplicationDbContext _context;
-        public CartController(ApplicationDbContext context)
+        
+        private readonly IHubContext<NotificationHub> _hubContext;
+        public CartController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
+
         }
 
         [HttpPost]
@@ -202,7 +209,7 @@ namespace Notifico.Controllers
         }
 
         [HttpPost]
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout()
         {
             var userName = HttpContext.Session.GetString("UserName");
             if (string.IsNullOrEmpty(userName))
@@ -265,6 +272,7 @@ namespace Notifico.Controllers
             _context.SaveChanges();
 
             TempData["Success"] = "Siparişiniz başarıyla oluşturuldu!";
+            await _hubContext.Clients.All.SendAsync("ReceiveOrderNotification", "Yeni sipariş alındı!");
             return RedirectToAction("OrderSuccess", "Cart");
         }
 
