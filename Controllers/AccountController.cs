@@ -23,25 +23,23 @@ namespace Notifico.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(string UserName, string Email, string Password)
+        public IActionResult Register(User user)
         {
-            string salt = GenerateSalt();
-            string passwordHash = HashPassword(Password, salt);
-
-            var user = new User
+            if (!ModelState.IsValid)
             {
-                UserName = UserName,
-                Email = Email,
-                PasswordHash = passwordHash,
-                Salt = salt,
-                Role = "User",
-                DateCreated = DateTime.UtcNow,
-            };
+                return View(user);
+            }
+
+            string salt = GenerateSalt();
+            user.PasswordHash = HashPassword(user.PasswordHash, salt);
+            user.Salt = salt;
+            user.Role = "User";
+            user.DateCreated = DateTime.UtcNow;
 
             _context.Users.Add(user);
             _context.SaveChanges();
 
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login","Account");
         }
 
         [HttpGet]
