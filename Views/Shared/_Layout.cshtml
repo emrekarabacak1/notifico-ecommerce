@@ -80,11 +80,17 @@
         </main>
     </div>
 
-    <!-- Yeni Sipariş Bildirim Div'i (Adminler için) -->
     @if (userRole == "Admin")
     {
-        <div id="orderNotification" class="alert alert-success" style="display:none; position: fixed; top: 20px; right: 20px; z-index: 9999;">
-            <span id="orderNotificationText"></span>
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+            <div id="orderToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <span id="orderToastText">Yeni sipariş bildirimi!</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
         </div>
     }
 
@@ -97,22 +103,21 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <!-- SignalR kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
     @if (userRole == "Admin")
     {
         <script>
-            // SignalR ile yeni sipariş bildirimi dinle
+            // SignalR ile yeni sipariş bildirimi geldiğinde toast aç
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl("/notificationHub")
                 .build();
 
             connection.on("ReceiveOrderNotification", function (message) {
-                document.getElementById("orderNotificationText").innerText = message;
-                var notif = document.getElementById("orderNotification");
-                notif.style.display = "block";
-                setTimeout(function () { notif.style.display = "none"; }, 4000);
+                document.getElementById("orderToastText").innerText = message;
+                var toastEl = document.getElementById("orderToast");
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
             });
 
             connection.start().catch(function (err) {
