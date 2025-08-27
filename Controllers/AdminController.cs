@@ -1,57 +1,57 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
+using Notifico.Helpers;
 using Notifico.Models;
-
-
 
 public class AdminController : Controller
 {
     private readonly ApplicationDbContext _context;
-    public AdminController(ApplicationDbContext context)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public AdminController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public IActionResult ProductList()
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if (string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-            
-
-        var user = _context.Users.FirstOrDefault(x => x.UserName == userName);
-        if (user == null || user.Role != "Admin")
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
             
         var products = _context.Products.ToList();
-        return View(products); 
+        return View(products);
     }
 
     [HttpGet]
     public IActionResult EditProduct(int id)
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if (string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-        if (user == null || user.Role != "Admin")
+            
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
+            
 
         var product = _context.Products.FirstOrDefault(p => p.Id == id);
         if (product == null)
         {
             return RedirectToAction("ProductList");
         }
+            
 
         return View(product);
     }
@@ -59,28 +59,30 @@ public class AdminController : Controller
     [HttpPost]
     public IActionResult EditProduct(Product product)
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if (string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-        if (user == null || user.Role != "Admin")
+            
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
+            
 
         if (!ModelState.IsValid)
         {
             return View(product);
         }
+            
 
         var productInDb = _context.Products.FirstOrDefault(p => p.Id == product.Id);
         if (productInDb == null)
         {
             return RedirectToAction("ProductList");
         }
+            
 
         productInDb.Name = product.Name;
         productInDb.Description = product.Description;
@@ -90,23 +92,22 @@ public class AdminController : Controller
         productInDb.ImageUrl = product.ImageUrl;
 
         _context.SaveChanges();
-
         return RedirectToAction("ProductList");
     }
 
     public IActionResult DeleteProduct(int id)
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if (string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-        if (user == null || user.Role != "Admin")
+            
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
+            
 
         var product = _context.Products.FirstOrDefault(p => p.Id == id);
         if (product != null)
@@ -120,14 +121,13 @@ public class AdminController : Controller
     [HttpGet]
     public IActionResult AddProduct()
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if (string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-        if (user == null || user.Role != "Admin")
+            
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
@@ -138,21 +138,19 @@ public class AdminController : Controller
     [HttpPost]
     public IActionResult AddProduct(Product product)
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if (string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-        if (user == null || user.Role != "Admin")
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
 
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            return View(product);  
+            return View(product);
         }
 
         product.DateAdded = DateTime.UtcNow;
@@ -162,53 +160,52 @@ public class AdminController : Controller
         return RedirectToAction("ProductList");
     }
 
-    
     public IActionResult OrderList(string search, OrderStatus? status)
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if(string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(x => x.UserName == userName);
-        if (user == null || user.Role != "Admin")
+            
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
+            
 
         var orders = _context.Orders.Include(o => o.User).OrderByDescending(o => o.OrderDate).AsQueryable();
-        if(!string.IsNullOrEmpty(search))
+
+        if (!string.IsNullOrEmpty(search))
         {
-            orders = orders.Where(o=> o.User.UserName.ToLower().Contains(search.ToLower()));
+            orders = orders.Where(o => o.User.UserName.ToLower().Contains(search.ToLower()));
         }
 
-        if(status.HasValue)
+        if (status.HasValue)
         {
-            orders = orders.Where(o=>o.Status== status.Value);
+            orders = orders.Where(o => o.Status == status.Value);
         }
 
         var filteredOrders = orders.ToList();
-        
-
         return View(filteredOrders);
     }
 
     public IActionResult OrderDetail(int id)
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if(string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(o => o.UserName == userName);
-        if (user == null || user.Role != "Admin")
+            
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
+            
 
-        var order = _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.Product).Include(u=>u.User).FirstOrDefault(p=>p.Id == id);
+        var order = _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.Product).Include(u => u.User).FirstOrDefault(p => p.Id == id);
+
         if (order == null)
         {
             return NotFound();
@@ -221,14 +218,12 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult UpdateOrderStatus(int id, int status)
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if (string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-        if (user == null || user.Role != "Admin")
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
@@ -256,22 +251,20 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult CancelOrder(int id)
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if (string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(u=>u.UserName==userName);
-        if (user == null || user.Role != "Admin")
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
 
         var order = _context.Orders.FirstOrDefault(o => o.Id == id);
-        if(order == null)
+        if (order == null)
         {
-            TempData["StatusMessage"] = "Sipariş Bulunamadı"; 
+            TempData["StatusMessage"] = "Sipariş Bulunamadı";
             return RedirectToAction("OrderList");
         }
 
@@ -290,19 +283,19 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult DeleteOrder(int id)
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if(string.IsNullOrEmpty(userName)) 
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-        if (user == null || user.Role != "Admin")
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
 
-        var order = _context.Orders.Include(o => o.OrderItems).FirstOrDefault(o => o.Id == id);
+        var order = _context.Orders.Include(o => o.OrderItems)
+                                   .FirstOrDefault(o => o.Id == id);
+
         if (order == null)
         {
             TempData["StatusMessage"] = "Sipariş bulunamadı!";
@@ -319,33 +312,31 @@ public class AdminController : Controller
 
         TempData["StatusMessage"] = "Sipariş başarıyla silindi.";
         return RedirectToAction("OrderList");
-
-
     }
 
     public IActionResult Dashboard()
     {
-        var userName = HttpContext.Session.GetString("UserName");
-        if (string.IsNullOrEmpty(userName))
+        var user = _httpContextAccessor.GetCurrentUser(_context);
+        if (user == null) 
         {
-            return RedirectToAction("Login","Account");
+            return RedirectToAction("Login", "Account");
         }
-
-        var user = _context.Users.FirstOrDefault(o => o.UserName == userName);
-        if(user == null || user.Role != "Admin")
+        if (user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
         }
 
         var totalOrderCount = _context.Orders.Count();
-        var totalSales = _context.Orders.Sum(o=>o.TotalAmount);
-        var totalCustomerCount = _context.Users.Count(u=>u.Role=="User");
+        var totalSales = _context.Orders.Sum(o => o.TotalAmount);
+        var totalCustomerCount = _context.Users.Count(u => u.Role == "User");
 
-        var recentOrders = _context.Orders.Include(o => o.User).OrderByDescending(o => o.OrderDate).Take(5).ToList();
-        
+        var recentOrders = _context.Orders.Include(o => o.User)
+                                          .OrderByDescending(o => o.OrderDate)
+                                          .Take(5)
+                                          .ToList();
+
         var chartLabels = new List<string>();
         var chartData = new List<decimal>();
-
 
         for (int i = 5; i >= 0; i--)
         {
@@ -359,10 +350,11 @@ public class AdminController : Controller
             string label = monthStart.ToString("MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"));
             chartLabels.Add(label);
 
-            decimal total = _context.Orders.Where(o => o.OrderDate >= monthStart && o.OrderDate < monthEnd).Sum(o => (decimal?)o.TotalAmount) ?? 0;
+            decimal total = _context.Orders
+                .Where(o => o.OrderDate >= monthStart && o.OrderDate < monthEnd)
+                .Sum(o => (decimal?)o.TotalAmount) ?? 0;
             chartData.Add(total);
         }
-
 
         var dashboardView = new ViewModel
         {
@@ -376,5 +368,4 @@ public class AdminController : Controller
 
         return View(dashboardView);
     }
-
 }

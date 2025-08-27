@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
+using Notifico.Helpers;
 using Notifico.Hubs;
 using Notifico.Models;
 
@@ -12,71 +13,61 @@ namespace Notifico.Controllers
     {
         
         private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         
         private readonly IHubContext<NotificationHub> _hubContext;
-        public CartController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
+        public CartController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _hubContext = hubContext;
-
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost]
         public ActionResult AddToCart(int productId) 
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if(string.IsNullOrEmpty(userName))
+            var user = _httpContextAccessor.GetCurrentUser(_context);
+            if(user == null)
             {
                 return RedirectToAction("Login","Account");
             }
+            
+            var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Id);
 
-            if(userName != null)
+            if (cart == null)
             {
-                var user = _context.Users.FirstOrDefault(x => x.UserName == userName);
-                var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Id);
-                
-
-                if(cart == null)
-                {
-                    cart = new Cart();
-                    cart.UserId = user.Id;
-                    _context.Carts.Add(cart);
-                    _context.SaveChanges();
-                }
-
-                var cartItem = _context.CartItems.FirstOrDefault(x => x.CartId == cart.Id && x.ProductId == productId);
-                if(cartItem != null) 
-                {
-                    cartItem.Quantity++;
-                }
-                else
-                {
-                    cartItem = new CartItem();
-                    cartItem.CartId = cart.Id;
-                    cartItem.ProductId = productId;
-                    cartItem.Quantity = 1;
-
-                    _context.CartItems.Add(cartItem);
-                }
-                    
+                cart = new Cart();
+                cart.UserId = user.Id;
+                _context.Carts.Add(cart);
                 _context.SaveChanges();
-                
-                return RedirectToAction("Index","Product");
             }
 
-            return RedirectToAction("Index","Product");
+            var cartItem = _context.CartItems.FirstOrDefault(x => x.CartId == cart.Id && x.ProductId == productId);
+            if (cartItem != null)
+            {
+                cartItem.Quantity++;
+            }
+            else
+            {
+                cartItem = new CartItem
+                {
+                    CartId = cart.Id,
+                    ProductId = productId,
+                    Quantity = 1
+                };
+
+                _context.CartItems.Add(cartItem);
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Product");
         }
 
         [HttpGet]
         public IActionResult MyCart()
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(userName))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+            var user = _httpContextAccessor.GetCurrentUser(_context);
             if (user == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -106,8 +97,8 @@ namespace Notifico.Controllers
 
         public IActionResult RemoveFromCart(int id)
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(userName))
+            var user = _httpContextAccessor.GetCurrentUser(_context);
+            if (user == null)
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -126,8 +117,8 @@ namespace Notifico.Controllers
         public IActionResult DecreaseQuantity(int id)
         {
 
-            var userName = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(userName))
+            var user = _httpContextAccessor.GetCurrentUser(_context);
+            if (user == null)
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -154,8 +145,8 @@ namespace Notifico.Controllers
 
         public IActionResult IncreaseQuantity(int id) 
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(userName))
+            var user = _httpContextAccessor.GetCurrentUser(_context);
+            if (user == null)
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -186,14 +177,11 @@ namespace Notifico.Controllers
         [HttpPost]
         public IActionResult ClearCart()
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(userName))
+            var user = _httpContextAccessor.GetCurrentUser(_context);
+            if (user == null)
             {
                 return RedirectToAction("Login", "Account");
             }
-
-            var user = _context.Users.FirstOrDefault(p => p.UserName == userName);
-            if (user == null) return RedirectToAction("Login", "Account");
 
             var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Id);
             if (cart == null) return RedirectToAction("MyCart", "Cart");
@@ -211,15 +199,8 @@ namespace Notifico.Controllers
         [HttpPost]
         public async Task<IActionResult> Checkout()
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(userName))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var user = _context.Users.FirstOrDefault(x => x.UserName == userName);
-            
-            if(user == null)
+            var user = _httpContextAccessor.GetCurrentUser(_context);
+            if (user == null)
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -284,13 +265,7 @@ namespace Notifico.Controllers
         [HttpGet]
         public IActionResult MyOrders()
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if(string.IsNullOrEmpty(userName))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var user = _context.Users.FirstOrDefault(x => x.UserName == userName);
+            var user = _httpContextAccessor.GetCurrentUser(_context);
             if(user == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -304,14 +279,8 @@ namespace Notifico.Controllers
         [HttpGet]
         public IActionResult OrderDetail(int id)
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(userName))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var user = _context.Users.FirstOrDefault(o => o.UserName == userName);
-            if (user == null)
+            var user = _httpContextAccessor.GetCurrentUser(_context);
+            if(user == null)
             {
                 return RedirectToAction("Login", "Account");
             }
