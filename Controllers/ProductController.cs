@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Notifico.Data;
+using Notifico.Helpers;
 using Notifico.Models;
 using System.Diagnostics;
 
@@ -8,26 +9,25 @@ namespace Notifico.Controllers
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ProductController(ApplicationDbContext context)
+        public ProductController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IActionResult Index()
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if (!string.IsNullOrEmpty(userName))
+            var user = _httpContextAccessor.GetCurrentUser(_context);
+            if (user == null)
             {
-                var user = _context.Users.FirstOrDefault(x => x.UserName == userName);
-                if (user != null)
-                {
-                    ViewBag.Role = user.Role;
-                    var products = _context.Products.ToList();
-                    return View(products);
-                }
+                return RedirectToAction("Login", "Account");
             }
-            return RedirectToAction("Login", "Account");
+
+            ViewBag.Role = user.Role;
+            var products = _context.Products.ToList();
+            return View(products);
         }
     }
 }

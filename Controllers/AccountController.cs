@@ -1,19 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Notifico.Data;
 using Notifico.Models;
-using System;
 using System.Security.Cryptography;
 using System.Text;
+
 namespace Notifico.Controllers
 {
     public class AccountController : Controller
     {
-
         private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountController(ApplicationDbContext context)
+        public AccountController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -23,23 +24,28 @@ namespace Notifico.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(User user)
+        public IActionResult Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(user);
+                return View(model);
             }
 
             string salt = GenerateSalt();
-            user.PasswordHash = HashPassword(user.PasswordHash, salt);
-            user.Salt = salt;
-            user.Role = "User";
-            user.DateCreated = DateTime.UtcNow;
+            var user = new User
+            {
+                UserName = model.UserName,
+                Email = model.Email,
+                PasswordHash = HashPassword(model.Password, salt),
+                Salt = salt,
+                Role = "User",
+                DateCreated = DateTime.UtcNow
+            };
 
             _context.Users.Add(user);
             _context.SaveChanges();
 
-            return RedirectToAction("Login","Account");
+            return RedirectToAction("Login", "Account");
         }
 
         [HttpGet]
@@ -62,7 +68,7 @@ namespace Notifico.Controllers
 
             if (user.PasswordHash == hashed)
             {
-                HttpContext.Session.SetString("UserName", user.UserName);
+                _httpContextAccessor.HttpContext!.Session.SetString("UserName", user.UserName);
                 return RedirectToAction("Index", "Product");
             }
             else
@@ -72,18 +78,15 @@ namespace Notifico.Controllers
             }
         }
 
-
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
+            _httpContextAccessor.HttpContext!.Session.Clear();
             return RedirectToAction("Login", "Account");
-
         }
-
 
         public static string HashPassword(string password, string salt)
         {
-            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            using (var sha256 = SHA256.Create())
             {
                 var combined = Encoding.UTF8.GetBytes(password + salt);
                 var hash = sha256.ComputeHash(combined);
@@ -93,13 +96,13 @@ namespace Notifico.Controllers
 
         public static string GenerateSalt(int size = 32)
         {
-            var rng = new System.Security.Cryptography.RNGCryptoServiceProvider();
+            // RNGCryptoServiceProvider
             var buff = new byte[size];
-            rng.GetBytes(buff);
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(buff);
+            }
             return Convert.ToBase64String(buff);
         }
-
     }
-
-
 }
