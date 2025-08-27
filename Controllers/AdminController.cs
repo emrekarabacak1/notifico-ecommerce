@@ -70,7 +70,11 @@ public class AdminController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
-            
+
+        if (!ModelState.IsValid)
+        {
+            return View(product);
+        }
 
         var productInDb = _context.Products.FirstOrDefault(p => p.Id == product.Id);
         if (productInDb == null)
@@ -144,6 +148,11 @@ public class AdminController : Controller
         if (user == null || user.Role != "Admin")
         {
             return RedirectToAction("Index", "Home");
+        }
+
+        if(!ModelState.IsValid)
+        {
+            return View(product);  
         }
 
         product.DateAdded = DateTime.UtcNow;
