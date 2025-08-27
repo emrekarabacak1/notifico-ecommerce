@@ -25,13 +25,15 @@ namespace Notifico.Controllers
         [HttpPost]
         public IActionResult Register(string UserName, string Email, string Password)
         {
-            string passwordHash = HashPassword(Password);
+            string salt = GenerateSalt();
+            string passwordHash = HashPassword(Password, salt);
 
             var user = new User
             {
                 UserName = UserName,
                 Email = Email,
                 PasswordHash = passwordHash,
+                Salt = salt,
                 Role = "User",
                 DateCreated = DateTime.UtcNow,
             };
@@ -51,24 +53,27 @@ namespace Notifico.Controllers
         [HttpPost]
         public IActionResult Login(string Email, string Password)
         {
-            string hashed = HashPassword(Password);
+            var user = _context.Users.FirstOrDefault(u => u.Email == Email);
+            if (user == null)
+            {
+                ViewBag.Error = "Email veya Şifre Hatalı";
+                return View();
+            }
 
-            var user = _context.Users.FirstOrDefault(u => u.Email == Email && u.PasswordHash == hashed);
+            string hashed = HashPassword(Password, user.Salt);
 
-            if (user != null)
+            if (user.PasswordHash == hashed)
             {
                 HttpContext.Session.SetString("UserName", user.UserName);
-
                 return RedirectToAction("Index", "Product");
             }
             else
             {
-
-                ViewBag.Error = "Email veya Sifre Hatalı";
+                ViewBag.Error = "Email veya Şifre Hatalı";
                 return View();
             }
-
         }
+
 
         public IActionResult Logout()
         {
@@ -78,18 +83,22 @@ namespace Notifico.Controllers
         }
 
 
-        public static string HashPassword(string password)
+        public static string HashPassword(string password, string salt)
         {
-            using (var sha256 = SHA256.Create())
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
             {
-                var bytes = Encoding.UTF8.GetBytes(password);
-                var hash = sha256.ComputeHash(bytes);
-
-                var sb = new StringBuilder();
-                foreach (var b in hash)
-                    sb.Append(b.ToString("x2"));
-                return sb.ToString(); 
+                var combined = Encoding.UTF8.GetBytes(password + salt);
+                var hash = sha256.ComputeHash(combined);
+                return Convert.ToBase64String(hash);
             }
+        }
+
+        public static string GenerateSalt(int size = 32)
+        {
+            var rng = new System.Security.Cryptography.RNGCryptoServiceProvider();
+            var buff = new byte[size];
+            rng.GetBytes(buff);
+            return Convert.ToBase64String(buff);
         }
 
     }
