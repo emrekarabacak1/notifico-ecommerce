@@ -18,7 +18,7 @@ else
     <form asp-action="ClearCart" asp-controller="Cart" method="post" class="mb-3">
         <button type="submit" class="btn btn-danger"
                 onclick="return confirm('Sepeti tamamen boşaltmak istediğinizden emin misiniz?');">
-            <i class="bi bi-trash"></i> Sepeti Boşalt
+            Sepeti Boşalt
         </button>
     </form>
 
@@ -44,7 +44,8 @@ else
                         <form asp-action="DecreaseQuantity" asp-controller="Cart" method="post" style="display:inline;">
                             <input type="hidden" name="id" value="@item.Id" />
                             <button type="submit" class="btn btn-outline-secondary btn-sm"
-                            @(item.Quantity == 1 ? "disabled" : "")>
+                            @(item.Quantity == 1 ? "disabled" : "")
+                                    title="Adeti azalt">
                                 -
                             </button>
                         </form>
@@ -52,7 +53,8 @@ else
                         <form asp-action="IncreaseQuantity" asp-controller="Cart" method="post" style="display:inline;">
                             <input type="hidden" name="id" value="@item.Id" />
                             <button type="submit" class="btn btn-outline-secondary btn-sm"
-                            @(item.Product != null && item.Quantity == item.Product.Stock ? "disabled" : "")>
+                            @(item.Product != null && item.Quantity == item.Product.Stock ? "disabled" : "")
+                                    title="Adeti artır">
                                 +
                             </button>
                         </form>
@@ -63,7 +65,7 @@ else
                             <input type="hidden" name="id" value="@item.Id" />
                             <button type="submit" class="btn btn-danger btn-sm"
                                     onclick="return confirm('Bu ürünü sepetten çıkarmak istediğinize emin misiniz?');">
-                                <i class="bi bi-trash"></i> Sepetten Çıkar
+                                Sepetten Çıkar
                             </button>
                         </form>
                     </td>
@@ -77,8 +79,10 @@ else
     </div>
 
     <form asp-action="Checkout" asp-controller="Cart" method="post" class="text-end mt-4">
-        <button type="submit" class="btn btn-primary btn-lg">
-            <i class="bi bi-bag-check"></i> Sipariş Ver
+        <button type="submit" class="btn btn-primary btn-lg"
+        @(Model == null || !Model.Any() ? "disabled" : "")
+                title="Sepetiniz boşsa sipariş veremezsiniz">
+            Sipariş Ver
         </button>
     </form>
 }

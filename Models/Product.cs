@@ -22,12 +22,14 @@ namespace Notifico.Models
         [Range(0, 99999, ErrorMessage = "Stok sıfır veya daha büyük olmalıdır!")]
         public int Stock { get; set; }
 
+        [Required(ErrorMessage = "Resim adresi zorunludur!")]
         [Url(ErrorMessage = "Geçerli bir resim adresi giriniz!")]
         public string ImageUrl { get; set; }
 
         [Required(ErrorMessage = "Kategori zorunludur!")]
         [StringLength(30, ErrorMessage = "Kategori en fazla 30 karakter olabilir!")]
         public string Category { get; set; }
-        public DateTime DateAdded { get; set; }
+        public DateTime DateAdded { get; set; } = DateTime.UtcNow;
     }
+
 }
