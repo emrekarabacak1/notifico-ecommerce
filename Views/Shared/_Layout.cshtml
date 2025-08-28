@@ -1,16 +1,6 @@
-﻿@using Microsoft.AspNetCore.Http
-@inject Notifico.Data.ApplicationDbContext db
-
-@{
-    var userName = Context.Session.GetString("UserName");
-    string userRole = null;
-
-    if (!string.IsNullOrEmpty(userName))
-    {
-        var user = db.Users.FirstOrDefault(u => u.UserName == userName);
-        userRole = user?.Role;
-    }
-}
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Notifico.Models.AppUser> SignInManager
+@inject UserManager<Notifico.Models.AppUser> UserManager
 
 <!DOCTYPE html>
 <html lang="en">
@@ -39,23 +29,20 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Product" asp-action="Index">Ürünler</a>
                         </li>
-                        @if (!string.IsNullOrEmpty(userName))
+                        @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-primary" asp-controller="Cart" asp-action="MyOrders">Siparişlerim</a>
                             </li>
-                            @if (userRole == "Admin")
+                            @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-warning" asp-controller="Admin" asp-action="ProductList">Admin Paneli</a>
                                 </li>
                             }
-                            else
-                            {
-                                <li class="nav-item">
-                                    <span class="nav-link text-success">Hoş Geldin, @userName!</span>
-                                </li>
-                            }
+                            <li class="nav-item">
+                                <span class="nav-link text-success">Hoş Geldin, @UserManager.GetUserName(User)!</span>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-danger" asp-controller="Account" asp-action="Logout">Çıkış Yap</a>
                             </li>
@@ -74,15 +61,16 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    @if (userRole == "Admin")
+    @if (User.IsInRole("Admin"))
     {
-        <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+        <div class="position-fixed top-0 end-0 p-3" style="z-index:1100">
             <div id="orderToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
@@ -96,35 +84,34 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - Notifico -
-            <a asp-controller="Product" asp-action="Index">Ürünler</a>
+            &copy; 2025 - Notifico - <a asp-controller="Product" asp-action="Index">Ürünler</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
-    @if (userRole == "Admin")
+    @if (User.IsInRole("Admin"))
     {
         <script>
-            // SignalR ile yeni sipariş bildirimi geldiğinde toast aç
-            const connection = new signalR.HubConnectionBuilder()
-                .withUrl("/notificationHub")
-                .build();
+            (function () {
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/notificationHub")
+                    .build();
 
-            connection.on("ReceiveOrderNotification", function (message) {
-                document.getElementById("orderToastText").innerText = message;
-                var toastEl = document.getElementById("orderToast");
-                var toast = new bootstrap.Toast(toastEl);
-                toast.show();
-            });
+                connection.on("ReceiveOrderNotification", function (message) {
+                    const toastEl = document.getElementById("orderToast");
+                    document.getElementById("orderToastText").innerText = message;
+                    new bootstrap.Toast(toastEl).show();
+                });
 
-            connection.start().catch(function (err) {
-                return console.error(err.toString());
-            });
+                connection.start().catch(err => console.error(err.toString()));
+            })();
         </script>
     }
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

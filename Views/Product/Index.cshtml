@@ -1,23 +1,22 @@
 ﻿@model IEnumerable<Notifico.Models.Product>
 
-
-<h1>Products</h1>
+<h1>Ürünler</h1>
 
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Description</th>
-            <th scope="col">Price</th>
-            <th scope="col">Stock</th>
-            <th scope="col">Category</th>
-            <th scope="col">Date Added</th>
-            <th scope="col">Image</th>
-
+            <th scope="col">Adı</th>
+            <th scope="col">Açıklama</th>
+            <th scope="col">Fiyat</th>
+            <th scope="col">Stok</th>
+            <th scope="col">Kategori</th>
+            <th scope="col">Tarih</th>
+            <th scope="col">Resim</th>
+            <th scope="col">Sepet</th>
         </tr>
     </thead>
     <tbody>
-        @foreach(var p in Model)
+        @foreach (var p in Model)
         {
             <tr>
                 <td>@p.Name</td>
@@ -29,18 +28,20 @@
                 <td>
                     @if (!string.IsNullOrEmpty(p.ImageUrl))
                     {
-                        <img src="@p.ImageUrl" alt="Product Image" style="width:40px; height:40px;" />
+                        <img src="@p.ImageUrl" alt="Ürün Resmi" style="width:40px; height:40px;" />
                     }
                 </td>
                 <td>
                     <form asp-action="AddToCart" asp-controller="Cart" method="post" style="display:inline;">
                         <input type="hidden" name="productId" value="@p.Id" />
-                        <button type="submit" class="btn btn-success btn-sm">Sepete Ekle</button>
+                        <button type="submit" class="btn btn-success btn-sm"
+                        @(p.Stock == 0 ? "disabled" : "")
+                                title="@(p.Stock == 0 ? "Stokta yok" : "Sepete Ekle")">
+                            Sepete Ekle
+                        </button>
                     </form>
                 </td>
-
             </tr>
         }
-
     </tbody>
 </table>

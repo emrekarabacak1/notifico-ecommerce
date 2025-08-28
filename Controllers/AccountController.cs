@@ -1,20 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Notifico.Data;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Notifico.Models;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Notifico.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public AccountController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
-            _context = context;
-            _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [HttpGet]
@@ -24,28 +22,48 @@ namespace Notifico.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            string salt = GenerateSalt();
-            var user = new User
+            var existingUserByEmail = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUserByEmail != null)
+            {
+                ModelState.AddModelError("Email", "Bu email ile daha önce kayıt olunmuş.");
+                return View(model);
+            }
+
+            var existingUserByUsername = await _userManager.FindByNameAsync(model.UserName);
+            if (existingUserByUsername != null)
+            {
+                ModelState.AddModelError("UserName", "Bu kullanıcı adı zaten alınmış.");
+                return View(model);
+            }
+
+            var user = new AppUser
             {
                 UserName = model.UserName,
-                Email = model.Email,
-                PasswordHash = HashPassword(model.Password, salt),
-                Salt = salt,
-                Role = "User",
-                DateCreated = DateTime.UtcNow
+                Email = model.Email
             };
 
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-            return RedirectToAction("Login", "Account");
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "User");
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
         }
 
         [HttpGet]
@@ -55,20 +73,20 @@ namespace Notifico.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(string Email, string Password)
+        public async Task<IActionResult> Login(string Email, string Password)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Email == Email);
+            var user = await _userManager.FindByEmailAsync(Email);
+
             if (user == null)
             {
                 ViewBag.Error = "Email veya Şifre Hatalı";
                 return View();
             }
 
-            string hashed = HashPassword(Password, user.Salt);
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, Password, isPersistent: false, lockoutOnFailure: false);
 
-            if (user.PasswordHash == hashed)
+            if (result.Succeeded)
             {
-                _httpContextAccessor.HttpContext!.Session.SetString("UserName", user.UserName);
                 return RedirectToAction("Index", "Product");
             }
             else
@@ -78,31 +96,10 @@ namespace Notifico.Controllers
             }
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            _httpContextAccessor.HttpContext!.Session.Clear();
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
-        }
-
-        public static string HashPassword(string password, string salt)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var combined = Encoding.UTF8.GetBytes(password + salt);
-                var hash = sha256.ComputeHash(combined);
-                return Convert.ToBase64String(hash);
-            }
-        }
-
-        public static string GenerateSalt(int size = 32)
-        {
-            // RNGCryptoServiceProvider
-            var buff = new byte[size];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(buff);
-            }
-            return Convert.ToBase64String(buff);
         }
     }
 }

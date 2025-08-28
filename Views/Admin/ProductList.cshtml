@@ -1,48 +1,55 @@
 ﻿@model IEnumerable<Notifico.Models.Product>
 
-
 <h2>Ürünler</h2>
 
 <a class="btn btn-primary mb-3" asp-controller="Admin" asp-action="AddProduct">Yeni Ürün Ekle</a>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Adı</th>
-            <th>Açıklama</th>
-            <th>Fiyat</th>
-            <th>Stok</th>
-            <th>Kategori</th>
-            <th>Tarih</th>
-            <th>Resim</th>
-            <th>İşlemler</th>
-
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var p in Model)
-        {
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead>
             <tr>
-                <td>@p.Name</td>
-                <td>@p.Description</td>
-                <td>@($"{p.Price:C}")</td>
-                <td>@p.Stock</td>
-                <td>@p.Category</td>
-                <td>@p.DateAdded.ToString("dd.MM.yyyy")</td>
-                <td>
-                    @if (!string.IsNullOrEmpty(p.ImageUrl))
-                    {
-
-                        <img src="@p.ImageUrl" alt="Ürün Resmi" style="width:40px; height:40px;" />
-                    }
-                </td>
-                <td>
-                    <a class="btn btn-warning btn-sm" asp-action="EditProduct" asp-route-id="@p.Id">Edit</a>
-                    <a class="btn btn-danger btn-sm" asp-action="DeleteProduct" asp-route-id="@p.Id"
-                       onclick="return confirm('Bu ürünü silmek istediğinize emin misiniz?');">Delete</a>
-                </td>
+                <th>ID</th>
+                <th>Adı</th>
+                <th>Açıklama</th>
+                <th>Fiyat</th>
+                <th>Stok</th>
+                <th>Kategori</th>
+                <th>Tarih</th>
+                <th>Resim</th>
+                <th>İşlemler</th>
             </tr>
-        }
-    </tbody>
-</table>
-
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.Id</td>
+                    <td>@p.Name</td>
+                    <td>
+                        @(p.Description?.Length > 50
+                            ? p.Description.Substring(0, 50) + "..."
+                            : p.Description)
+                    </td>
+                    <td>@($"{p.Price:C}")</td>
+                    <td>@p.Stock</td>
+                    <td>@p.Category</td>
+                    <td>@p.DateAdded.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "/images/no-image.png" : p.ImageUrl)"
+                             alt="Ürün Resmi" style="width:40px; height:40px;" />
+                    </td>
+                    <td>
+                        <a class="btn btn-warning btn-sm" asp-action="EditProduct" asp-route-id="@p.Id">Edit</a>
+                        <form asp-action="DeleteProduct" asp-route-id="@p.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Bu ürünü silmek istediğinize emin misiniz?');">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

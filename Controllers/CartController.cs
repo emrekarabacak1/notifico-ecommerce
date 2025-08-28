@@ -1,48 +1,49 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
-using Notifico.Helpers;
 using Notifico.Hubs;
 using Notifico.Models;
-
+using System.Security.Claims;
 
 namespace Notifico.Controllers
 {
+    [Authorize]
     public class CartController : Controller
     {
-        
         private readonly ApplicationDbContext _context;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        
         private readonly IHubContext<NotificationHub> _hubContext;
-        public CartController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext, IHttpContextAccessor httpContextAccessor)
+
+        public CartController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
             _hubContext = hubContext;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost]
-        public ActionResult AddToCart(int productId) 
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddToCart(int productId)
         {
-            var user = _httpContextAccessor.GetCurrentUser(_context);
-            if(user == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
-                return RedirectToAction("Login","Account");
+                return RedirectToAction("Login", "Account");
             }
-            
-            var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Id);
+
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null)
             {
-                cart = new Cart();
-                cart.UserId = user.Id;
-                _context.Carts.Add(cart);
-                _context.SaveChanges();
+                cart = new Cart { UserId = userId, CartItems = new List<CartItem>() };
+                await _context.Carts.AddAsync(cart);
+                await _context.SaveChangesAsync();
             }
 
-            var cartItem = _context.CartItems.FirstOrDefault(x => x.CartId == cart.Id && x.ProductId == productId);
+            var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
+
             if (cartItem != null)
             {
                 cartItem.Quantity++;
@@ -55,177 +56,175 @@ namespace Notifico.Controllers
                     ProductId = productId,
                     Quantity = 1
                 };
-
-                _context.CartItems.Add(cartItem);
+                await _context.CartItems.AddAsync(cartItem);
             }
 
-            _context.SaveChanges();
-
+            await _context.SaveChangesAsync();
             return RedirectToAction("Index", "Product");
         }
 
         [HttpGet]
-        public IActionResult MyCart()
+        public async Task<IActionResult> MyCart()
         {
-            var user = _httpContextAccessor.GetCurrentUser(_context);
-            if (user == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Id);
-            if (cart == null)
-            {
-                return View(new List<CartItem>());
-            }
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Product)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
 
-            
-            var cartItems = _context.CartItems
-                .Where(ci => ci.CartId == cart.Id)
-                .Include(ci => ci.Product)   
-                .ToList();
-
-            if (cartItems == null || !cartItems.Any())
-            {
-                return View(new List<CartItem>());
-            }
-            else
-            {
-                return View(cartItems);
-            }
+            var cartItems = cart?.CartItems ?? new List<CartItem>();
+            return View(cartItems);
         }
 
-        public IActionResult RemoveFromCart(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveFromCart(int id)
         {
-            var user = _httpContextAccessor.GetCurrentUser(_context);
-            if (user == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            var cartItem = _context.CartItems.FirstOrDefault(x => x.Id == id);
-            if(cartItem != null)
+            var cartItem = await _context.CartItems
+                .Include(ci => ci.Cart)
+                .FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
+
+            if (cartItem != null)
             {
                 _context.CartItems.Remove(cartItem);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
 
-            
-            return RedirectToAction("MyCart", "Cart");
+            return RedirectToAction("MyCart");
         }
 
-        public IActionResult DecreaseQuantity(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DecreaseQuantity(int id)
         {
-
-            var user = _httpContextAccessor.GetCurrentUser(_context);
-            if (user == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            var cartItem = _context.CartItems.FirstOrDefault(x => x.Id == id);
-            if(cartItem == null ) 
+            var cartItem = await _context.CartItems
+                .Include(ci => ci.Cart)
+                .Include(ci => ci.Product)
+                .FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
+
+            if (cartItem == null)
             {
-                return RedirectToAction("MyCart", "Cart");
+                return RedirectToAction("MyCart");
             }
-            
-            
-            if(cartItem.Quantity > 1)
+
+            if (cartItem.Quantity > 1)
             {
                 cartItem.Quantity--;
-                _context.SaveChanges();
             }
             else
             {
-                _context.SaveChanges();
                 _context.CartItems.Remove(cartItem);
             }
-            return RedirectToAction("MyCart", "Cart");
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("MyCart");
         }
 
-        public IActionResult IncreaseQuantity(int id) 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> IncreaseQuantity(int id)
         {
-            var user = _httpContextAccessor.GetCurrentUser(_context);
-            if (user == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            var cartItem = _context.CartItems.FirstOrDefault(x=>x.Id == id);
-            if(cartItem == null)
+            var cartItem = await _context.CartItems
+                .Include(ci => ci.Cart)
+                .Include(ci => ci.Product)
+                .FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
+
+            if (cartItem == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("MyCart");
             }
-            
-            
-            var product = _context.Products.FirstOrDefault(p => p.Id == cartItem.ProductId);
-            if(product == null)
-            {
-                return RedirectToAction("MyCart", "Cart");
-            }
-            
-            if(cartItem.Quantity < product.Stock) 
+
+            if (cartItem.Product != null && cartItem.Quantity < cartItem.Product.Stock)
             {
                 cartItem.Quantity++;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction("MyCart", "Cart");
-            
+            return RedirectToAction("MyCart");
         }
 
         [HttpPost]
-        public IActionResult ClearCart()
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ClearCart()
         {
-            var user = _httpContextAccessor.GetCurrentUser(_context);
-            if (user == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Id);
-            if (cart == null) return RedirectToAction("MyCart", "Cart");
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
 
-            var cartItems = _context.CartItems.Where(ci => ci.CartId == cart.Id).ToList();
-            if (cartItems.Any())
+            if (cart?.CartItems.Any() == true)
             {
-                _context.CartItems.RemoveRange(cartItems);
-                _context.SaveChanges();
+                _context.CartItems.RemoveRange(cart.CartItems);
+                await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction("MyCart", "Cart");
+            return RedirectToAction("MyCart");
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Checkout()
         {
-            var user = _httpContextAccessor.GetCurrentUser(_context);
-            if (user == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            var cart = _context.Carts.FirstOrDefault(c => c.UserId == user.Id);
-            if(cart == null)
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (cart == null)
             {
                 return RedirectToAction("MyCart", "Cart");
             }
 
-            var cartItems = _context.CartItems.Where(ci=>ci.CartId == cart.Id).Include(ci=>ci.Product).ToList();
-            if (cartItems==null || !cartItems.Any()) 
+            var cartItems = await _context.CartItems
+                .Where(x => x.CartId == cart.Id)
+                .Include(x => x.Product)
+                .ToListAsync();
+
+            if (cartItems == null || !cartItems.Any())
             {
                 return RedirectToAction("MyCart", "Cart");
             }
 
             var order = new Order
             {
-                UserId = user.Id,
-                OrderDate = DateTime.UtcNow,
+                UserId = userId,
+                OrderDate = DateTime.UtcNow, 
                 Status = OrderStatus.Beklemede,
                 TotalAmount = cartItems.Sum(i => i.Product.Price * i.Quantity)
             };
+
             _context.Orders.Add(order);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             foreach (var item in cartItems)
             {
@@ -238,65 +237,69 @@ namespace Notifico.Controllers
                 };
                 _context.OrderItems.Add(orderItem);
 
-                if(item.Product.Stock >= item.Quantity)
+                if (item.Product.Stock >= item.Quantity)
                 {
                     item.Product.Stock -= item.Quantity;
                 }
                 else
                 {
+                    TempData["Error"] = $"Ürün stok yetersiz: {item.Product.Name}";
                     return RedirectToAction("MyCart", "Cart");
                 }
             }
 
             _context.CartItems.RemoveRange(cartItems);
-
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             TempData["Success"] = "Siparişiniz başarıyla oluşturuldu!";
             await _hubContext.Clients.All.SendAsync("ReceiveOrderNotification", "Yeni sipariş alındı!");
+
             return RedirectToAction("OrderSuccess", "Cart");
         }
 
+        [HttpGet]
         public IActionResult OrderSuccess()
         {
             return View();
         }
 
         [HttpGet]
-        public IActionResult MyOrders()
+        public async Task<IActionResult> MyOrders()
         {
-            var user = _httpContextAccessor.GetCurrentUser(_context);
-            if(user == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            var orders = _context.Orders.Where(o => o.UserId == user.Id).OrderByDescending(o => o.OrderDate).ToList();
-            
+            var orders = await _context.Orders
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+
             return View(orders);
         }
 
         [HttpGet]
-        public IActionResult OrderDetail(int id)
+        public async Task<IActionResult> OrderDetail(int id)
         {
-            var user = _httpContextAccessor.GetCurrentUser(_context);
-            if(user == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            var order = _context.Orders
-                .Include(x => x.OrderItems)
-                .ThenInclude(oi => oi.Product)
-                .FirstOrDefault(o => o.Id == id && o.UserId == user.Id);
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
 
             if (order == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
 
             return View(order);
         }
-
     }
 }
