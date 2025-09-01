@@ -1,16 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Notifico.Models
 {
-    public class ProfileViewModel
+    public class ProfileEditViewModel
     {
-        [Required(ErrorMessage = "Kullanıcı adı zorunludur!")]
-        public string UserName { get; set; }
-
-        [Required(ErrorMessage = "E-posta zorunludur")]
-        [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz!")]
-        public string Email { get; set; }
-
         [Display(Name = "Ad")]
         public string FirstName { get; set; }
 
@@ -18,7 +12,7 @@ namespace Notifico.Models
         public string LastName { get; set; }
 
         [Display(Name = "Telefon")]
-        [Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz!")]
+        [Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz.")]
         public string PhoneNumber { get; set; }
 
         [Display(Name = "Doğum Tarihi")]

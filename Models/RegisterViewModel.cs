@@ -5,21 +5,28 @@ namespace Notifico.Models
     public class RegisterViewModel
     {
         [Required(ErrorMessage = "Kullanıcı adı zorunludur!")]
-        [StringLength(30, ErrorMessage = "Kullanıcı adı en fazla 30 karakter olabilir!")]
         public string UserName { get; set; }
 
-        [Required(ErrorMessage = "Email zorunludur!")]
-        [EmailAddress(ErrorMessage = "Geçerli bir email giriniz!")]
+        [Required(ErrorMessage = "E-posta zorunludur!")]
+        [EmailAddress(ErrorMessage = "Geçerli bir e-posta giriniz!")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Şifre zorunludur!")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Şifre en az 6 karakter olmalı!")]
-        public string Password { get; set; }
-        
-        [Required(ErrorMessage = "Şifre tekrar zorunludur!")]
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Şifreler uyuşmuyor!")]
-        public string ConfirmPassword { get; set; }
-    }
+        public string Password { get; set; }
 
+        [Required(ErrorMessage = "Ad zorunludur!")]
+        public string FirstName { get; set; }
+
+        [Required(ErrorMessage = "Soyad zorunludur!")]
+        public string LastName { get; set; }
+
+        [Phone(ErrorMessage = "Geçerli bir telefon giriniz!")]
+        public string PhoneNumber { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime? BirthDate { get; set; }
+
+        public string Address { get; set; }
+    }
 }
