@@ -4,37 +4,40 @@
     ViewData["Title"] = "Profilim";
 }
 
-<h2>Profilim</h2>
+<div class="row mt-4">
+    <div class="col-md-6 offset-md-3">
+        <div class="card shadow-sm p-4">
+            <h2 class="mb-4">Profilim</h2>
+            <dl class="row">
+                <dt class="col-sm-4">Kullanıcı Adı</dt>
+                <dd class="col-sm-8">@Model.UserName</dd>
+                <dt class="col-sm-4">E-posta</dt>
+                <dd class="col-sm-8">@Model.Email</dd>
+                <dt class="col-sm-4">Ad</dt>
+                <dd class="col-sm-8">@Model.FirstName</dd>
+                <dt class="col-sm-4">Soyad</dt>
+                <dd class="col-sm-8">@Model.LastName</dd>
+                <dt class="col-sm-4">Telefon</dt>
+                <dd class="col-sm-8">@Model.PhoneNumber</dd>
+                <dt class="col-sm-4">Doğum Tarihi</dt>
+                <dd class="col-sm-8">@Model.BirthDate?.ToString("dd.MM.yyyy")</dd>
+                <dt class="col-sm-4">Adres</dt>
+                <dd class="col-sm-8">@Model.Address</dd>
+            </dl>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
+            <div class="mt-4 d-flex gap-2">
+                <a asp-action="Edit" class="btn btn-primary">Düzenle</a>
+                <a asp-action="ChangePassword" class="btn btn-outline-secondary">Şifre Değiştir</a>
+            </div>
 
-<form asp-action="Index" method="post" class="mt-4">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="text-danger"></div>
-
-    <div class="mb-3">
-        <label asp-for="UserName" class="form-label"></label>
-        <input asp-for="UserName" class="form-control" />
-        <span asp-validation-for="UserName" class="text-danger"></span>
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success mt-3">@TempData["Success"]</div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger mt-3">@TempData["Error"]</div>
+            }
+        </div>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Kaydet</button>
-    <a asp-action="ChangePassword" class="btn btn-outline-secondary ms-2">Şifre Değiştir</a>
-</form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+</div>

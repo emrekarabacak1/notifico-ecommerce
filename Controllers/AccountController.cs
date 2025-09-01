@@ -46,7 +46,14 @@ namespace Notifico.Controllers
             var user = new AppUser
             {
                 UserName = model.UserName,
-                Email = model.Email
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                PhoneNumber = model.PhoneNumber,
+                Address = model.Address,
+                BirthDate = model.BirthDate.HasValue
+                    ? DateTime.SpecifyKind(model.BirthDate.Value, DateTimeKind.Utc)
+                    : null
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -74,6 +81,7 @@ namespace Notifico.Controllers
                 return View(model);
             }
         }
+
 
         [HttpGet]
         public IActionResult Login()
