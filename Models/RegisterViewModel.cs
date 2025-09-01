@@ -15,6 +15,11 @@ namespace Notifico.Models
         [Required(ErrorMessage = "Şifre zorunludur!")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Şifre en az 6 karakter olmalı!")]
         public string Password { get; set; }
+        
+        [Required(ErrorMessage = "Şifre tekrar zorunludur!")]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "Şifreler uyuşmuyor!")]
+        public string ConfirmPassword { get; set; }
     }
 
 }
