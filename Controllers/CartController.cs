@@ -31,6 +31,14 @@ namespace Notifico.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p=>p.Id == productId);
+
+            if (product == null) 
+            {
+                TempData["Error"] = "Ürün Bulunamadı";
+                return RedirectToAction("Index", "Product");
+            }
+
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
@@ -46,6 +54,11 @@ namespace Notifico.Controllers
 
             if (cartItem != null)
             {
+                if(product.Stock <= cartItem.Quantity) 
+                {
+                    TempData["Error"] = "Sepetteki ürün adedi, mevcut stoktan fazla olamaz!";
+                    return RedirectToAction("Index", "Product");
+                }
                 cartItem.Quantity++;
             }
             else
