@@ -54,6 +54,15 @@ namespace Notifico.Controllers
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "User");
+
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var confirmationLink = Url.Action(
+                    "ConfirmEmail", "Account",
+                    new { userId = user.Id, token = token },
+                    protocol: HttpContext.Request.Scheme
+                );
+                TempData["EmailConfirmationLink"] = confirmationLink;
+
                 return RedirectToAction("Login", "Account");
             }
             else
@@ -83,6 +92,12 @@ namespace Notifico.Controllers
                 return View();
             }
 
+            if (!user.EmailConfirmed)
+            {
+                ViewBag.Error = "E-posta adresiniz onaylanmamış. Lütfen mail kutunuzu kontrol edin.";
+                return View();
+            }
+
             var result = await _signInManager.PasswordSignInAsync(user.UserName, Password, isPersistent: false, lockoutOnFailure: false);
 
             if (result.Succeeded)
@@ -100,6 +115,23 @@ namespace Notifico.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+                return RedirectToAction("Index", "Home");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+                return View("ConfirmEmailSuccess");
+            else
+                return View("ConfirmEmailError");
         }
     }
 }
