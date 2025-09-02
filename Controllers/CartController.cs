@@ -85,10 +85,7 @@ namespace Notifico.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var cart = await _context.Carts
-                .Include(c => c.CartItems)
-                    .ThenInclude(ci => ci.Product)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            var cart = await _context.Carts.Include(c => c.CartItems).ThenInclude(ci => ci.Product).FirstOrDefaultAsync(c => c.UserId == userId);
 
             var cartItems = cart?.CartItems ?? new List<CartItem>();
             return View(cartItems);
@@ -104,9 +101,7 @@ namespace Notifico.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var cartItem = await _context.CartItems
-                .Include(ci => ci.Cart)
-                .FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
+            var cartItem = await _context.CartItems.Include(ci => ci.Cart).FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
 
             if (cartItem != null)
             {
@@ -127,10 +122,7 @@ namespace Notifico.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var cartItem = await _context.CartItems
-                .Include(ci => ci.Cart)
-                .Include(ci => ci.Product)
-                .FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
+            var cartItem = await _context.CartItems.Include(ci => ci.Cart).Include(ci => ci.Product).FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
 
             if (cartItem == null)
             {
@@ -160,10 +152,7 @@ namespace Notifico.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var cartItem = await _context.CartItems
-                .Include(ci => ci.Cart)
-                .Include(ci => ci.Product)
-                .FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
+            var cartItem = await _context.CartItems.Include(ci => ci.Cart).Include(ci => ci.Product).FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
 
             if (cartItem == null)
             {
@@ -189,9 +178,7 @@ namespace Notifico.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var cart = await _context.Carts
-                .Include(c => c.CartItems)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            var cart = await _context.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart?.CartItems.Any() == true)
             {
@@ -218,10 +205,7 @@ namespace Notifico.Controllers
                 return RedirectToAction("MyCart", "Cart");
             }
 
-            var cartItems = await _context.CartItems
-                .Where(x => x.CartId == cart.Id)
-                .Include(x => x.Product)
-                .ToListAsync();
+            var cartItems = await _context.CartItems.Where(x => x.CartId == cart.Id).Include(x => x.Product).ToListAsync();
 
             if (cartItems == null || !cartItems.Any())
             {
@@ -285,10 +269,7 @@ namespace Notifico.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var orders = await _context.Orders
-                .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync();
+            var orders = await _context.Orders.Where(o => o.UserId == userId).OrderByDescending(o => o.OrderDate).ToListAsync();
 
             return View(orders);
         }
@@ -302,10 +283,7 @@ namespace Notifico.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var order = await _context.Orders
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product)
-                .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
+            var order = await _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.Product).FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
 
             if (order == null)
             {
@@ -314,5 +292,75 @@ namespace Notifico.Controllers
 
             return View(order);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> IncreaseQuantityAjax(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Json(new { success = false, error = "Yetkisiz" });
+            }
+
+            var cartItem = await _context.CartItems.Include(ci => ci.Cart).Include(ci => ci.Product).FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
+            if (cartItem == null)
+            {
+                return Json(new { success = false, error = "Ürün bulunamadı" });
+            }
+
+            if(cartItem.Product != null && cartItem.Quantity < cartItem.Product.Stock)
+            {
+                cartItem.Quantity++;
+                await _context.SaveChangesAsync();
+
+                var lineTotal = cartItem.Quantity * cartItem.Product.Price;
+                var cartTotal = await _context.CartItems.Where(x => x.CartId == cartItem.CartId).SumAsync(x => x.Product.Price * x.Quantity);
+                
+                return Json(new { success = true,quantity=cartItem.Quantity, lineTotal, cartTotal});
+            }
+
+            return Json(new { success = false, error = "Stok yetersiz" });
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DecreaseQuantityAjax(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Json(new { success = false, error = "Yetkisiz" });
+            }
+
+            var cartItem = await _context.CartItems.Include(ci => ci.Cart).Include(ci => ci.Product).FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
+
+            if (cartItem == null)
+            {
+                return Json(new { success = false, error = "Ürün bulunamadı" });
+            }
+
+            if (cartItem.Quantity > 1)
+            {
+                cartItem.Quantity--;
+                await _context.SaveChangesAsync();
+
+                var lineTotal = cartItem.Quantity * cartItem.Product.Price;
+                var cartTotal = await _context.CartItems.Where(x => x.CartId == cartItem.CartId)
+                                        .SumAsync(x => x.Product.Price * x.Quantity);
+
+                return Json(new { success = true, quantity = cartItem.Quantity, lineTotal, cartTotal });
+            }
+            else 
+            {
+                var cartId = cartItem.CartId;
+                _context.CartItems.Remove(cartItem);
+                await _context.SaveChangesAsync();
+
+                var cartTotal = await _context.CartItems.Where(x => x.CartId == cartId).SumAsync(x => x.Product.Price * x.Quantity);
+
+                return Json(new { success = true, quantity = 0, lineTotal = 0, cartTotal });
+            }
+        }
+
     }
 }
