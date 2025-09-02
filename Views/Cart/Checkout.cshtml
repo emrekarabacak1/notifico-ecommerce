@@ -1,0 +1,64 @@
+﻿@model Notifico.ViewModels.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Siparişi Onayla";
+}
+
+<h2>Siparişi Onayla</h2>
+
+<form asp-action="Checkout" method="post">
+    <div class="mb-3">
+        <label class="form-label">Teslimat Adresi</label>
+        @if (Model.Addresses != null && Model.Addresses.Any())
+        {
+            <select asp-for="SelectedAddressId" class="form-select" required>
+                <option value="">Adres seçiniz</option>
+                @foreach (var addr in Model.Addresses)
+                {
+                    <option value="@addr.Id">@addr.Title - @addr.FullAddress, @addr.District, @addr.City</option>
+                }
+            </select>
+
+            <span asp-validation-for="SelectedAddressId" class="text-danger"></span>
+        }
+        else
+        {
+            <div class="alert alert-warning mb-2">
+                Sipariş verebilmek için adres eklemelisiniz.
+            </div>
+        }
+        <a href="/Address/Add" class="btn btn-link">+ Yeni Adres Ekle</a>
+    </div>
+    <h4>Sepetiniz</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Ürün</th>
+                <th>Adet</th>
+                <th>Fiyat</th>
+                <th>Toplam</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CartItems)
+            {
+                <tr>
+                    <td>@item.Product?.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@(item.Product != null ? $"{item.Product.Price:C}" : "-")</td>
+                    <td>@(item.Product != null ? (item.Quantity * item.Product.Price).ToString("C") : "-")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="text-end">
+        <strong>Toplam: @Model.CartItems.Sum(x => (x.Product?.Price ?? 0) * x.Quantity).ToString("C")</strong>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3" @(Model.Addresses == null || !Model.Addresses.Any() ? "disabled" : "")>
+        Siparişi Tamamla
+    </button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

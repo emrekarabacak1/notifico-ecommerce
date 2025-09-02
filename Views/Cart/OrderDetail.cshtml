@@ -15,6 +15,16 @@ else
     <p><strong>Tarih:</strong> @Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</p>
     <p><strong>Durum:</strong> @Model.Status.ToString()</p>
     <p><strong>Toplam Tutar:</strong> @Model.TotalAmount.ToString("C", tr)</p>
+
+    <div class="mb-3">
+        <strong>Teslimat Adresi:</strong>
+        <div class="border rounded bg-light p-2 mt-1" style="max-width:600px;">
+            @(!string.IsNullOrWhiteSpace(Model.AddressSnapshot)
+                ? Model.AddressSnapshot
+                : "Adres bilgisi bulunamadı.")
+        </div>
+    </div>
+
     <hr />
     <table class="table table-bordered table-striped align-middle">
         <thead>

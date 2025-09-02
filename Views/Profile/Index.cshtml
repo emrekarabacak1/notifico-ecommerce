@@ -30,9 +30,9 @@
                 <a asp-action="ChangePassword" class="btn btn-outline-secondary">Şifre Değiştir</a>
             </div>
 
-            @if (TempData["Success"] != null)
+            @if (TempData["ProfileSuccess"] != null)
             {
-                <div class="alert alert-success mt-3">@TempData["Success"]</div>
+                <div class="alert alert-success mt-3">@TempData["ProfileSuccess"]</div>
             }
             @if (TempData["Error"] != null)
             {
