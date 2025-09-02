@@ -26,5 +26,16 @@ namespace Notifico.Controllers
             var products = await _context.Products.ToListAsync();
             return View(products);
         }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
     }
 }
