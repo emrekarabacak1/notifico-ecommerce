@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
 using Notifico.Hubs;
 using Notifico.Models;
+using Notifico.ViewModels;
 using System.Security.Claims;
 
 namespace Notifico.Controllers
@@ -75,7 +76,6 @@ namespace Notifico.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "Product");
         }
-
         [HttpGet]
         public async Task<IActionResult> MyCart()
         {
@@ -87,9 +87,10 @@ namespace Notifico.Controllers
 
             var cart = await _context.Carts.Include(c => c.CartItems).ThenInclude(ci => ci.Product).FirstOrDefaultAsync(c => c.UserId == userId);
 
-            var cartItems = cart?.CartItems ?? new List<CartItem>();
+            var cartItems = cart?.CartItems.ToList() ?? new List<CartItem>();
             return View(cartItems);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -187,71 +188,6 @@ namespace Notifico.Controllers
             }
 
             return RedirectToAction("MyCart");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Checkout()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
-            if (cart == null)
-            {
-                return RedirectToAction("MyCart", "Cart");
-            }
-
-            var cartItems = await _context.CartItems.Where(x => x.CartId == cart.Id).Include(x => x.Product).ToListAsync();
-
-            if (cartItems == null || !cartItems.Any())
-            {
-                return RedirectToAction("MyCart", "Cart");
-            }
-
-            var order = new Order
-            {
-                UserId = userId,
-                OrderDate = DateTime.UtcNow, 
-                Status = OrderStatus.Beklemede,
-                TotalAmount = cartItems.Sum(i => i.Product.Price * i.Quantity)
-            };
-
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-
-            foreach (var item in cartItems)
-            {
-                var orderItem = new OrderItem
-                {
-                    OrderId = order.Id,
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.Product.Price
-                };
-                _context.OrderItems.Add(orderItem);
-
-                if (item.Product.Stock >= item.Quantity)
-                {
-                    item.Product.Stock -= item.Quantity;
-                }
-                else
-                {
-                    TempData["Error"] = $"Ürün stok yetersiz: {item.Product.Name}";
-                    return RedirectToAction("MyCart", "Cart");
-                }
-            }
-
-            _context.CartItems.RemoveRange(cartItems);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Siparişiniz başarıyla oluşturuldu!";
-            await _hubContext.Clients.All.SendAsync("ReceiveOrderNotification", "Yeni sipariş alındı!");
-
-            return RedirectToAction("OrderSuccess", "Cart");
         }
 
         [HttpGet]
@@ -361,6 +297,123 @@ namespace Notifico.Controllers
                 return Json(new { success = true, quantity = 0, lineTotal = 0, cartTotal });
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Checkout()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var addresses = await _context.Addresses
+                .Where(a => a.UserId == userId)
+                .ToListAsync();
+
+            int? defaultAddressId = addresses.FirstOrDefault(a => a.IsDefault)?.Id;
+
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Product)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            var viewModel = new Notifico.ViewModels.CheckoutViewModel
+            {
+                Addresses = addresses,
+                SelectedAddressId = defaultAddressId,
+                CartItems = cart?.CartItems.ToList() ?? new List<CartItem>() 
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Checkout(CheckoutViewModel model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (model.SelectedAddressId == null)
+            {
+                model.Addresses = await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
+                var cart = await _context.Carts
+                    .Include(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                    .FirstOrDefaultAsync(c => c.UserId == userId);
+                model.CartItems = cart?.CartItems.ToList() ?? new List<CartItem>();
+                ModelState.AddModelError("SelectedAddressId", "Lütfen adres seçiniz.");
+                return View(model);
+            }
+
+            var cartDb = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (cartDb == null)
+            {
+                return RedirectToAction("MyCart", "Cart");
+            }
+
+            var cartItems = await _context.CartItems.Where(x => x.CartId == cartDb.Id).Include(x => x.Product).ToListAsync();
+            if (cartItems == null || !cartItems.Any())
+            {
+                return RedirectToAction("MyCart", "Cart");
+            }
+
+            var address = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == model.SelectedAddressId && a.UserId == userId);
+            if (address == null)
+            {
+                TempData["Error"] = "Adres bulunamadı";
+                return RedirectToAction("Checkout");
+            }
+
+            var order = new Order
+            {
+                UserId = userId,
+                OrderDate = DateTime.UtcNow,
+                Status = OrderStatus.Beklemede,
+                TotalAmount = cartItems.Sum(i => i.Product.Price * i.Quantity),
+                AddressId = address.Id,
+                AddressSnapshot = $"{address.Title} - {address.FullAddress}, {address.District}, {address.City} {address.ZipCode}"
+            };
+
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            foreach (var item in cartItems)
+            {
+                var orderItem = new OrderItem
+                {
+                    OrderId = order.Id,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.Product.Price
+                };
+                _context.OrderItems.Add(orderItem);
+
+                if (item.Product.Stock >= item.Quantity)
+                {
+                    item.Product.Stock -= item.Quantity;
+                }
+                else
+                {
+                    TempData["Error"] = $"Ürün stok yetersiz: {item.Product.Name}";
+                    return RedirectToAction("MyCart", "Cart");
+                }
+            }
+
+            _context.CartItems.RemoveRange(cartItems);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Siparişiniz başarıyla oluşturuldu!";
+            await _hubContext.Clients.All.SendAsync("ReceiveOrderNotification", "Yeni sipariş alındı!");
+
+            return RedirectToAction("OrderSuccess", "Cart");
+        }
+
+
 
     }
 }

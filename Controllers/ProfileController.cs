@@ -93,7 +93,7 @@ namespace Notifico.Controllers
 
             await userManager.UpdateAsync(user);
 
-            TempData["Success"] = "Profil bilgileriniz güncellendi.";
+            TempData["ProfileSuccess"] = "Profil bilgileriniz güncellendi.";
             return RedirectToAction("Index");
         }
 

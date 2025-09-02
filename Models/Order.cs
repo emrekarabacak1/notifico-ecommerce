@@ -13,5 +13,12 @@ namespace Notifico.Models
         public decimal TotalAmount { get; set; }
         public OrderStatus Status { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+
+        public int? AddressId { get; set; }                
+        public Address Address { get; set; }               
+
+        [MaxLength(512)]
+        public string AddressSnapshot { get; set; }        
+
     }
 }

@@ -64,10 +64,10 @@ else
         <strong>Sepet Toplamı: <span id="cartTotal">@toplamTutar.ToString("C")</span></strong>
     </div>
 
-    <form asp-action="Checkout" asp-controller="Cart" method="post" class="text-end mt-4">
+    <form asp-action="Checkout" asp-controller="Cart" method="get" class="text-end mt-4">
         <button type="submit" class="btn btn-primary btn-lg"
         @(Model == null || !Model.Any() ? "disabled" : "")>
-            Sipariş Ver
+            Siparişi Onayla
         </button>
     </form>
 }
@@ -75,7 +75,6 @@ else
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Artır
         $(".btn-increase").click(function () {
             var id = $(this).data("id");
             $.post("/Cart/IncreaseQuantityAjax", { id: id }, function (result) {
@@ -88,7 +87,6 @@ else
                 }
             });
         });
-        // Azalt
         $(".btn-decrease").click(function () {
             var id = $(this).data("id");
             $.post("/Cart/DecreaseQuantityAjax", { id: id }, function (result) {
@@ -104,7 +102,6 @@ else
                 }
             });
         });
-        // Sil
         $(".btn-remove").click(function () {
             if (!confirm("Bu ürünü sepetten çıkarmak istediğinize emin misiniz?")) return;
             var id = $(this).data("id");
@@ -117,7 +114,6 @@ else
                 }
             });
         });
-        // Sepeti Boşalt
         $("#clearCartBtn").click(function () {
             if (!confirm("Sepeti tamamen boşaltmak istediğinizden emin misiniz?")) return;
             $.post("/Cart/ClearCartAjax", {}, function (result) {
