@@ -1,0 +1,25 @@
+﻿@model Notifico.Models.Product
+
+@{
+    ViewData["Title"] = "Ürün Detayı";
+}
+
+<div class="row mt-4">
+    <div class="col-md-6 text-center">
+        <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded shadow-sm" style="max-height:350px;" />
+    </div>
+    <div class="col-md-6">
+        <h2 class="mb-3">@Model.Name</h2>
+        <p class="lead">@Model.Description</p>
+        <h4 class="text-primary mb-3">@Model.Price.ToString("C")</h4>
+        <p><strong>Stok:</strong> @Model.Stock</p>
+        <p><strong>Kategori:</strong> @Model.Category</p>
+        <form asp-action="AddToCart" asp-controller="Cart" method="post" class="mt-4">
+            <input type="hidden" name="productId" value="@Model.Id" />
+            <button type="submit" class="btn btn-success btn-lg" @(Model.Stock == 0 ? "disabled" : "")>
+                Sepete Ekle
+            </button>
+        </form>
+        <a asp-action="Index" class="btn btn-outline-secondary mt-3">Tüm Ürünlere Dön</a>
+    </div>
+</div>
