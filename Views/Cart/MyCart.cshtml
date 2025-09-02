@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Sepetim";
-    decimal toplamTutar = 0;
+    decimal toplamTutar = Model?.Sum(item => (item.Product?.Price ?? 0) * item.Quantity) ?? 0;
 }
 
 <h2>Sepetim</h2>
@@ -15,12 +15,9 @@
 }
 else
 {
-    <form asp-action="ClearCart" asp-controller="Cart" method="post" class="mb-3">
-        <button type="submit" class="btn btn-danger"
-                onclick="return confirm('Sepeti tamamen boşaltmak istediğinizden emin misiniz?');">
-            Sepeti Boşalt
-        </button>
-    </form>
+    <button id="clearCartBtn" class="btn btn-danger mb-3">
+        Sepeti Boşalt
+    </button>
 
     <table class="table table-bordered table-striped mt-4">
         <thead>
@@ -36,38 +33,27 @@ else
             @foreach (var item in Model)
             {
                 var satirTutar = (item.Product != null ? item.Product.Price : 0) * item.Quantity;
-                toplamTutar += satirTutar;
-                <tr>
+                <tr data-id="@item.Id">
                     <td>@item.Product?.Name</td>
                     <td>@(item.Product != null ? $"{item.Product.Price:C}" : "-")</td>
                     <td>
-                        <form asp-action="DecreaseQuantity" asp-controller="Cart" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <button type="submit" class="btn btn-outline-secondary btn-sm"
-                            @(item.Quantity == 1 ? "disabled" : "")
-                                    title="Adeti azalt">
-                                -
-                            </button>
-                        </form>
-                        <span class="mx-2">@item.Quantity</span>
-                        <form asp-action="IncreaseQuantity" asp-controller="Cart" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <button type="submit" class="btn btn-outline-secondary btn-sm"
-                            @(item.Product != null && item.Quantity == item.Product.Stock ? "disabled" : "")
-                                    title="Adeti artır">
-                                +
-                            </button>
-                        </form>
+                        <button class="btn btn-outline-secondary btn-sm btn-decrease"
+                                data-id="@item.Id"
+                        @(item.Quantity == 1 ? "disabled" : "")>
+                            -
+                        </button>
+                        <span class="mx-2" id="qty_@item.Id">@item.Quantity</span>
+                        <button class="btn btn-outline-secondary btn-sm btn-increase"
+                                data-id="@item.Id"
+                        @(item.Product != null && item.Quantity == item.Product.Stock ? "disabled" : "")>
+                            +
+                        </button>
                     </td>
-                    <td>@satirTutar.ToString("C")</td>
+                    <td id="line_@item.Id">@satirTutar.ToString("C")</td>
                     <td>
-                        <form asp-action="RemoveFromCart" asp-controller="Cart" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <button type="submit" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Bu ürünü sepetten çıkarmak istediğinize emin misiniz?');">
-                                Sepetten Çıkar
-                            </button>
-                        </form>
+                        <button class="btn btn-danger btn-sm btn-remove" data-id="@item.Id">
+                            Sepetten Çıkar
+                        </button>
                     </td>
                 </tr>
             }
@@ -75,14 +61,73 @@ else
     </table>
 
     <div class="mt-3 text-end">
-        <strong>Sepet Toplamı: @toplamTutar.ToString("C")</strong>
+        <strong>Sepet Toplamı: <span id="cartTotal">@toplamTutar.ToString("C")</span></strong>
     </div>
 
     <form asp-action="Checkout" asp-controller="Cart" method="post" class="text-end mt-4">
         <button type="submit" class="btn btn-primary btn-lg"
-        @(Model == null || !Model.Any() ? "disabled" : "")
-                title="Sepetiniz boşsa sipariş veremezsiniz">
+        @(Model == null || !Model.Any() ? "disabled" : "")>
             Sipariş Ver
         </button>
     </form>
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Artır
+        $(".btn-increase").click(function () {
+            var id = $(this).data("id");
+            $.post("/Cart/IncreaseQuantityAjax", { id: id }, function (result) {
+                if (result.success) {
+                    $("#qty_" + id).text(result.quantity);
+                    $("#line_" + id).text(result.lineTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                    $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                } else {
+                    alert(result.error);
+                }
+            });
+        });
+        // Azalt
+        $(".btn-decrease").click(function () {
+            var id = $(this).data("id");
+            $.post("/Cart/DecreaseQuantityAjax", { id: id }, function (result) {
+                if (result.success) {
+                    $("#qty_" + id).text(result.quantity);
+                    $("#line_" + id).text(result.lineTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                    $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                    if (result.quantity == 0) {
+                        $("tr[data-id='" + id + "']").remove();
+                    }
+                } else {
+                    alert(result.error);
+                }
+            });
+        });
+        // Sil
+        $(".btn-remove").click(function () {
+            if (!confirm("Bu ürünü sepetten çıkarmak istediğinize emin misiniz?")) return;
+            var id = $(this).data("id");
+            $.post("/Cart/RemoveFromCartAjax", { id: id }, function (result) {
+                if (result.success) {
+                    $("tr[data-id='" + id + "']").remove();
+                    $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                } else {
+                    alert(result.error);
+                }
+            });
+        });
+        // Sepeti Boşalt
+        $("#clearCartBtn").click(function () {
+            if (!confirm("Sepeti tamamen boşaltmak istediğinizden emin misiniz?")) return;
+            $.post("/Cart/ClearCartAjax", {}, function (result) {
+                if (result.success) {
+                    $("tbody").empty();
+                    $("#cartTotal").text("0,00 ₺");
+                } else {
+                    alert("Hata: " + result.error);
+                }
+            });
+        });
+    </script>
 }
