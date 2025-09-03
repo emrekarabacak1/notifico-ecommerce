@@ -407,12 +407,56 @@ namespace Notifico.Controllers
             _context.CartItems.RemoveRange(cartItems);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Siparişiniz başarıyla oluşturuldu!";
+            TempData["OrderSuccess"] = "Siparişiniz başarıyla oluşturuldu!";
             await _hubContext.Clients.All.SendAsync("ReceiveOrderNotification", "Yeni sipariş alındı!");
 
             return RedirectToAction("OrderSuccess", "Cart");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RemoveFromCartAjax(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Json(new { success = false, error = "Yetkisiz" });
+
+            var cartItem = await _context.CartItems
+                .Include(ci => ci.Cart)
+                .FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
+
+            if (cartItem == null)
+                return Json(new { success = false, error = "Ürün bulunamadı" });
+
+            var cartId = cartItem.CartId;
+            _context.CartItems.Remove(cartItem);
+            await _context.SaveChangesAsync();
+
+            var cartTotal = await _context.CartItems
+                .Where(x => x.CartId == cartId)
+                .SumAsync(x => x.Product.Price * x.Quantity);
+
+            return Json(new { success = true, cartTotal });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ClearCartAjax()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Json(new { success = false, error = "Yetkisiz" });
+
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (cart?.CartItems.Any() == true)
+            {
+                _context.CartItems.RemoveRange(cart.CartItems);
+                await _context.SaveChangesAsync();
+            }
+
+            return Json(new { success = true });
+        }
 
 
     }
