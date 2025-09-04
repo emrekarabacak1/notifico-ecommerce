@@ -7,18 +7,18 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<table class="table">
+<table class="table align-middle">
     <thead>
         <tr>
-            <th scope="col">Adı</th>
-            <th scope="col">Açıklama</th>
-            <th scope="col">Fiyat</th>
-            <th scope="col">Stok</th>
-            <th scope="col">Kategori</th>
-            <th scope="col">Tarih</th>
-            <th scope="col">Resim</th>
-            <th scope="col">Sepet</th>
-            <th scope="col">Detay</th> 
+            <th>Adı</th>
+            <th>Açıklama</th>
+            <th>Fiyat</th>
+            <th>Stok</th>
+            <th>Kategori</th>
+            <th>Tarih</th>
+            <th>Resim</th>
+            <th>Sepet</th>
+            <th>Detay</th>
         </tr>
     </thead>
     <tbody>
@@ -29,31 +29,27 @@
                     <a asp-action="Details" asp-route-id="@p.Id">@p.Name</a>
                 </td>
                 <td>
-                    @(
-                        p.Description?.Length > 70
+                    @(p.Description?.Length > 70
                         ? p.Description.Substring(0, 70) + "..."
-                        : p.Description
-                        )
+                        : p.Description)
                 </td>
                 <td>@($"{p.Price:C}")</td>
                 <td>@p.Stock</td>
                 <td>@p.Category</td>
                 <td>@p.DateAdded.ToString("dd.MM.yyyy")</td>
                 <td>
-                    @if (!string.IsNullOrEmpty(p.ImageUrl))
-                    {
-                        <img src="@p.ImageUrl" alt="Ürün Resmi" style="width:40px; height:40px;" />
-                    }
+                    <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "/images/no-image.png" : p.ImageUrl)"
+                         alt="@(p.Name)"
+                         style="width:40px; height:40px; object-fit:cover; border-radius:6px;" />
                 </td>
                 <td>
-                    <form asp-action="AddToCart" asp-controller="Cart" method="post" style="display:inline;">
-                        <input type="hidden" name="productId" value="@p.Id" />
-                        <button type="submit" class="btn btn-success btn-sm"
-                        @(p.Stock == 0 ? "disabled" : "")
-                                title="@(p.Stock == 0 ? "Stokta yok" : "Sepete Ekle")">
-                            Sepete Ekle
-                        </button>
-                    </form>
+                    <button type="button"
+                            class="btn btn-success btn-sm btn-add-to-cart"
+                            data-id="@p.Id"
+                    @(p.Stock == 0 ? "disabled" : "")
+                            title="@(p.Stock == 0 ? "Stokta yok" : "Sepete Ekle")">
+                        Sepete Ekle
+                    </button>
                 </td>
                 <td>
                     <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-info btn-sm">
@@ -64,3 +60,24 @@
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        $(document).on("click", ".btn-add-to-cart", function (e) {
+            e.preventDefault();
+            var pid = $(this).data("id");
+            $.post("/Cart/AddToCartAjax", { productId: pid }, function (res) {
+                if (res.success) {
+                    if (typeof reloadSideCart === "function") {
+                        reloadSideCart();
+                    }
+                    if (!$("#sideCartPanel").hasClass("active") && typeof openSideCart === "function") {
+                        openSideCart();
+                    }
+                } else {
+                    alert(res.error || "Ürün sepete eklenemedi");
+                }
+            });
+        });
+    </script>
+}
