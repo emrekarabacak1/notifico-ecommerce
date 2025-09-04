@@ -16,17 +16,27 @@ namespace Notifico.Controllers
         {
             _context = context;
         }
+        private bool IsAdmin() => User.IsInRole("Admin");
 
         public async Task<IActionResult> Index()
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var addresses = await _context.Addresses.Where(a => a.UserId == userId).OrderByDescending(a => a.IsDefault).ToListAsync();
+            var addresses = await _context.Addresses.Where(a => a.UserId == userId)
+                .OrderByDescending(a => a.IsDefault).ToListAsync();
 
             return View(addresses);
         }
 
         public IActionResult Add()
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
             return View();
         }
 
@@ -34,6 +44,11 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Address address)
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             address.UserId = userId;
 
@@ -53,6 +68,10 @@ namespace Notifico.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var address = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
 
@@ -68,33 +87,44 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Address address)
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            address.UserId = userId;
-
-            if (address.UserId != userId)
+            var addressDb = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == address.Id && a.UserId == userId);
+            if (addressDb == null)
             {
                 return Unauthorized();
             }
+
+            addressDb.Title = address.Title;
+            addressDb.FullAddress = address.FullAddress;
+            addressDb.City = address.City;
+            addressDb.District = address.District;
+            addressDb.ZipCode = address.ZipCode;
 
             if (address.IsDefault)
             {
                 var existingDefaults = _context.Addresses.Where(a => a.UserId == userId && a.IsDefault && a.Id != address.Id);
                 foreach (var item in existingDefaults)
-                {
                     item.IsDefault = false;
-                }
             }
+            addressDb.IsDefault = address.IsDefault;
 
-            _context.Update(address);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var address = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
             if (address == null)
@@ -105,12 +135,16 @@ namespace Notifico.Controllers
             _context.Addresses.Remove(address);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetDefault(int id)
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var addresses = await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
@@ -120,9 +154,7 @@ namespace Notifico.Controllers
             }
 
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
-
     }
 }
