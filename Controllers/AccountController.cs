@@ -180,21 +180,28 @@ namespace Notifico.Controllers
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
             if (!ModelState.IsValid)
+            {
                 return View(model);
+            }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
+
+            TempData["ResetPasswordInfo"] = "Eğer bu e-posta adresi kayıtlıysa şifre sıfırlama maili gönderildi.";
+
             if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
             {
-                TempData["ResetPasswordInfo"] = "Eğer bu e-posta adresi kayıtlıysa şifre sıfırlama maili gönderildi.";
                 return View();
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var link = Url.Action("ResetPassword", "Account", new { token, email = model.Email }, Request.Scheme);
+
             try
             {
                 var mailBody = $"<p>Şifrenizi sıfırlamak için <a href='{link}'>buraya tıklayın</a>.</p>";
                 await _emailHelper.SendEmailAsync(model.Email, "Notifico Şifre Sıfırlama", mailBody);
+
+                TempData["ResetPasswordLink"] = link;
             }
             catch (Exception ex)
             {
@@ -202,7 +209,6 @@ namespace Notifico.Controllers
                 _logger.LogError("EXCEPTION DETAIL: {Detail}", ex.ToString());
             }
 
-            TempData["ResetPasswordInfo"] = "Eğer bu e-posta adresi kayıtlıysa şifre sıfırlama maili gönderildi.";
             return View();
         }
 
@@ -210,7 +216,9 @@ namespace Notifico.Controllers
         public IActionResult ResetPassword(string token, string email)
         {
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
+            {
                 return RedirectToAction("Index", "Home");
+            }
 
             return View(new ResetPasswordViewModel { Token = token, Email = email });
         }
@@ -220,7 +228,9 @@ namespace Notifico.Controllers
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
+            {
                 return View(model);
+            }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
@@ -236,7 +246,9 @@ namespace Notifico.Controllers
                 return RedirectToAction("Login");
             }
             foreach (var error in result.Errors)
+            {
                 ModelState.AddModelError("", error.Description);
+            }
 
             TempData["ResetPasswordResult"] = "Şifre sıfırlama başarısız.";
             return View(model);
