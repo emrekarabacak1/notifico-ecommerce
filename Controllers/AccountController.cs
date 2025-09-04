@@ -66,8 +66,10 @@ namespace Notifico.Controllers
             {
                 await _userManager.AddToRoleAsync(user, "User");
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var encodedToken = System.Net.WebUtility.UrlEncode(token);
+
                 var confirmLink = Url.Action("ConfirmEmail", "Account",
-                    new { userId = user.Id, token = System.Net.WebUtility.UrlEncode(token) },
+                    new { userId = user.Id, token = encodedToken },
                     protocol: HttpContext.Request.Scheme);
 
                 try
@@ -83,6 +85,8 @@ namespace Notifico.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "E-posta gönderilemedi, kullanıcı siliniyor.");
+                    _logger.LogError("EXCEPTION DETAIL: {Detail}", ex.ToString());
+
                     await _userManager.DeleteAsync(user);
                     ModelState.AddModelError("", "Kayıt sırasında e-posta gönderilemedi. Lütfen geçerli bir adres kullanın.");
                     return View(model);
@@ -110,6 +114,8 @@ namespace Notifico.Controllers
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return View("ConfirmEmailError");
+
+            token = System.Net.WebUtility.UrlDecode(token);
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (result.Succeeded)
@@ -193,6 +199,7 @@ namespace Notifico.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Şifre sıfırlama e-postası gönderilemedi.");
+                _logger.LogError("EXCEPTION DETAIL: {Detail}", ex.ToString());
             }
 
             TempData["ResetPasswordInfo"] = "Eğer bu e-posta adresi kayıtlıysa şifre sıfırlama maili gönderildi.";
