@@ -72,57 +72,66 @@ else
     </form>
 }
 
+@Html.AntiForgeryToken()
+
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(".btn-increase").click(function () {
-            var id = $(this).data("id");
-            $.post("/Cart/IncreaseQuantityAjax", { id: id }, function (result) {
-                if (result.success) {
-                    $("#qty_" + id).text(result.quantity);
-                    $("#line_" + id).text(result.lineTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
-                    $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
-                } else {
-                    alert(result.error);
-                }
+        $(function () {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            $.ajaxSetup({
+                headers: { 'RequestVerificationToken': token }
             });
-        });
-        $(".btn-decrease").click(function () {
-            var id = $(this).data("id");
-            $.post("/Cart/DecreaseQuantityAjax", { id: id }, function (result) {
-                if (result.success) {
-                    $("#qty_" + id).text(result.quantity);
-                    $("#line_" + id).text(result.lineTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
-                    $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
-                    if (result.quantity == 0) {
-                        $("tr[data-id='" + id + "']").remove();
+
+            $(".btn-increase").click(function () {
+                var id = $(this).data("id");
+                $.post("/Cart/IncreaseQuantityAjax", { id: id }, function (result) {
+                    if (result.success) {
+                        $("#qty_" + id).text(result.quantity);
+                        $("#line_" + id).text(result.lineTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                        $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                    } else {
+                        alert(result.error);
                     }
-                } else {
-                    alert(result.error);
-                }
+                });
             });
-        });
-        $(".btn-remove").click(function () {
-            if (!confirm("Bu ürünü sepetten çıkarmak istediğinize emin misiniz?")) return;
-            var id = $(this).data("id");
-            $.post("/Cart/RemoveFromCartAjax", { id: id }, function (result) {
-                if (result.success) {
-                    $("tr[data-id='" + id + "']").remove();
-                    $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
-                } else {
-                    alert(result.error);
-                }
+            $(".btn-decrease").click(function () {
+                var id = $(this).data("id");
+                $.post("/Cart/DecreaseQuantityAjax", { id: id }, function (result) {
+                    if (result.success) {
+                        $("#qty_" + id).text(result.quantity);
+                        $("#line_" + id).text(result.lineTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                        $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                        if (result.quantity == 0) {
+                            $("tr[data-id='" + id + "']").remove();
+                        }
+                    } else {
+                        alert(result.error);
+                    }
+                });
             });
-        });
-        $("#clearCartBtn").click(function () {
-            if (!confirm("Sepeti tamamen boşaltmak istediğinizden emin misiniz?")) return;
-            $.post("/Cart/ClearCartAjax", {}, function (result) {
-                if (result.success) {
-                    $("tbody").empty();
-                    $("#cartTotal").text("0,00 ₺");
-                } else {
-                    alert("Hata: " + result.error);
-                }
+            $(".btn-remove").click(function () {
+                if (!confirm("Bu ürünü sepetten çıkarmak istediğinize emin misiniz?")) return;
+                var id = $(this).data("id");
+                $.post("/Cart/RemoveFromCartAjax", { id: id }, function (result) {
+                    if (result.success) {
+                        $("tr[data-id='" + id + "']").remove();
+                        $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                    } else {
+                        alert(result.error);
+                    }
+                });
+            });
+            $("#clearCartBtn").click(function () {
+                if (!confirm("Sepeti tamamen boşaltmak istediğinizden emin misiniz?")) return;
+                $.post("/Cart/ClearCartAjax", {}, function (result) {
+                    if (result.success) {
+                        $("tbody").empty();
+                        $("#cartTotal").text("0,00 ₺");
+                    } else {
+                        alert("Hata: " + result.error);
+                    }
+                });
             });
         });
     </script>

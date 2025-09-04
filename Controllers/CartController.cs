@@ -8,6 +8,7 @@ using Notifico.Models;
 using Notifico.ViewModels;
 using System.Security.Claims;
 
+
 namespace Notifico.Controllers
 {
     [Authorize]
@@ -76,6 +77,53 @@ namespace Notifico.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "Product");
         }
+
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddToCartAjax(int productId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Json(new { success = false, error = "Giriş yapmalısınız" });
+            }
+
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+            if (product == null)
+            {
+                return Json(new { success = false, error = "Ürün bulunamadı" });
+            }
+
+            var cart = await _context.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.UserId == userId);
+            if (cart == null)
+            {
+                cart = new Cart { UserId = userId, CartItems = new List<CartItem>() };
+                await _context.Carts.AddAsync(cart);
+                await _context.SaveChangesAsync();
+            }
+
+            var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
+
+            if (cartItem != null)
+            {
+                if (product.Stock <= cartItem.Quantity)
+                {
+                    return Json(new { success = false, error = "Stok yetersiz" });
+                }
+                cartItem.Quantity++;
+            }
+            else
+            {
+                cartItem = new CartItem { CartId = cart.Id, ProductId = productId, Quantity = 1 };
+                await _context.CartItems.AddAsync(cartItem);
+            }
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> MyCart()
         {
@@ -458,6 +506,23 @@ namespace Notifico.Controllers
             return Json(new { success = true });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SideCartPartial()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return PartialView("SideCartPartial", new List<CartItem>());
+            }
+
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                .ThenInclude(ci => ci.Product)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            var cartItems = cart?.CartItems.ToList() ?? new List<CartItem>();
+            return PartialView("SideCartPartial", cartItems);
+        }
 
     }
 }
