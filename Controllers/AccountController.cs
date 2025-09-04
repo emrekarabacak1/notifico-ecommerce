@@ -120,6 +120,7 @@ namespace Notifico.Controllers
 
         [HttpGet]
         public IActionResult ConfirmEmailSuccess() => View();
+
         [HttpGet]
         public IActionResult ConfirmEmailError() => View();
 

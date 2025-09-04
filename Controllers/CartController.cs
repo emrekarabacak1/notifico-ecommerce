@@ -8,7 +8,6 @@ using Notifico.Models;
 using Notifico.ViewModels;
 using System.Security.Claims;
 
-
 namespace Notifico.Controllers
 {
     [Authorize]
@@ -23,27 +22,28 @@ namespace Notifico.Controllers
             _hubContext = hubContext;
         }
 
+        // Helper: ADMIN ise erişimi engelle
+        private bool IsAdmin() => User.IsInRole("Admin");
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCart(int productId)
         {
+            if (IsAdmin()) return Forbid();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
-            var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p=>p.Id == productId);
+            var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == productId);
 
-            if (product == null) 
+            if (product == null)
             {
                 TempData["Error"] = "Ürün Bulunamadı";
                 return RedirectToAction("Index", "Product");
             }
 
-            var cart = await _context.Carts
-                .Include(c => c.CartItems)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            var cart = await _context.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null)
             {
@@ -56,7 +56,7 @@ namespace Notifico.Controllers
 
             if (cartItem != null)
             {
-                if(product.Stock <= cartItem.Quantity) 
+                if (product.Stock <= cartItem.Quantity)
                 {
                     TempData["Error"] = "Sepetteki ürün adedi, mevcut stoktan fazla olamaz!";
                     return RedirectToAction("Index", "Product");
@@ -78,22 +78,19 @@ namespace Notifico.Controllers
             return RedirectToAction("Index", "Product");
         }
 
-
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> AddToCartAjax(int productId)
         {
+            if (IsAdmin()) return Json(new { success = false, error = "Admin kullanıcılar sepete ürün ekleyemez!" });
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return Json(new { success = false, error = "Giriş yapmalısınız" });
-            }
 
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
             if (product == null)
-            {
                 return Json(new { success = false, error = "Ürün bulunamadı" });
-            }
 
             var cart = await _context.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.UserId == userId);
             if (cart == null)
@@ -108,9 +105,8 @@ namespace Notifico.Controllers
             if (cartItem != null)
             {
                 if (product.Stock <= cartItem.Quantity)
-                {
                     return Json(new { success = false, error = "Stok yetersiz" });
-                }
+
                 cartItem.Quantity++;
             }
             else
@@ -123,32 +119,29 @@ namespace Notifico.Controllers
             return Json(new { success = true });
         }
 
-
         [HttpGet]
         public async Task<IActionResult> MyCart()
         {
+            if (IsAdmin()) return Forbid();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var cart = await _context.Carts.Include(c => c.CartItems).ThenInclude(ci => ci.Product).FirstOrDefaultAsync(c => c.UserId == userId);
-
             var cartItems = cart?.CartItems.ToList() ?? new List<CartItem>();
             return View(cartItems);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveFromCart(int id)
         {
+            if (IsAdmin()) return Forbid();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var cartItem = await _context.CartItems.Include(ci => ci.Cart).FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
 
@@ -165,18 +158,16 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DecreaseQuantity(int id)
         {
+            if (IsAdmin()) return Forbid();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var cartItem = await _context.CartItems.Include(ci => ci.Cart).Include(ci => ci.Product).FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
 
             if (cartItem == null)
-            {
                 return RedirectToAction("MyCart");
-            }
 
             if (cartItem.Quantity > 1)
             {
@@ -195,18 +186,16 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IncreaseQuantity(int id)
         {
+            if (IsAdmin()) return Forbid();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var cartItem = await _context.CartItems.Include(ci => ci.Cart).Include(ci => ci.Product).FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
 
             if (cartItem == null)
-            {
                 return RedirectToAction("MyCart");
-            }
 
             if (cartItem.Product != null && cartItem.Quantity < cartItem.Product.Stock)
             {
@@ -221,11 +210,11 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ClearCart()
         {
+            if (IsAdmin()) return Forbid();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var cart = await _context.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.UserId == userId);
 
@@ -241,38 +230,36 @@ namespace Notifico.Controllers
         [HttpGet]
         public IActionResult OrderSuccess()
         {
+            if (IsAdmin()) return Forbid();
             return View();
         }
 
         [HttpGet]
         public async Task<IActionResult> MyOrders()
         {
+            if (IsAdmin()) return Forbid();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var orders = await _context.Orders.Where(o => o.UserId == userId).OrderByDescending(o => o.OrderDate).ToListAsync();
-
             return View(orders);
         }
 
         [HttpGet]
         public async Task<IActionResult> OrderDetail(int id)
         {
+            if (IsAdmin()) return Forbid();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var order = await _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.Product).FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
 
             if (order == null)
-            {
                 return NotFound();
-            }
 
             return View(order);
         }
@@ -280,48 +267,43 @@ namespace Notifico.Controllers
         [HttpPost]
         public async Task<IActionResult> IncreaseQuantityAjax(int id)
         {
+            if (IsAdmin()) return Json(new { success = false, error = "Admin işlem yapamaz." });
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return Json(new { success = false, error = "Yetkisiz" });
-            }
 
             var cartItem = await _context.CartItems.Include(ci => ci.Cart).Include(ci => ci.Product).FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
             if (cartItem == null)
-            {
                 return Json(new { success = false, error = "Ürün bulunamadı" });
-            }
 
-            if(cartItem.Product != null && cartItem.Quantity < cartItem.Product.Stock)
+            if (cartItem.Product != null && cartItem.Quantity < cartItem.Product.Stock)
             {
                 cartItem.Quantity++;
                 await _context.SaveChangesAsync();
 
                 var lineTotal = cartItem.Quantity * cartItem.Product.Price;
                 var cartTotal = await _context.CartItems.Where(x => x.CartId == cartItem.CartId).SumAsync(x => x.Product.Price * x.Quantity);
-                
-                return Json(new { success = true,quantity=cartItem.Quantity, lineTotal, cartTotal});
+
+                return Json(new { success = true, quantity = cartItem.Quantity, lineTotal, cartTotal });
             }
 
             return Json(new { success = false, error = "Stok yetersiz" });
-
         }
 
         [HttpPost]
         public async Task<IActionResult> DecreaseQuantityAjax(int id)
         {
+            if (IsAdmin()) return Json(new { success = false, error = "Admin işlem yapamaz." });
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return Json(new { success = false, error = "Yetkisiz" });
-            }
 
             var cartItem = await _context.CartItems.Include(ci => ci.Cart).Include(ci => ci.Product).FirstOrDefaultAsync(ci => ci.Id == id && ci.Cart.UserId == userId);
 
             if (cartItem == null)
-            {
                 return Json(new { success = false, error = "Ürün bulunamadı" });
-            }
 
             if (cartItem.Quantity > 1)
             {
@@ -334,7 +316,7 @@ namespace Notifico.Controllers
 
                 return Json(new { success = true, quantity = cartItem.Quantity, lineTotal, cartTotal });
             }
-            else 
+            else
             {
                 var cartId = cartItem.CartId;
                 _context.CartItems.Remove(cartItem);
@@ -349,11 +331,11 @@ namespace Notifico.Controllers
         [HttpGet]
         public async Task<IActionResult> Checkout()
         {
+            if (IsAdmin()) return Forbid();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             var addresses = await _context.Addresses
                 .Where(a => a.UserId == userId)
@@ -366,11 +348,11 @@ namespace Notifico.Controllers
                     .ThenInclude(ci => ci.Product)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
-            var viewModel = new Notifico.ViewModels.CheckoutViewModel
+            var viewModel = new CheckoutViewModel
             {
                 Addresses = addresses,
                 SelectedAddressId = defaultAddressId,
-                CartItems = cart?.CartItems.ToList() ?? new List<CartItem>() 
+                CartItems = cart?.CartItems.ToList() ?? new List<CartItem>()
             };
 
             return View(viewModel);
@@ -380,11 +362,11 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Checkout(CheckoutViewModel model)
         {
+            if (IsAdmin()) return Forbid();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Account");
-            }
 
             if (model.SelectedAddressId == null)
             {
@@ -400,15 +382,11 @@ namespace Notifico.Controllers
 
             var cartDb = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
             if (cartDb == null)
-            {
                 return RedirectToAction("MyCart", "Cart");
-            }
 
             var cartItems = await _context.CartItems.Where(x => x.CartId == cartDb.Id).Include(x => x.Product).ToListAsync();
             if (cartItems == null || !cartItems.Any())
-            {
                 return RedirectToAction("MyCart", "Cart");
-            }
 
             var address = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == model.SelectedAddressId && a.UserId == userId);
             if (address == null)
@@ -464,6 +442,8 @@ namespace Notifico.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveFromCartAjax(int id)
         {
+            if (IsAdmin()) return Json(new { success = false, error = "Admin işlem yapamaz." });
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Json(new { success = false, error = "Yetkisiz" });
@@ -489,6 +469,8 @@ namespace Notifico.Controllers
         [HttpPost]
         public async Task<IActionResult> ClearCartAjax()
         {
+            if (IsAdmin()) return Json(new { success = false, error = "Admin işlem yapamaz." });
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Json(new { success = false, error = "Yetkisiz" });
@@ -509,11 +491,11 @@ namespace Notifico.Controllers
         [HttpGet]
         public async Task<IActionResult> SideCartPartial()
         {
+            if (IsAdmin()) return PartialView("SideCartPartial", new List<CartItem>());
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
                 return PartialView("SideCartPartial", new List<CartItem>());
-            }
 
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
@@ -523,6 +505,5 @@ namespace Notifico.Controllers
             var cartItems = cart?.CartItems.ToList() ?? new List<CartItem>();
             return PartialView("SideCartPartial", cartItems);
         }
-
     }
 }
