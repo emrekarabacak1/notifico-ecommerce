@@ -1,8 +1,16 @@
 ﻿@model Notifico.Models.Order
-
 @{
     ViewData["Title"] = "Sipariş Detayı";
     var tr = new System.Globalization.CultureInfo("tr-TR");
+    string GetStatusBadge(Notifico.Models.OrderStatus status) => status switch
+    {
+        Notifico.Models.OrderStatus.Beklemede => "<span class='badge bg-secondary'>Beklemede</span>",
+        Notifico.Models.OrderStatus.Onaylandı => "<span class='badge bg-info text-dark'>Onaylandı</span>",
+        Notifico.Models.OrderStatus.KargoyaVerildi => "<span class='badge bg-warning text-dark'>Kargoya Verildi</span>",
+        Notifico.Models.OrderStatus.TeslimEdildi => "<span class='badge bg-success'>Teslim Edildi</span>",
+        Notifico.Models.OrderStatus.IptalEdildi => "<span class='badge bg-danger'>İptal Edildi</span>",
+        _ => status.ToString()
+    };
 }
 
 @if (Model == null)
@@ -11,47 +19,74 @@
 }
 else
 {
-    <h3 class="mb-3">Sipariş No: @Model.Id</h3>
-    <p><strong>Tarih:</strong> @Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</p>
-    <p><strong>Durum:</strong> @Model.Status.ToString()</p>
-    <p><strong>Toplam Tutar:</strong> @Model.TotalAmount.ToString("C", tr)</p>
-
-    <div class="mb-3">
-        <strong>Teslimat Adresi:</strong>
-        <div class="border rounded bg-light p-2 mt-1" style="max-width:600px;">
-            @(!string.IsNullOrWhiteSpace(Model.AddressSnapshot)
-                ? Model.AddressSnapshot
-                : "Adres bilgisi bulunamadı.")
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h4 class="card-title mb-2">
+                            Sipariş Özeti
+                        </h4>
+                        <ul class="list-unstyled mb-0">
+                            <li><b>Sipariş No:</b> #@Model.Id</li>
+                            <p><strong>Tarih:</strong> @Model.OrderDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+                            <li>
+                                <b>Durum:</b> @Html.Raw(GetStatusBadge(Model.Status))
+                            </li>
+                            <li><b>Toplam:</b> <span class="fw-bold">@Model.TotalAmount.ToString("C", tr)</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">Teslimat Adresi</h5>
+                        <div class="text-muted small">
+                            @(!string.IsNullOrWhiteSpace(Model.AddressSnapshot)
+                                ? Model.AddressSnapshot
+                                : "Adres bilgisi bulunamadı.")
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Ürünler</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Görsel</th>
+                                        <th>Ürün</th>
+                                        <th>Adet</th>
+                                        <th>Birim Fiyat</th>
+                                        <th>Toplam</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.OrderItems)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <img src="@(!string.IsNullOrEmpty(item.Product?.ImageUrl) ? item.Product.ImageUrl : "/images/noimage.png")"
+                                                     alt="Görsel"
+                                                     style="width:48px; height:48px; object-fit:cover; border-radius:8px;" />
+                                            </td>
+                                            <td><strong>@item.Product?.Name</strong></td>
+                                            <td>@item.Quantity</td>
+                                            <td>@item.UnitPrice.ToString("C", tr)</td>
+                                            <td>@((item.UnitPrice * item.Quantity).ToString("C", tr))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-end mt-3">
+                            <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-outline-secondary">Tüm Siparişlerim</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <hr />
-    <table class="table table-bordered table-striped align-middle">
-        <thead>
-            <tr>
-                <th>Görsel</th>
-                <th>Ürün</th>
-                <th>Adet</th>
-                <th>Birim Fiyat</th>
-                <th>Toplam</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.OrderItems)
-            {
-                <tr>
-                    <td>
-                        <img src="@(!string.IsNullOrEmpty(item.Product?.ImageUrl) ? item.Product.ImageUrl : "/images/noimage.png")"
-                             alt="Görsel"
-                             style="width:64px; height:64px; object-fit:cover; border-radius:8px;" />
-                    </td>
-                    <td><strong>@item.Product?.Name</strong></td>
-                    <td>@item.Quantity</td>
-                    <td>@item.UnitPrice.ToString("C", tr)</td>
-                    <td>@(item.UnitPrice * item.Quantity).ToString("C", tr)</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-outline-secondary mt-2">Tüm Siparişlerim</a>
 }

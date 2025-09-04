@@ -214,7 +214,9 @@ namespace Notifico.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
+            {
                 return RedirectToAction("Login", "Account");
+            }
 
             var cart = await _context.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.UserId == userId);
 
@@ -230,22 +232,36 @@ namespace Notifico.Controllers
         [HttpGet]
         public IActionResult OrderSuccess()
         {
-            if (IsAdmin()) return Forbid();
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
             return View();
         }
 
         [HttpGet]
         public async Task<IActionResult> MyOrders()
         {
-            if (IsAdmin()) return Forbid();
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
+            {
                 return RedirectToAction("Login", "Account");
+            }
 
-            var orders = await _context.Orders.Where(o => o.UserId == userId).OrderByDescending(o => o.OrderDate).ToListAsync();
+            var orders = await _context.Orders
+                .Where(o => o.UserId == userId)
+                .Include(o => o.OrderItems) 
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+
             return View(orders);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> OrderDetail(int id)

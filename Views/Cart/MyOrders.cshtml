@@ -1,42 +1,63 @@
 ﻿@model IEnumerable<Notifico.Models.Order>
-
 @{
     ViewData["Title"] = "Siparişlerim";
+    var tr = new System.Globalization.CultureInfo("tr-TR");
+    string GetStatusBadge(Notifico.Models.OrderStatus status) => status switch
+    {
+        Notifico.Models.OrderStatus.Beklemede => "<span class='badge bg-secondary'>Beklemede</span>",
+        Notifico.Models.OrderStatus.Onaylandı => "<span class='badge bg-info text-dark'>Onaylandı</span>",
+        Notifico.Models.OrderStatus.KargoyaVerildi => "<span class='badge bg-warning text-dark'>Kargoya Verildi</span>",
+        Notifico.Models.OrderStatus.TeslimEdildi => "<span class='badge bg-success'>Teslim Edildi</span>",
+        Notifico.Models.OrderStatus.IptalEdildi => "<span class='badge bg-danger'>İptal Edildi</span>",
+        _ => status.ToString()
+    };
 }
 
-<h2 class="mb-4">Siparişlerim</h2>
+<div class="container mt-4">
+    <h2 class="mb-4">Siparişlerim</h2>
 
-@if (Model == null || !Model.Any())
-{
-    <div class="alert alert-info">Henüz hiç siparişiniz yok.</div>
-}
-else
-{
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Sipariş No</th>
-                <th>Tarih</th>
-                <th>Tutar</th>
-                <th>Durum</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var order in Model)
-            {
-                <tr>
-                    <td>@order.Id</td>
-                    <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
-                    <td>@order.TotalAmount.ToString("C", new System.Globalization.CultureInfo("tr-TR"))</td>
-                    <td>@order.Status</td>
-                    <td>
-                        <a asp-action="OrderDetail" asp-route-id="@order.Id" class="btn btn-primary btn-sm">
-                            Detay
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info text-center py-4">
+            <b>Henüz hiç siparişiniz yok.</b><br>
+            <a href="@Url.Action("Index", "Product")" class="btn btn-outline-primary mt-2">Ürünlere Göz At</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sipariş No</th>
+                        <th>Tarih</th>
+                        <th>Tutar</th>
+                        <th>Adet</th>
+                        <th>Durum</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tbody>
+                        @foreach (var order in Model)
+                        {
+                        <tr>
+                            <td>#@order.Id</td>
+                            <td>@order.OrderDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>@order.TotalAmount.ToString("C", new System.Globalization.CultureInfo("tr-TR"))</td>
+                            <td>@(order.OrderItems?.Sum(x => x.Quantity) ?? 0)</td>
+                            <td>
+                                <span class="badge bg-secondary">@order.Status</span>
+                            </td>
+                            <td>
+                                <a asp-action="OrderDetail" asp-route-id="@order.Id" class="btn btn-primary btn-sm">
+                                    Detay
+                                </a>
+                            </td>
+                        </tr>
+                        }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
