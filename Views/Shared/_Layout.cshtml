@@ -35,6 +35,21 @@
         media (max-width: 600px) {
             #sideCartPanel { width: 99vw; }
         }
+        .logout-btn {
+            padding: 0 10px;
+            line-height: 1.7;
+            vertical-align: middle;
+            font-size: 1rem;
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            transition: color 0.15s;
+        }
+        .logout-btn:hover, .logout-btn:focus {
+            color: #b52a3a;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -51,13 +66,32 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Product" asp-action="Index">Ürünler</a>
-                        </li>
                         @if (SignInManager.IsSignedIn(User))
                         {
-                            @if (!User.IsInRole("Admin"))
+                            if (User.IsInRole("Admin"))
                             {
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="ProductList">
+                                        <i class="bi bi-box-seam"></i> Ürünler
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="OrderList">
+                                        <i class="bi bi-list-check"></i> Siparişler
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="Dashboard">
+                                        <i class="bi bi-bar-chart"></i> Dashboard
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Product" asp-action="Index">Ürünler</a>
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-success" href="javascript:void(0);" id="openSideCartBtn">
                                         <i class="bi bi-cart-fill"></i> Sepetim
@@ -73,17 +107,14 @@
                                     <a class="nav-link text-success" asp-controller="Address" asp-action="Index">Adreslerim</a>
                                 </li>
                             }
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="ProductList">Admin Paneli</a>
-                                </li>
-                            }
-                            <li class="nav-item">
+                            <li class="nav-item ms-auto d-flex align-items-center">
                                 <span class="nav-link text-success">Hoş Geldin, @UserManager.GetUserName(User)!</span>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-danger" asp-controller="Account" asp-action="Logout">Çıkış Yap</a>
+                            <li class="nav-item d-flex align-items-center">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger ms-2">Çıkış Yap</button>
+                                </form>
                             </li>
                         }
                         else
