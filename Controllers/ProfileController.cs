@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Notifico.Models;
 using System.Security.Claims;
 
 namespace Notifico.Controllers
 {
+    [Authorize]
     public class ProfileController : Controller
     {
         private readonly UserManager<AppUser> userManager;
@@ -14,9 +16,16 @@ namespace Notifico.Controllers
             this.userManager = userManager;
         }
 
+        private bool IsAdmin() => User.IsInRole("Admin");
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
+
             var user = await userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -40,6 +49,11 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(ProfileViewModel model)
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -100,6 +114,11 @@ namespace Notifico.Controllers
         [HttpGet]
         public IActionResult ChangePassword()
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
+
             return View();
         }
 
@@ -107,6 +126,11 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -138,6 +162,11 @@ namespace Notifico.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await userManager.FindByIdAsync(userId);
 
@@ -161,6 +190,11 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProfileEditViewModel model)
         {
+            if (IsAdmin())
+            {
+                return Forbid();
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);

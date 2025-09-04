@@ -35,21 +35,6 @@
         media (max-width: 600px) {
             #sideCartPanel { width: 99vw; }
         }
-        .logout-btn {
-            padding: 0 10px;
-            line-height: 1.7;
-            vertical-align: middle;
-            font-size: 1rem;
-            background: none;
-            border: none;
-            color: #dc3545;
-            cursor: pointer;
-            transition: color 0.15s;
-        }
-        .logout-btn:hover, .logout-btn:focus {
-            color: #b52a3a;
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
@@ -62,7 +47,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1 align-items-center">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
@@ -70,10 +55,9 @@
                         {
                             if (User.IsInRole("Admin"))
                             {
-
                                 <li class="nav-item">
-                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="ProductList">
-                                        <i class="bi bi-box-seam"></i> Ürünler
+                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="Dashboard">
+                                        <i class="bi bi-bar-chart"></i> Dashboard
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -82,8 +66,8 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="Dashboard">
-                                        <i class="bi bi-bar-chart"></i> Dashboard
+                                    <a class="nav-link text-warning" asp-controller="Admin" asp-action="ProductList">
+                                        <i class="bi bi-box-seam"></i> Ürünler
                                     </a>
                                 </li>
                             }

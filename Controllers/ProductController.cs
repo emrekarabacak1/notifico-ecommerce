@@ -23,12 +23,22 @@ namespace Notifico.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            if (User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
             var products = await _context.Products.ToListAsync();
             return View(products);
         }
 
         public async Task<IActionResult> Details(int id)
         {
+            if (User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
             if (product == null)
             {
