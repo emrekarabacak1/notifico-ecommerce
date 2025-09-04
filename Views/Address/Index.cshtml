@@ -2,48 +2,73 @@
 @{
     ViewData["Title"] = "Adreslerim";
 }
-<h2>Adreslerim</h2>
-<a asp-action="Add" class="btn btn-primary mb-3">Yeni Adres Ekle</a>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Başlık</th>
-            <th>Adres</th>
-            <th>Şehir</th>
-            <th>İlçe</th>
-            <th>Varsayılan</th>
-            <th>İşlem</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var a in Model)
-        {
-            <tr>
-                <td>@a.Title</td>
-                <td>@a.FullAddress</td>
-                <td>@a.City</td>
-                <td>@a.District</td>
-                <td>
-                    @if (a.IsDefault)
-                    {
-                        <span class="badge bg-success">Varsayılan</span>
-                    }
-                    else
-                    {
-                        <form asp-action="SetDefault" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@a.Id" />
-                            <button class="btn btn-link">Varsayılan Yap</button>
-                        </form>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@a.Id" class="btn btn-sm btn-warning">Düzenle</a>
-                    <form asp-action="Delete" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@a.Id" />
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('Silinsin mi?');">Sil</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<h2 class="mb-4">Adreslerim</h2>
+
+@if (ViewBag.Success != null)
+{
+    <div class="alert alert-success">@ViewBag.Success</div>
+}
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<a asp-action="Add" class="btn btn-primary mb-3">+ Yeni Adres Ekle</a>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info mt-4">Henüz kayıtlı adresiniz yok.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Başlık</th>
+                    <th>Adres</th>
+                    <th>Şehir</th>
+                    <th>İlçe</th>
+                    <th class="text-center">Varsayılan</th>
+                    <th class="text-center">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model)
+                {
+                    <tr>
+                        <td>@a.Title</td>
+                        <td style="max-width:220px;word-break:break-word;">@a.FullAddress</td>
+                        <td>@a.City</td>
+                        <td>@a.District</td>
+                        <td class="text-center">
+                            @if (a.IsDefault)
+                            {
+                                <span class="badge bg-success px-3 py-2">Varsayılan</span>
+                            }
+                            else
+                            {
+                                <form asp-action="SetDefault" method="post" style="display:inline;" asp-route-id="@a.Id">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-outline-secondary btn-sm" type="submit" title="Varsayılan Yap">
+                                        Yap
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@a.Id" class="btn btn-warning btn-sm me-1">Düzenle</a>
+                            <form asp-action="Delete" method="post" style="display:inline;" asp-route-id="@a.Id">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-danger btn-sm" type="submit"
+                                        onclick="return confirm('Bu adres silinsin mi?');">
+                                    Sil
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
