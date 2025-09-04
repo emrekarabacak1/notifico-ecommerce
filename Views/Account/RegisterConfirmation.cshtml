@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Kayıt Başarılı";
+}
+
+<div class="alert alert-success mt-5 text-center">
+    <h2>Kayıt işleminiz başarılı!</h2>
+    <p>
+        Lütfen e-posta adresinize gelen onay linkine tıklayarak hesabınızı aktif edin.
+        <br />
+        Onay mailini bulamazsanız spam/junk klasörünüzü de kontrol edin.
+    </p>
+    @if (TempData["EmailConfirmationLink"] != null)
+    {
+        <div class="alert alert-info mt-4">
+            <b>Geliştirme ortamı için:</b>
+            <br />
+            <a href="@TempData["EmailConfirmationLink"]">Buraya tıklayarak hesabınızı hemen onaylayabilirsiniz.</a>
+            <br />
+            <small>(Canlıda bu link mail olarak gönderilecektir.)</small>
+        </div>
+    }
+    <a href="@Url.Action("Login", "Account")" class="btn btn-primary mt-4">Giriş Yap</a>
+</div>
