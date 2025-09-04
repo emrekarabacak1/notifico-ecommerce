@@ -27,7 +27,7 @@ namespace Notifico.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            return View();
+            return View(new RegisterViewModel());
         }
 
         [HttpPost]
@@ -75,9 +75,9 @@ namespace Notifico.Controllers
                 try
                 {
                     var mailBody = $@"
-                        <h2>Notifico'ya Hoşgeldiniz!</h2>
-                        <p>Hesabınızı aktifleştirmek için <a href='{confirmLink}'>buraya tıklayın</a>.</p>
-                        <p>Link çalışmazsa: <br/><code>{confirmLink}</code></p>";
+                <h2>Notifico'ya Hoşgeldiniz!</h2>
+                <p>Hesabınızı aktifleştirmek için <a href='{confirmLink}'>buraya tıklayın</a>.</p>
+                <p>Link çalışmazsa: <br/><code>{confirmLink}</code></p>";
                     await _emailHelper.SendEmailAsync(user.Email, "E-posta Onayı", mailBody);
 
                     TempData["EmailConfirmationLink"] = confirmLink;
@@ -98,6 +98,7 @@ namespace Notifico.Controllers
 
             return View(model);
         }
+
 
         [HttpGet]
         public IActionResult RegisterConfirmation()

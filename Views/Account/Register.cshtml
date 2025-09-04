@@ -25,7 +25,6 @@
         <input asp-for="Password" class="form-control" type="password" />
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
-
     <div class="mb-3">
         <label asp-for="FirstName" class="form-label"></label>
         <input asp-for="FirstName" class="form-control" />
@@ -46,10 +45,25 @@
         <input asp-for="BirthDate" class="form-control" type="date" />
         <span asp-validation-for="BirthDate" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
-        <label asp-for="Address" class="form-label"></label>
-        <textarea asp-for="Address" class="form-control"></textarea>
-        <span asp-validation-for="Address" class="text-danger"></span>
+        <label class="form-label">Şehir</label>
+        <select id="citySelect" name="City" class="form-select">
+            <option value="">-- İl seçiniz --</option>
+        </select>
+        <span class="text-danger" asp-validation-for="City"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">İlçe</label>
+        <select id="districtSelect" name="District" class="form-select">
+            <option value="">-- İlçe seçiniz --</option>
+        </select>
+        <span class="text-danger" asp-validation-for="District"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Adres Detayı</label>
+        <textarea name="Address" class="form-control">@Model.Address</textarea>
+        <span class="text-danger" asp-validation-for="Address"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Kayıt Ol</button>
@@ -57,4 +71,59 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        let cityDistrictData = [];
+
+        function fillCities(selectedCity) {
+            var citySelect = document.getElementById('citySelect');
+            citySelect.innerHTML = '<option value="">-- İl seçiniz --</option>';
+            cityDistrictData.forEach(function (city) {
+                var option = document.createElement('option');
+                option.value = city.text;
+                option.text = city.text;
+                if (selectedCity && selectedCity === city.text) {
+                    option.selected = true;
+                }
+                citySelect.appendChild(option);
+            });
+        }
+
+        function fillDistricts(cityName, selectedDistrict) {
+            var districtSelect = document.getElementById('districtSelect');
+            districtSelect.innerHTML = '<option value="">-- İlçe seçiniz --</option>';
+            var city = cityDistrictData.find(function (c) { return c.text === cityName; });
+            if (!city) return;
+            city.districts.forEach(function (district) {
+                var option = document.createElement('option');
+                option.value = district.text;
+                option.text = district.text;
+                if (selectedDistrict && selectedDistrict === district.text) {
+                    option.selected = true;
+                }
+                districtSelect.appendChild(option);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/data/cityDistricts.json')
+                .then(response => response.json())
+                .then(data => {
+                    cityDistrictData = data;
+                    var initialCity = '@(Model.City ?? "")';
+                    var initialDistrict = '@(Model.District ?? "")';
+                    fillCities(initialCity);
+
+                    if (initialCity) {
+                        fillDistricts(initialCity, initialDistrict);
+                    }
+
+                    document.getElementById('citySelect').addEventListener('change', function () {
+                        fillDistricts(this.value, null);
+                    });
+                })
+                .catch(error => {
+                    console.error("Şehir-ilçe verisi yüklenemedi:", error);
+                });
+        });
+    </script>
 }

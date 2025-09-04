@@ -1,31 +1,46 @@
 ﻿@model Notifico.Models.Address
 
+@if (ViewBag.ModelStateErrors != null)
+{
+    <div class="alert alert-danger">
+        @foreach (var err in (List<string>)ViewBag.ModelStateErrors)
+        {
+            <div>@err</div>
+        }
+    </div>
+}
+
 @{
     ViewData["Title"] = "Adres Ekle";
 }
 
-<h2>Yeni Adres Ekle</h2>
+<h2 class="mb-4">Yeni Adres Ekle</h2>
 
-<form asp-action="Add" method="post">
+<form asp-action="Add" method="post" autocomplete="off">
     @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
     <div class="mb-3">
         <label asp-for="Title" class="form-label"></label>
-        <input asp-for="Title" class="form-control" />
+        <input asp-for="Title" class="form-control" autocomplete="off" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="FullAddress" class="form-label"></label>
-        <textarea asp-for="FullAddress" class="form-control"></textarea>
+        <textarea asp-for="FullAddress" class="form-control" rows="2"></textarea>
         <span asp-validation-for="FullAddress" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="City" class="form-label"></label>
-        <input asp-for="City" class="form-control" />
+        <select id="citySelect" name="City" asp-for="City" class="form-select">
+            <option value="">-- İl seçiniz --</option>
+        </select>
         <span asp-validation-for="City" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="District" class="form-label"></label>
-        <input asp-for="District" class="form-control" />
+        <select id="districtSelect" name="District" asp-for="District" class="form-select">
+            <option value="">-- İlçe seçiniz --</option>
+        </select>
         <span asp-validation-for="District" class="text-danger"></span>
     </div>
     <div class="mb-3">
@@ -37,10 +52,67 @@
         <input asp-for="IsDefault" class="form-check-input" />
         <label asp-for="IsDefault" class="form-check-label"></label>
     </div>
-    <button type="submit" class="btn btn-primary">Kaydet</button>
-    <a asp-action="Index" class="btn btn-secondary">Vazgeç</a>
+    <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary">Vazgeç</a>
+    </div>
 </form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        let cityDistrictData = [];
+
+        function fillCities(selectedCity) {
+            var citySelect = document.getElementById('citySelect');
+            citySelect.innerHTML = '<option value="">-- İl seçiniz --</option>';
+            cityDistrictData.forEach(function (city) {
+                var option = document.createElement('option');
+                option.value = city.text;
+                option.text = city.text;
+                if (selectedCity && selectedCity === city.text) {
+                    option.selected = true;
+                }
+                citySelect.appendChild(option);
+            });
+        }
+
+        function fillDistricts(cityName, selectedDistrict) {
+            var districtSelect = document.getElementById('districtSelect');
+            districtSelect.innerHTML = '<option value="">-- İlçe seçiniz --</option>';
+            var city = cityDistrictData.find(function (c) { return c.text === cityName; });
+            if (!city) return;
+            city.districts.forEach(function (district) {
+                var option = document.createElement('option');
+                option.value = district.text;
+                option.text = district.text;
+                if (selectedDistrict && selectedDistrict === district.text) {
+                    option.selected = true;
+                }
+                districtSelect.appendChild(option);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/data/cityDistricts.json')
+                .then(response => response.json())
+                .then(data => {
+                    cityDistrictData = data;
+                    var initialCity = '@(Model.City ?? "")';
+                    var initialDistrict = '@(Model.District ?? "")';
+                    fillCities(initialCity);
+
+                    if (initialCity) {
+                        fillDistricts(initialCity, initialDistrict);
+                    }
+
+                    document.getElementById('citySelect').addEventListener('change', function () {
+                        fillDistricts(this.value, null);
+                    });
+                })
+                .catch(error => {
+                    console.error("Şehir-ilçe verisi yüklenemedi:", error);
+                });
+        });
+    </script>
 }
