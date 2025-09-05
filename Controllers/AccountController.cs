@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Notifico.Data;
 using Notifico.Models;
 using System.Security.Claims;
 
@@ -11,17 +13,20 @@ namespace Notifico.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly EmailHelper _emailHelper;
         private readonly ILogger<AccountController> _logger;
+        private readonly ApplicationDbContext _context;
 
         public AccountController(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             EmailHelper emailHelper,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailHelper = emailHelper;
             _logger = logger;
+            _context = context;
         }
 
         [HttpGet]
@@ -58,13 +63,35 @@ namespace Notifico.Controllers
                 LastName = model.LastName,
                 PhoneNumber = model.PhoneNumber,
                 Address = model.Address,
-                BirthDate = model.BirthDate.HasValue ? DateTime.SpecifyKind(model.BirthDate.Value, DateTimeKind.Utc) : null
+                BirthDate = model.BirthDate.HasValue ? DateTime.SpecifyKind(model.BirthDate.Value, DateTimeKind.Utc) : null,
+                City = model.City,
+                District = model.District
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "User");
+
+                if (!string.IsNullOrWhiteSpace(model.Address) &&
+                    !string.IsNullOrWhiteSpace(model.City) &&
+                    !string.IsNullOrWhiteSpace(model.District))
+                {
+                    var address = new Address
+                    {
+                        UserId = user.Id,
+                        Title = "Varsayılan Adres",
+                        FullAddress = model.Address,
+                        City = model.City,
+                        District = model.District,
+                        ZipCode = "", 
+                        IsDefault = true
+                    };
+
+                    _context.Addresses.Add(address);
+                    await _context.SaveChangesAsync();
+                }
+
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var encodedToken = System.Net.WebUtility.UrlEncode(token);
 
@@ -75,9 +102,9 @@ namespace Notifico.Controllers
                 try
                 {
                     var mailBody = $@"
-                <h2>Notifico'ya Hoşgeldiniz!</h2>
-                <p>Hesabınızı aktifleştirmek için <a href='{confirmLink}'>buraya tıklayın</a>.</p>
-                <p>Link çalışmazsa: <br/><code>{confirmLink}</code></p>";
+        <h2>Notifico'ya Hoşgeldiniz!</h2>
+        <p>Hesabınızı aktifleştirmek için <a href='{confirmLink}'>buraya tıklayın</a>.</p>
+        <p>Link çalışmazsa: <br/><code>{confirmLink}</code></p>";
                     await _emailHelper.SendEmailAsync(user.Email, "E-posta Onayı", mailBody);
 
                     TempData["EmailConfirmationLink"] = confirmLink;
@@ -98,7 +125,6 @@ namespace Notifico.Controllers
 
             return View(model);
         }
-
 
         [HttpGet]
         public IActionResult RegisterConfirmation()

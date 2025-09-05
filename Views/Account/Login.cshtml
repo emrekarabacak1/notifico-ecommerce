@@ -4,13 +4,6 @@
 
 <h2>Giriş Yap</h2>
 
-@if (TempData["EmailConfirmationLink"] != null)
-{
-    <div class="alert alert-info mt-4">
-        Hesabınızı doğrulamak için <a href="@TempData["EmailConfirmationLink"]">buraya tıklayın</a>.<br />
-        (Bu geliştirme ortamı içindir, gerçek projede mail ile gönderilir.)
-    </div>
-}
 
 @if (ViewBag.Error != null)
 {
