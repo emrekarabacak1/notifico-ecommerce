@@ -4,40 +4,50 @@
     ViewData["Title"] = "Profilim";
 }
 
-<div class="row mt-4">
-    <div class="col-md-6 offset-md-3">
-        <div class="card shadow-sm p-4">
-            <h2 class="mb-4">Profilim</h2>
-            <dl class="row">
-                <dt class="col-sm-4">Kullanıcı Adı</dt>
-                <dd class="col-sm-8">@Model.UserName</dd>
-                <dt class="col-sm-4">E-posta</dt>
-                <dd class="col-sm-8">@Model.Email</dd>
-                <dt class="col-sm-4">Ad</dt>
-                <dd class="col-sm-8">@Model.FirstName</dd>
-                <dt class="col-sm-4">Soyad</dt>
-                <dd class="col-sm-8">@Model.LastName</dd>
-                <dt class="col-sm-4">Telefon</dt>
-                <dd class="col-sm-8">@Model.PhoneNumber</dd>
-                <dt class="col-sm-4">Doğum Tarihi</dt>
-                <dd class="col-sm-8">@Model.BirthDate?.ToString("dd.MM.yyyy")</dd>
-                <dt class="col-sm-4">Adres</dt>
-                <dd class="col-sm-8">@Model.Address</dd>
-            </dl>
-
-            <div class="mt-4 d-flex gap-2">
-                <a asp-action="Edit" class="btn btn-primary">Düzenle</a>
-                <a asp-action="ChangePassword" class="btn btn-outline-secondary">Şifre Değiştir</a>
-            </div>
-
-            @if (TempData["ProfileSuccess"] != null)
-            {
-                <div class="alert alert-success mt-3">@TempData["ProfileSuccess"]</div>
-            }
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger mt-3">@TempData["Error"]</div>
-            }
+<div class="card mx-auto mt-5" style="max-width:600px;">
+    <div class="card-body">
+        <h2 class="mb-4">Profilim</h2>
+        <table class="table">
+            <tr>
+                <th>Kullanıcı Adı</th>
+                <td>@Model.UserName</td>
+            </tr>
+            <tr>
+                <th>E-posta</th>
+                <td>@Model.Email</td>
+            </tr>
+            <tr>
+                <th>Ad</th>
+                <td>@Model.FirstName</td>
+            </tr>
+            <tr>
+                <th>Soyad</th>
+                <td>@Model.LastName</td>
+            </tr>
+            <tr>
+                <th>Telefon</th>
+                <td>@Model.PhoneNumber</td>
+            </tr>
+            <tr>
+                <th>Doğum Tarihi</th>
+                <td>@(Model.BirthDate.HasValue ? Model.BirthDate.Value.ToString("dd.MM.yyyy") : "-")</td>
+            </tr>
+            <tr>
+                <th>Adres</th>
+                <td>@Model.Address</td>
+            </tr>
+            <tr>
+                <th>Şehir</th>
+                <td>@Model.City</td>
+            </tr>
+            <tr>
+                <th>İlçe</th>
+                <td>@Model.District</td>
+            </tr>
+        </table>
+        <div class="mt-4">
+            <a asp-action="Edit" class="btn btn-primary">Düzenle</a>
+            <a asp-action="ChangePassword" class="btn btn-secondary">Şifre Değiştir</a>
         </div>
     </div>
 </div>

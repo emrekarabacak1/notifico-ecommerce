@@ -40,7 +40,9 @@ namespace Notifico.Controllers
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
                 BirthDate = user.BirthDate,
-                Address = user.Address
+                Address = user.Address,
+                City = user.City,
+                District = user.District
             };
             return View(model);
         }
@@ -95,6 +97,8 @@ namespace Notifico.Controllers
             user.LastName = model.LastName;
             user.PhoneNumber = model.PhoneNumber;
             user.Address = model.Address;
+            user.City = model.City;
+            user.District = model.District;
 
             if (model.BirthDate.HasValue)
             {
@@ -181,7 +185,9 @@ namespace Notifico.Controllers
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
                 BirthDate = user.BirthDate,
-                Address = user.Address
+                Address = user.Address,
+                City = user.City,
+                District = user.District
             };
             return View(model);
         }
@@ -212,6 +218,8 @@ namespace Notifico.Controllers
             user.LastName = model.LastName;
             user.PhoneNumber = model.PhoneNumber;
             user.Address = model.Address;
+            user.City = model.City;
+            user.District = model.District;
 
             if (model.BirthDate.HasValue)
             {
@@ -225,7 +233,7 @@ namespace Notifico.Controllers
             await userManager.UpdateAsync(user);
 
             TempData["ProfileSuccess"] = "Profil bilgileriniz güncellendi.";
-            return RedirectToAction("Edit");
+            return RedirectToAction("Index");
         }
     }
 }
