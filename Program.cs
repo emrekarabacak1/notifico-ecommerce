@@ -2,14 +2,23 @@ using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
 using Microsoft.AspNetCore.Identity;
 using Notifico.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var logDirectory = Path.Combine(Directory.GetCurrentDirectory(), "logs");
+if (!Directory.Exists(logDirectory))
+    Directory.CreateDirectory(logDirectory);
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File(Path.Combine(logDirectory, "app.log"), rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddSession();
-
 builder.Services.AddTransient<EmailHelper>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -21,7 +30,6 @@ builder.Services
     .AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -35,7 +43,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddSignalR();
 
 var app = builder.Build();
@@ -53,7 +60,7 @@ using (var scope = app.Services.CreateScope())
 
     string adminEmail = "eadmin@notifico.com";
     string adminUserName = "admin";
-    string adminPassword = "Admin.22"; 
+    string adminPassword = "Admin.22";
 
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
     if (adminUser == null)
@@ -67,7 +74,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -76,13 +82,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
-
 app.UseSession();
-
 app.UseAuthentication();
 app.UseAuthorization();
 

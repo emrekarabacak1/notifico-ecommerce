@@ -2,6 +2,7 @@
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using Serilog;   // <-- ekle
 
 public class EmailHelper
 {
@@ -37,10 +38,13 @@ public class EmailHelper
                 mail.IsBodyHtml = true;
 
                 await client.SendMailAsync(mail);
+
+                Log.Information("E-posta gönderildi: {To} | Konu: {Subject}", to, subject);
             }
         }
         catch (Exception ex)
         {
+            Log.Error(ex, "E-posta gönderim hatası: {To} | Konu: {Subject}", to, subject);
             throw new Exception("Eposta gönderim hatası: " + ex.Message, ex);
         }
     }
