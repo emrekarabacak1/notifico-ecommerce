@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging; 
 using Notifico.Data;
 using Notifico.Hubs;
 using Notifico.Models;
@@ -15,14 +16,15 @@ namespace Notifico.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly ILogger<CartController> _logger; 
 
-        public CartController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
+        public CartController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext, ILogger<CartController> logger)
         {
             _context = context;
             _hubContext = hubContext;
+            _logger = logger; 
         }
 
-        // Helper: ADMIN ise erişimi engelle
         private bool IsAdmin() => User.IsInRole("Admin");
 
         [HttpPost]
@@ -40,6 +42,7 @@ namespace Notifico.Controllers
             if (product == null)
             {
                 TempData["Error"] = "Ürün Bulunamadı";
+                _logger.LogWarning("Sepete ekleme başarısız! User: {UserId}, ProductId: {ProductId} Ürün bulunamadı", userId, productId);
                 return RedirectToAction("Index", "Product");
             }
 
@@ -59,9 +62,12 @@ namespace Notifico.Controllers
                 if (product.Stock <= cartItem.Quantity)
                 {
                     TempData["Error"] = "Sepetteki ürün adedi, mevcut stoktan fazla olamaz!";
+                    _logger.LogWarning("Stok yetersiz! User: {UserId}, ProductId: {ProductId} Stok: {Stock}, Sepet: {Quantity}",
+                        userId, productId, product.Stock, cartItem.Quantity);
                     return RedirectToAction("Index", "Product");
                 }
                 cartItem.Quantity++;
+                _logger.LogInformation("Sepetteki ürün adedi artırıldı. User: {UserId}, ProductId: {ProductId}, Yeni Adet: {Quantity}", userId, productId, cartItem.Quantity);
             }
             else
             {
@@ -72,6 +78,7 @@ namespace Notifico.Controllers
                     Quantity = 1
                 };
                 await _context.CartItems.AddAsync(cartItem);
+                _logger.LogInformation("Ürün sepete eklendi. User: {UserId}, ProductId: {ProductId}", userId, productId);
             }
 
             await _context.SaveChangesAsync();
@@ -90,7 +97,10 @@ namespace Notifico.Controllers
 
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
             if (product == null)
+            {
+                _logger.LogWarning("AddToCartAjax: Ürün bulunamadı. User: {UserId}, ProductId: {ProductId}", userId, productId);
                 return Json(new { success = false, error = "Ürün bulunamadı" });
+            }
 
             var cart = await _context.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.UserId == userId);
             if (cart == null)
@@ -105,14 +115,18 @@ namespace Notifico.Controllers
             if (cartItem != null)
             {
                 if (product.Stock <= cartItem.Quantity)
+                {
+                    _logger.LogWarning("AddToCartAjax: Stok yetersiz. User: {UserId}, ProductId: {ProductId}", userId, productId);
                     return Json(new { success = false, error = "Stok yetersiz" });
-
+                }
                 cartItem.Quantity++;
+                _logger.LogInformation("AddToCartAjax: Sepetteki ürün adedi artırıldı. User: {UserId}, ProductId: {ProductId}, Yeni Adet: {Quantity}", userId, productId, cartItem.Quantity);
             }
             else
             {
                 cartItem = new CartItem { CartId = cart.Id, ProductId = productId, Quantity = 1 };
                 await _context.CartItems.AddAsync(cartItem);
+                _logger.LogInformation("AddToCartAjax: Ürün sepete eklendi. User: {UserId}, ProductId: {ProductId}", userId, productId);
             }
             await _context.SaveChangesAsync();
 
@@ -130,6 +144,9 @@ namespace Notifico.Controllers
 
             var cart = await _context.Carts.Include(c => c.CartItems).ThenInclude(ci => ci.Product).FirstOrDefaultAsync(c => c.UserId == userId);
             var cartItems = cart?.CartItems.ToList() ?? new List<CartItem>();
+
+            _logger.LogInformation("Kullanıcı sepetini görüntüledi. User: {UserId}, Ürün Sayısı: {Count}", userId, cartItems.Count);
+
             return View(cartItems);
         }
 
@@ -149,6 +166,7 @@ namespace Notifico.Controllers
             {
                 _context.CartItems.Remove(cartItem);
                 await _context.SaveChangesAsync();
+                _logger.LogInformation("Ürün sepetten çıkarıldı. User: {UserId}, ProductId: {ProductId}", userId, cartItem.ProductId);
             }
 
             return RedirectToAction("MyCart");
@@ -172,10 +190,12 @@ namespace Notifico.Controllers
             if (cartItem.Quantity > 1)
             {
                 cartItem.Quantity--;
+                _logger.LogInformation("Ürün adedi azaltıldı. User: {UserId}, ProductId: {ProductId}, Yeni Adet: {Quantity}", userId, cartItem.ProductId, cartItem.Quantity);
             }
             else
             {
                 _context.CartItems.Remove(cartItem);
+                _logger.LogInformation("Sepetten ürün tamamen silindi (adet 1 idi). User: {UserId}, ProductId: {ProductId}", userId, cartItem.ProductId);
             }
 
             await _context.SaveChangesAsync();
@@ -201,6 +221,11 @@ namespace Notifico.Controllers
             {
                 cartItem.Quantity++;
                 await _context.SaveChangesAsync();
+                _logger.LogInformation("Ürün adedi artırıldı. User: {UserId}, ProductId: {ProductId}, Yeni Adet: {Quantity}", userId, cartItem.ProductId, cartItem.Quantity);
+            }
+            else
+            {
+                _logger.LogWarning("Stok yetersiz, ürün adedi artırılamadı. User: {UserId}, ProductId: {ProductId}", userId, cartItem.ProductId);
             }
 
             return RedirectToAction("MyCart");
@@ -224,6 +249,7 @@ namespace Notifico.Controllers
             {
                 _context.CartItems.RemoveRange(cart.CartItems);
                 await _context.SaveChangesAsync();
+                _logger.LogInformation("Kullanıcı sepetini tamamen temizledi. User: {UserId}", userId);
             }
 
             return RedirectToAction("MyCart");
@@ -255,9 +281,11 @@ namespace Notifico.Controllers
 
             var orders = await _context.Orders
                 .Where(o => o.UserId == userId)
-                .Include(o => o.OrderItems) 
+                .Include(o => o.OrderItems)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
+
+            _logger.LogInformation("Kullanıcı siparişlerini görüntüledi. User: {UserId}, Sipariş Sayısı: {OrderCount}", userId, orders.Count);
 
             return View(orders);
         }
@@ -275,7 +303,12 @@ namespace Notifico.Controllers
             var order = await _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.Product).FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
 
             if (order == null)
+            {
+                _logger.LogWarning("Kullanıcı kendi olmayan ya da olmayan bir sipariş detayını görüntülemeye çalıştı. User: {UserId}, OrderId: {OrderId}", userId, id);
                 return NotFound();
+            }
+
+            _logger.LogInformation("Kullanıcı bir sipariş detayını görüntüledi. User: {UserId}, OrderId: {OrderId}", userId, id);
 
             return View(order);
         }
@@ -301,8 +334,12 @@ namespace Notifico.Controllers
                 var lineTotal = cartItem.Quantity * cartItem.Product.Price;
                 var cartTotal = await _context.CartItems.Where(x => x.CartId == cartItem.CartId).SumAsync(x => x.Product.Price * x.Quantity);
 
+                _logger.LogInformation("AJAX - Ürün adedi artırıldı. User: {UserId}, ProductId: {ProductId}, Yeni Adet: {Quantity}", userId, cartItem.ProductId, cartItem.Quantity);
+
                 return Json(new { success = true, quantity = cartItem.Quantity, lineTotal, cartTotal });
             }
+
+            _logger.LogWarning("AJAX - Stok yetersiz, ürün adedi artırılamadı. User: {UserId}, ProductId: {ProductId}", userId, cartItem.ProductId);
 
             return Json(new { success = false, error = "Stok yetersiz" });
         }
@@ -330,6 +367,8 @@ namespace Notifico.Controllers
                 var cartTotal = await _context.CartItems.Where(x => x.CartId == cartItem.CartId)
                                         .SumAsync(x => x.Product.Price * x.Quantity);
 
+                _logger.LogInformation("AJAX - Ürün adedi azaltıldı. User: {UserId}, ProductId: {ProductId}, Yeni Adet: {Quantity}", userId, cartItem.ProductId, cartItem.Quantity);
+
                 return Json(new { success = true, quantity = cartItem.Quantity, lineTotal, cartTotal });
             }
             else
@@ -339,6 +378,8 @@ namespace Notifico.Controllers
                 await _context.SaveChangesAsync();
 
                 var cartTotal = await _context.CartItems.Where(x => x.CartId == cartId).SumAsync(x => x.Product.Price * x.Quantity);
+
+                _logger.LogInformation("AJAX - Sepetten ürün tamamen silindi (adet 1 idi). User: {UserId}, ProductId: {ProductId}", userId, cartItem.ProductId);
 
                 return Json(new { success = true, quantity = 0, lineTotal = 0, cartTotal });
             }
@@ -371,6 +412,8 @@ namespace Notifico.Controllers
                 CartItems = cart?.CartItems.ToList() ?? new List<CartItem>()
             };
 
+            _logger.LogInformation("Kullanıcı checkout ekranını açtı. User: {UserId}", userId);
+
             return View(viewModel);
         }
 
@@ -393,21 +436,29 @@ namespace Notifico.Controllers
                     .FirstOrDefaultAsync(c => c.UserId == userId);
                 model.CartItems = cart?.CartItems.ToList() ?? new List<CartItem>();
                 ModelState.AddModelError("SelectedAddressId", "Lütfen adres seçiniz.");
+                _logger.LogWarning("Checkout: Adres seçilmedi. User: {UserId}", userId);
                 return View(model);
             }
 
             var cartDb = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
             if (cartDb == null)
+            {
+                _logger.LogWarning("Checkout: Cart bulunamadı. User: {UserId}", userId);
                 return RedirectToAction("MyCart", "Cart");
+            }
 
             var cartItems = await _context.CartItems.Where(x => x.CartId == cartDb.Id).Include(x => x.Product).ToListAsync();
             if (cartItems == null || !cartItems.Any())
+            {
+                _logger.LogWarning("Checkout: Sepet boş. User: {UserId}", userId);
                 return RedirectToAction("MyCart", "Cart");
+            }
 
             var address = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == model.SelectedAddressId && a.UserId == userId);
             if (address == null)
             {
                 TempData["Error"] = "Adres bulunamadı";
+                _logger.LogWarning("Checkout: Adres bulunamadı. User: {UserId}, AddressId: {AddressId}", userId, model.SelectedAddressId);
                 return RedirectToAction("Checkout");
             }
 
@@ -442,6 +493,8 @@ namespace Notifico.Controllers
                 else
                 {
                     TempData["Error"] = $"Ürün stok yetersiz: {item.Product.Name}";
+                    _logger.LogError("Checkout: Stok yetersiz! User: {UserId}, ProductId: {ProductId}, İstenen: {Quantity}, Stok: {Stock}",
+                        userId, item.ProductId, item.Quantity, item.Product.Stock);
                     return RedirectToAction("MyCart", "Cart");
                 }
             }
@@ -450,6 +503,9 @@ namespace Notifico.Controllers
             await _context.SaveChangesAsync();
 
             TempData["OrderSuccess"] = "Siparişiniz başarıyla oluşturuldu!";
+            _logger.LogInformation("Checkout: Sipariş başarıyla oluşturuldu. User: {UserId}, OrderId: {OrderId}, Toplam: {Total}",
+                userId, order.Id, order.TotalAmount);
+
             await _hubContext.Clients.All.SendAsync("ReceiveOrderNotification", "Yeni sipariş alındı!");
 
             return RedirectToAction("OrderSuccess", "Cart");
@@ -479,6 +535,8 @@ namespace Notifico.Controllers
                 .Where(x => x.CartId == cartId)
                 .SumAsync(x => x.Product.Price * x.Quantity);
 
+            _logger.LogInformation("AJAX - Ürün sepetten çıkarıldı. User: {UserId}, ProductId: {ProductId}", userId, cartItem.ProductId);
+
             return Json(new { success = true, cartTotal });
         }
 
@@ -499,6 +557,7 @@ namespace Notifico.Controllers
             {
                 _context.CartItems.RemoveRange(cart.CartItems);
                 await _context.SaveChangesAsync();
+                _logger.LogInformation("AJAX - Kullanıcı sepetini tamamen temizledi. User: {UserId}", userId);
             }
 
             return Json(new { success = true });
@@ -519,6 +578,9 @@ namespace Notifico.Controllers
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             var cartItems = cart?.CartItems.ToList() ?? new List<CartItem>();
+
+            _logger.LogInformation("SideCartPartial çağrıldı. User: {UserId}, Ürün Sayısı: {Count}", userId, cartItems.Count);
+
             return PartialView("SideCartPartial", cartItems);
         }
     }

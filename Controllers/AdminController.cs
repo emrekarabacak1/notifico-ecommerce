@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging; 
 using Notifico.Data;
 using Notifico.Models;
 using System.Globalization;
@@ -11,16 +12,19 @@ public class AdminController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<AppUser> _userManager;
+    private readonly ILogger<AdminController> _logger; 
 
-    public AdminController(ApplicationDbContext context, UserManager<AppUser> userManager)
+    public AdminController(ApplicationDbContext context, UserManager<AppUser> userManager, ILogger<AdminController> logger)
     {
         _context = context;
         _userManager = userManager;
+        _logger = logger;
     }
 
     public async Task<IActionResult> ProductList()
     {
         var products = await _context.Products.ToListAsync();
+        _logger.LogInformation("Admin ürün listesi görüntülendi.");
         return View(products);
     }
 
@@ -30,10 +34,11 @@ public class AdminController : Controller
         var product = await _context.Products.FindAsync(id);
         if (product == null)
         {
+            _logger.LogWarning("Admin: Düzenlenmek istenen ürün bulunamadı. ProductId: {ProductId}", id);
             return RedirectToAction("ProductList");
         }
-
-        return View("ProductForm",product);
+        _logger.LogInformation("Admin ürün düzenleme sayfasını açtı. ProductId: {ProductId}", id);
+        return View("ProductForm", product);
     }
 
     [HttpPost]
@@ -42,18 +47,21 @@ public class AdminController : Controller
     {
         if (!ModelState.IsValid)
         {
+            _logger.LogWarning("Admin: Ürün düzenleme formu hatalı gönderildi.");
             return View(product);
         }
 
         var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == product.Id);
         if (productInDb == null)
         {
+            _logger.LogWarning("Admin: Düzenlenmek istenen ürün bulunamadı. ProductId: {ProductId}", product.Id);
             return RedirectToAction("ProductList");
         }
 
         if (await _context.Products.AnyAsync(p => p.Id != product.Id && p.Name.ToLower() == product.Name.ToLower()))
         {
             ModelState.AddModelError("Name", "Bu isimde zaten başka bir ürün var.");
+            _logger.LogWarning("Admin: Aynı isimde başka bir ürün var. ProductName: {ProductName}", product.Name);
             return View(product);
         }
 
@@ -65,6 +73,7 @@ public class AdminController : Controller
         productInDb.ImageUrl = product.ImageUrl;
 
         await _context.SaveChangesAsync();
+        _logger.LogInformation("Admin ürün güncelledi. ProductId: {ProductId}", product.Id);
         return RedirectToAction("ProductList");
     }
 
@@ -77,6 +86,11 @@ public class AdminController : Controller
         {
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Admin ürün sildi. ProductId: {ProductId}", id);
+        }
+        else
+        {
+            _logger.LogWarning("Admin: Silinmek istenen ürün bulunamadı. ProductId: {ProductId}", id);
         }
         return RedirectToAction("ProductList");
     }
@@ -84,6 +98,7 @@ public class AdminController : Controller
     [HttpGet]
     public IActionResult AddProduct()
     {
+        _logger.LogInformation("Admin yeni ürün ekleme sayfasını açtı.");
         return View("ProductForm", new Product());
     }
 
@@ -93,18 +108,21 @@ public class AdminController : Controller
     {
         if (!ModelState.IsValid)
         {
+            _logger.LogWarning("Admin: Ürün ekleme formu hatalı gönderildi.");
             return View(product);
         }
 
         if (await _context.Products.AnyAsync(p => p.Name.ToLower() == product.Name.ToLower()))
         {
             ModelState.AddModelError("Name", "Bu isimde zaten bir ürün var.");
+            _logger.LogWarning("Admin: Aynı isimde başka bir ürün eklemeye çalıştı. ProductName: {ProductName}", product.Name);
             return View(product);
         }
 
         product.DateAdded = DateTime.UtcNow;
         await _context.Products.AddAsync(product);
         await _context.SaveChangesAsync();
+        _logger.LogInformation("Admin yeni ürün ekledi. ProductId: {ProductId}, Name: {Name}", product.Id, product.Name);
 
         return RedirectToAction("ProductList");
     }
@@ -119,13 +137,16 @@ public class AdminController : Controller
         if (!string.IsNullOrEmpty(search))
         {
             orders = orders.Where(o => o.User.UserName.ToLower().Contains(search.ToLower()));
+            _logger.LogInformation("Admin sipariş listesi filtreli arandı. Search: {Search}", search);
         }
 
         if (status.HasValue)
         {
             orders = orders.Where(o => o.Status == status.Value);
+            _logger.LogInformation("Admin sipariş listesi statü ile filtrelendi. Status: {Status}", status.Value);
         }
 
+        _logger.LogInformation("Admin sipariş listesi görüntülendi.");
         return View(await orders.ToListAsync());
     }
 
@@ -139,9 +160,10 @@ public class AdminController : Controller
 
         if (order == null)
         {
+            _logger.LogWarning("Admin: Sipariş detayı bulunamadı. OrderId: {OrderId}", id);
             return NotFound();
         }
-
+        _logger.LogInformation("Admin sipariş detay sayfasını görüntüledi. OrderId: {OrderId}", id);
         return View(order);
     }
 
@@ -152,17 +174,20 @@ public class AdminController : Controller
         var order = await _context.Orders.FindAsync(id);
         if (order == null)
         {
+            _logger.LogWarning("Admin: Statüsü güncellenmek istenen sipariş bulunamadı. OrderId: {OrderId}", id);
             return NotFound();
         }
 
         if (!Enum.IsDefined(typeof(OrderStatus), status))
         {
             TempData["StatusMessage"] = "Geçersiz statü!";
+            _logger.LogWarning("Admin: Sipariş için geçersiz statü gönderildi. OrderId: {OrderId}, Status: {Status}", id, status);
             return RedirectToAction("OrderDetail", new { id });
         }
 
         order.Status = (OrderStatus)status;
         await _context.SaveChangesAsync();
+        _logger.LogInformation("Admin sipariş statüsünü güncelledi. OrderId: {OrderId}, Status: {Status}", id, order.Status);
 
         TempData["StatusMessage"] = "Sipariş statüsü güncellendi.";
         return RedirectToAction("OrderDetail", new { id });
@@ -176,12 +201,14 @@ public class AdminController : Controller
         if (order == null)
         {
             TempData["StatusMessage"] = "Sipariş Bulunamadı";
+            _logger.LogWarning("Admin: İptal edilmek istenen sipariş bulunamadı. OrderId: {OrderId}", id);
             return RedirectToAction("OrderList");
         }
 
         if (order.Status == OrderStatus.IptalEdildi || order.Status == OrderStatus.TeslimEdildi)
         {
             TempData["StatusMessage"] = "Bu sipariş iptal veya teslim edilmiş.";
+            _logger.LogInformation("Admin: Sipariş zaten iptal edilmiş ya da teslim edilmiş. OrderId: {OrderId}, Status: {Status}", id, order.Status);
             return RedirectToAction("OrderList");
         }
 
@@ -189,6 +216,7 @@ public class AdminController : Controller
         await _context.SaveChangesAsync();
 
         TempData["StatusMessage"] = "Sipariş başarıyla iptal edildi.";
+        _logger.LogInformation("Admin siparişi iptal etti. OrderId: {OrderId}", id);
         return RedirectToAction("OrderList");
     }
 
@@ -203,6 +231,7 @@ public class AdminController : Controller
         if (order == null)
         {
             TempData["StatusMessage"] = "Sipariş bulunamadı!";
+            _logger.LogWarning("Admin: Silinmek istenen sipariş bulunamadı. OrderId: {OrderId}", id);
             return RedirectToAction("OrderList");
         }
 
@@ -215,6 +244,7 @@ public class AdminController : Controller
         await _context.SaveChangesAsync();
 
         TempData["StatusMessage"] = "Sipariş başarıyla silindi.";
+        _logger.LogInformation("Admin sipariş sildi. OrderId: {OrderId}", id);
         return RedirectToAction("OrderList");
     }
 
@@ -261,7 +291,7 @@ public class AdminController : Controller
             ChartData = chartData ?? new List<decimal>()
         };
 
+        _logger.LogInformation("Admin dashboard görüntülendi.");
         return View(dashboardView);
     }
-
 }
