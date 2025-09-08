@@ -172,6 +172,7 @@ namespace Notifico.Controllers
 
             await _context.SaveChangesAsync();
 
+            // Eğer bu adres varsayılan olduysa profil adresini de güncelle
             if (addressDb.IsDefault)
             {
                 var user = await _context.Users.FindAsync(userId);

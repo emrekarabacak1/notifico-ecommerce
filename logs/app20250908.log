@@ -23594,3 +23594,666 @@ FROM "Products" AS p
 2025-09-08 23:21:10.367 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
 2025-09-08 23:21:10.417 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 51.8814ms
 2025-09-08 23:21:10.420 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 51.9169ms
+2025-09-08 23:42:43.098 +03:00 [INF] User profile is available. Using 'C:\Users\Emre\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-09-08 23:42:43.872 +03:00 [INF] Executed DbCommand (36ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2025-09-08 23:42:43.924 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2025-09-08 23:42:43.938 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__normalizedEmail_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2025-09-08 23:42:44.187 +03:00 [INF] Now listening on: https://localhost:7193
+2025-09-08 23:42:44.189 +03:00 [INF] Now listening on: http://localhost:5232
+2025-09-08 23:42:44.192 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-09-08 23:42:44.194 +03:00 [INF] Hosting environment: Development
+2025-09-08 23:42:44.195 +03:00 [INF] Content root path: C:\Users\Emre\Desktop\C#\repos\intro\Notifico
+2025-09-08 23:42:44.754 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/ - null null
+2025-09-08 23:42:44.909 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:42:44.950 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__user_Id_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ClaimType", a."ClaimValue", a."UserId"
+FROM "AspNetUserClaims" AS a
+WHERE a."UserId" = @__user_Id_0
+2025-09-08 23:42:44.970 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__userId_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a0."Name"
+FROM "AspNetUserRoles" AS a
+INNER JOIN "AspNetRoles" AS a0 ON a."RoleId" = a0."Id"
+WHERE a."UserId" = @__userId_0
+2025-09-08 23:42:44.978 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2025-09-08 23:42:44.988 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__role_Id_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."ClaimType", a."ClaimValue"
+FROM "AspNetRoleClaims" AS a
+WHERE a."RoleId" = @__role_Id_0
+2025-09-08 23:42:45.003 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:42:45.013 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:42:45.018 +03:00 [INF] Executing endpoint 'Notifico.Controllers.HomeController.Index (Notifico)'
+2025-09-08 23:42:45.028 +03:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller Notifico.Controllers.HomeController (Notifico).
+2025-09-08 23:42:45.037 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-08 23:42:45.105 +03:00 [INF] Executed ViewResult - view Index executed in 67.9018ms.
+2025-09-08 23:42:45.110 +03:00 [INF] Executed action Notifico.Controllers.HomeController.Index (Notifico) in 78.0966ms
+2025-09-08 23:42:45.113 +03:00 [INF] Executed endpoint 'Notifico.Controllers.HomeController.Index (Notifico)'
+2025-09-08 23:42:45.116 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:42:45.118 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:42:45.121 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/ - 200 null text/html; charset=utf-8 372.8876ms
+2025-09-08 23:42:45.130 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 13.8162ms
+2025-09-08 23:42:45.155 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 37.685ms
+2025-09-08 23:42:48.375 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Cart/SideCartPartial - null null
+2025-09-08 23:42:48.398 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:42:48.402 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:42:48.406 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:42:48.408 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.SideCartPartial (Notifico)'
+2025-09-08 23:42:48.413 +03:00 [INF] Route matched with {action = "SideCartPartial", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SideCartPartial() on controller Notifico.Controllers.CartController (Notifico).
+2025-09-08 23:42:48.457 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[@__userId_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Id", t."UserId", t0."Id", t0."CartId", t0."ProductId", t0."Quantity", t0."Id0", t0."Category", t0."DateAdded", t0."Description", t0."ImageUrl", t0."Name", t0."Price", t0."Stock"
+FROM (
+    SELECT c."Id", c."UserId"
+    FROM "Carts" AS c
+    WHERE c."UserId" = @__userId_0
+    LIMIT 1
+) AS t
+LEFT JOIN (
+    SELECT c0."Id", c0."CartId", c0."ProductId", c0."Quantity", p."Id" AS "Id0", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+    FROM "CartItems" AS c0
+    INNER JOIN "Products" AS p ON c0."ProductId" = p."Id"
+) AS t0 ON t."Id" = t0."CartId"
+ORDER BY t."Id", t0."Id"
+2025-09-08 23:42:48.492 +03:00 [INF] SideCartPartial çağrıldı. User: e0c80e6e-b49d-49b2-ae9d-fdff882c04cd, Ürün Sayısı: 1
+2025-09-08 23:42:48.500 +03:00 [INF] Executing PartialViewResult, running view SideCartPartial.
+2025-09-08 23:42:48.511 +03:00 [INF] Executed PartialViewResult - view SideCartPartial executed in 12.6042ms.
+2025-09-08 23:42:48.513 +03:00 [INF] Executed action Notifico.Controllers.CartController.SideCartPartial (Notifico) in 97.0987ms
+2025-09-08 23:42:48.514 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.SideCartPartial (Notifico)'
+2025-09-08 23:42:48.515 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Cart/SideCartPartial - 200 null text/html; charset=utf-8 140.0825ms
+2025-09-08 23:42:50.729 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Product - null null
+2025-09-08 23:42:50.779 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:42:50.788 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:42:50.797 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:42:50.803 +03:00 [INF] Executing endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-08 23:42:50.833 +03:00 [INF] Route matched with {action = "Index", controller = "Product"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.String) on controller Notifico.Controllers.ProductController (Notifico).
+2025-09-08 23:42:50.892 +03:00 [INF] Product/Index: User (ID: e0c80e6e-b49d-49b2-ae9d-fdff882c04cd) viewed product list.
+2025-09-08 23:42:50.918 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Category"
+FROM (
+    SELECT DISTINCT p."Category"
+    FROM "Products" AS p
+) AS t
+ORDER BY t."Category"
+2025-09-08 23:42:51.008 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+2025-09-08 23:42:51.015 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-08 23:42:51.127 +03:00 [INF] Executed ViewResult - view Index executed in 113.737ms.
+2025-09-08 23:42:51.130 +03:00 [INF] Executed action Notifico.Controllers.ProductController.Index (Notifico) in 288.0066ms
+2025-09-08 23:42:51.132 +03:00 [INF] Executed endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-08 23:42:51.135 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Product - 200 null text/html; charset=utf-8 406.445ms
+2025-09-08 23:42:51.136 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:42:51.137 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:42:51.149 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 13.2799ms
+2025-09-08 23:42:51.196 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 59.6519ms
+2025-09-08 23:42:55.979 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7193/Account/Logout - application/x-www-form-urlencoded 225
+2025-09-08 23:42:55.998 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:42:56.008 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:42:56.024 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:42:56.032 +03:00 [INF] Executing endpoint 'Notifico.Controllers.AccountController.Logout (Notifico)'
+2025-09-08 23:42:56.049 +03:00 [INF] Route matched with {action = "Logout", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Logout() on controller Notifico.Controllers.AccountController (Notifico).
+2025-09-08 23:42:56.078 +03:00 [INF] AuthenticationScheme: Identity.Application signed out.
+2025-09-08 23:42:56.086 +03:00 [INF] AuthenticationScheme: Identity.External signed out.
+2025-09-08 23:42:56.090 +03:00 [INF] AuthenticationScheme: Identity.TwoFactorUserId signed out.
+2025-09-08 23:42:56.096 +03:00 [INF] Executing RedirectResult, redirecting to /Account/Login.
+2025-09-08 23:42:56.103 +03:00 [INF] Executed action Notifico.Controllers.AccountController.Logout (Notifico) in 47.7457ms
+2025-09-08 23:42:56.106 +03:00 [INF] Executed endpoint 'Notifico.Controllers.AccountController.Logout (Notifico)'
+2025-09-08 23:42:56.110 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7193/Account/Logout - 302 0 null 131.8368ms
+2025-09-08 23:42:56.117 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Account/Login - null null
+2025-09-08 23:42:56.133 +03:00 [INF] Executing endpoint 'Notifico.Controllers.AccountController.Login (Notifico)'
+2025-09-08 23:42:56.139 +03:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller Notifico.Controllers.AccountController (Notifico).
+2025-09-08 23:42:56.147 +03:00 [INF] Executing ViewResult, running view Login.
+2025-09-08 23:42:56.217 +03:00 [INF] Executed ViewResult - view Login executed in 71.1299ms.
+2025-09-08 23:42:56.220 +03:00 [INF] Executed action Notifico.Controllers.AccountController.Login (Notifico) in 76.4012ms
+2025-09-08 23:42:56.222 +03:00 [INF] Executed endpoint 'Notifico.Controllers.AccountController.Login (Notifico)'
+2025-09-08 23:42:56.224 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Account/Login - 200 null text/html; charset=utf-8 108.0369ms
+2025-09-08 23:42:56.230 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:42:56.231 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:42:56.235 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 5.1519ms
+2025-09-08 23:42:56.253 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 22.474ms
+2025-09-08 23:43:05.573 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7193/Account/Login - application/x-www-form-urlencoded 228
+2025-09-08 23:43:05.595 +03:00 [INF] Executing endpoint 'Notifico.Controllers.AccountController.Login (Notifico)'
+2025-09-08 23:43:05.616 +03:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Notifico.Models.LoginViewModel) on controller Notifico.Controllers.AccountController (Notifico).
+2025-09-08 23:43:05.656 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedEmail_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2025-09-08 23:43:05.816 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__user_Id_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ClaimType", a."ClaimValue", a."UserId"
+FROM "AspNetUserClaims" AS a
+WHERE a."UserId" = @__user_Id_0
+2025-09-08 23:43:05.822 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__userId_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a0."Name"
+FROM "AspNetUserRoles" AS a
+INNER JOIN "AspNetRoles" AS a0 ON a."RoleId" = a0."Id"
+WHERE a."UserId" = @__userId_0
+2025-09-08 23:43:05.828 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2025-09-08 23:43:05.834 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__role_Id_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."ClaimType", a."ClaimValue"
+FROM "AspNetRoleClaims" AS a
+WHERE a."RoleId" = @__role_Id_0
+2025-09-08 23:43:05.840 +03:00 [INF] AuthenticationScheme: Identity.Application signed in.
+2025-09-08 23:43:05.846 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:05.855 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:43:05.875 +03:00 [INF] Executing RedirectResult, redirecting to /Admin.
+2025-09-08 23:43:05.881 +03:00 [INF] Executed action Notifico.Controllers.AccountController.Login (Notifico) in 253.1329ms
+2025-09-08 23:43:05.883 +03:00 [INF] Executed endpoint 'Notifico.Controllers.AccountController.Login (Notifico)'
+2025-09-08 23:43:05.886 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7193/Account/Login - 302 0 null 313.9928ms
+2025-09-08 23:43:05.891 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Admin - null null
+2025-09-08 23:43:05.914 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:43:05.924 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:05.933 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:43:05.939 +03:00 [INF] Executing endpoint 'AdminController.Index (Notifico)'
+2025-09-08 23:43:05.952 +03:00 [INF] Route matched with {action = "Index", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller AdminController (Notifico).
+2025-09-08 23:43:06.021 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT count(*)::int
+FROM "Products" AS p
+2025-09-08 23:43:06.038 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT count(*)::int
+FROM "Orders" AS o
+2025-09-08 23:43:06.062 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+2025-09-08 23:43:06.086 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-08 23:43:06.122 +03:00 [INF] Executed ViewResult - view Index executed in 37.4299ms.
+2025-09-08 23:43:06.125 +03:00 [INF] Executed action AdminController.Index (Notifico) in 162.5611ms
+2025-09-08 23:43:06.127 +03:00 [INF] Executed endpoint 'AdminController.Index (Notifico)'
+2025-09-08 23:43:06.129 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Admin - 200 null text/html; charset=utf-8 238.8223ms
+2025-09-08 23:43:06.136 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:43:06.136 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:43:06.142 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 6.2503ms
+2025-09-08 23:43:06.160 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 24.7741ms
+2025-09-08 23:43:08.644 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Admin/Dashboard - null null
+2025-09-08 23:43:08.661 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:43:08.670 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:08.679 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:43:08.684 +03:00 [INF] Executing endpoint 'AdminController.Dashboard (Notifico)'
+2025-09-08 23:43:08.693 +03:00 [INF] Route matched with {action = "Dashboard", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Dashboard() on controller AdminController (Notifico).
+2025-09-08 23:43:08.708 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT count(*)::int
+FROM "Orders" AS o
+2025-09-08 23:43:08.734 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+2025-09-08 23:43:08.755 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:08.787 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@__role_Id_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a0."Id", a0."AccessFailedCount", a0."Address", a0."BirthDate", a0."City", a0."ConcurrencyStamp", a0."District", a0."Email", a0."EmailConfirmed", a0."FirstName", a0."LastName", a0."LockoutEnabled", a0."LockoutEnd", a0."NormalizedEmail", a0."NormalizedUserName", a0."PasswordHash", a0."PhoneNumber", a0."PhoneNumberConfirmed", a0."SecurityStamp", a0."TwoFactorEnabled", a0."UserName"
+FROM "AspNetUserRoles" AS a
+INNER JOIN "AspNetUsers" AS a0 ON a."UserId" = a0."Id"
+WHERE a."RoleId" = @__role_Id_0
+2025-09-08 23:43:08.825 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Id", t."AddressId", t."AddressSnapshot", t."OrderDate", t."Status", t."TotalAmount", t."UserId", a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM (
+    SELECT o."Id", o."AddressId", o."AddressSnapshot", o."OrderDate", o."Status", o."TotalAmount", o."UserId"
+    FROM "Orders" AS o
+    ORDER BY o."OrderDate" DESC
+    LIMIT @__p_0
+) AS t
+INNER JOIN "AspNetUsers" AS a ON t."UserId" = a."Id"
+ORDER BY t."OrderDate" DESC
+2025-09-08 23:43:08.878 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:08.885 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:08.891 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:08.899 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:08.908 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:08.915 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:08.923 +03:00 [INF] Executing ViewResult, running view Dashboard.
+2025-09-08 23:43:09.366 +03:00 [INF] Executed ViewResult - view Dashboard executed in 444.1765ms.
+2025-09-08 23:43:09.369 +03:00 [INF] Executed action AdminController.Dashboard (Notifico) in 668.6119ms
+2025-09-08 23:43:09.371 +03:00 [INF] Executed endpoint 'AdminController.Dashboard (Notifico)'
+2025-09-08 23:43:09.372 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Admin/Dashboard - 200 null text/html; charset=utf-8 729.2108ms
+2025-09-08 23:43:09.378 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:43:09.378 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:43:09.383 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 5.9401ms
+2025-09-08 23:43:09.403 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 25.8299ms
+2025-09-08 23:43:10.620 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Admin/OrderList - null null
+2025-09-08 23:43:10.640 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:43:10.651 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:10.659 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:43:10.663 +03:00 [INF] Executing endpoint 'AdminController.OrderList (Notifico)'
+2025-09-08 23:43:10.680 +03:00 [INF] Route matched with {action = "OrderList", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] OrderList(System.String, System.Nullable`1[Notifico.Models.OrderStatus]) on controller AdminController (Notifico).
+2025-09-08 23:43:10.700 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT o."Id", o."AddressId", o."AddressSnapshot", o."OrderDate", o."Status", o."TotalAmount", o."UserId", a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "Orders" AS o
+INNER JOIN "AspNetUsers" AS a ON o."UserId" = a."Id"
+ORDER BY o."OrderDate" DESC
+2025-09-08 23:43:10.707 +03:00 [INF] Executing ViewResult, running view OrderList.
+2025-09-08 23:43:10.729 +03:00 [INF] Executed ViewResult - view OrderList executed in 23.1874ms.
+2025-09-08 23:43:10.731 +03:00 [INF] Executed action AdminController.OrderList (Notifico) in 44.0971ms
+2025-09-08 23:43:10.733 +03:00 [INF] Executed endpoint 'AdminController.OrderList (Notifico)'
+2025-09-08 23:43:10.735 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Admin/OrderList - 200 null text/html; charset=utf-8 115.504ms
+2025-09-08 23:43:10.737 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:43:10.737 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:43:10.749 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 11.3937ms
+2025-09-08 23:43:10.754 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 16.9172ms
+2025-09-08 23:43:17.568 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Admin/Dashboard - null null
+2025-09-08 23:43:17.589 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:43:17.597 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:17.607 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:43:17.612 +03:00 [INF] Executing endpoint 'AdminController.Dashboard (Notifico)'
+2025-09-08 23:43:17.614 +03:00 [INF] Route matched with {action = "Dashboard", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Dashboard() on controller AdminController (Notifico).
+2025-09-08 23:43:17.621 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT count(*)::int
+FROM "Orders" AS o
+2025-09-08 23:43:17.630 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+2025-09-08 23:43:17.636 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:17.644 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__role_Id_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a0."Id", a0."AccessFailedCount", a0."Address", a0."BirthDate", a0."City", a0."ConcurrencyStamp", a0."District", a0."Email", a0."EmailConfirmed", a0."FirstName", a0."LastName", a0."LockoutEnabled", a0."LockoutEnd", a0."NormalizedEmail", a0."NormalizedUserName", a0."PasswordHash", a0."PhoneNumber", a0."PhoneNumberConfirmed", a0."SecurityStamp", a0."TwoFactorEnabled", a0."UserName"
+FROM "AspNetUserRoles" AS a
+INNER JOIN "AspNetUsers" AS a0 ON a."UserId" = a0."Id"
+WHERE a."RoleId" = @__role_Id_0
+2025-09-08 23:43:17.653 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Id", t."AddressId", t."AddressSnapshot", t."OrderDate", t."Status", t."TotalAmount", t."UserId", a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM (
+    SELECT o."Id", o."AddressId", o."AddressSnapshot", o."OrderDate", o."Status", o."TotalAmount", o."UserId"
+    FROM "Orders" AS o
+    ORDER BY o."OrderDate" DESC
+    LIMIT @__p_0
+) AS t
+INNER JOIN "AspNetUsers" AS a ON t."UserId" = a."Id"
+ORDER BY t."OrderDate" DESC
+2025-09-08 23:43:17.660 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:17.668 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:17.676 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:17.684 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:17.691 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:17.699 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime), @__monthEnd_1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(o."TotalAmount"), 0.0)
+FROM "Orders" AS o
+WHERE o."OrderDate" >= @__monthStart_0 AND o."OrderDate" < @__monthEnd_1
+2025-09-08 23:43:17.703 +03:00 [INF] Executing ViewResult, running view Dashboard.
+2025-09-08 23:43:17.710 +03:00 [INF] Executed ViewResult - view Dashboard executed in 6.8343ms.
+2025-09-08 23:43:17.714 +03:00 [INF] Executed action AdminController.Dashboard (Notifico) in 96.8539ms
+2025-09-08 23:43:17.718 +03:00 [INF] Executed endpoint 'AdminController.Dashboard (Notifico)'
+2025-09-08 23:43:17.720 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Admin/Dashboard - 200 null text/html; charset=utf-8 151.9758ms
+2025-09-08 23:43:17.723 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:43:17.723 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:43:17.731 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 8.8755ms
+2025-09-08 23:43:17.750 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 27.6531ms
+2025-09-08 23:43:22.633 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Admin/ProductList - null null
+2025-09-08 23:43:22.645 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:43:22.652 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:22.658 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:43:22.662 +03:00 [INF] Executing endpoint 'AdminController.ProductList (Notifico)'
+2025-09-08 23:43:22.667 +03:00 [INF] Route matched with {action = "ProductList", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ProductList() on controller AdminController (Notifico).
+2025-09-08 23:43:22.673 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+2025-09-08 23:43:22.679 +03:00 [INF] Admin ürün listesi görüntülendi.
+2025-09-08 23:43:22.681 +03:00 [INF] Executing ViewResult, running view ProductList.
+2025-09-08 23:43:22.698 +03:00 [INF] Executed ViewResult - view ProductList executed in 16.9038ms.
+2025-09-08 23:43:22.701 +03:00 [INF] Executed action AdminController.ProductList (Notifico) in 30.5006ms
+2025-09-08 23:43:22.705 +03:00 [INF] Executed endpoint 'AdminController.ProductList (Notifico)'
+2025-09-08 23:43:22.707 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:43:22.707 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:43:22.708 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Admin/ProductList - 200 null text/html; charset=utf-8 74.8572ms
+2025-09-08 23:43:22.712 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 5.7057ms
+2025-09-08 23:43:22.729 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 22.0141ms
+2025-09-08 23:43:27.779 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Admin/AddProduct - null null
+2025-09-08 23:43:27.793 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:43:27.798 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:27.804 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:43:27.809 +03:00 [INF] Executing endpoint 'AdminController.AddProduct (Notifico)'
+2025-09-08 23:43:27.817 +03:00 [INF] Route matched with {action = "AddProduct", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] AddProduct() on controller AdminController (Notifico).
+2025-09-08 23:43:27.826 +03:00 [INF] Executing ViewResult, running view ProductForm.
+2025-09-08 23:43:27.912 +03:00 [INF] Executed ViewResult - view ProductForm executed in 87.3728ms.
+2025-09-08 23:43:27.915 +03:00 [INF] Executed action AdminController.AddProduct (Notifico) in 91.3584ms
+2025-09-08 23:43:27.918 +03:00 [INF] Executed endpoint 'AdminController.AddProduct (Notifico)'
+2025-09-08 23:43:27.921 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Admin/AddProduct - 200 null text/html; charset=utf-8 142.4959ms
+2025-09-08 23:43:27.925 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:43:27.925 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:43:27.952 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 27.4813ms
+2025-09-08 23:43:27.958 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 34.1624ms
+2025-09-08 23:43:58.144 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7193/Admin/AddProduct - multipart/form-data; boundary=----WebKitFormBoundaryPM95O134AeitBrhe 189048
+2025-09-08 23:43:58.176 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:43:58.185 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:58.193 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:43:58.199 +03:00 [INF] Executing endpoint 'AdminController.AddProduct (Notifico)'
+2025-09-08 23:43:58.212 +03:00 [INF] Route matched with {action = "AddProduct", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] AddProduct(Notifico.Models.ProductFormViewModel) on controller AdminController (Notifico).
+2025-09-08 23:43:58.329 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__ToLower_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS p
+    WHERE lower(p."Name") = @__ToLower_0)
+2025-09-08 23:43:58.531 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[@p0='?', @p1='?' (DbType = DateTime), @p2='?', @p3='?', @p4='?', @p5='?' (DbType = Decimal), @p6='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Products" ("Category", "DateAdded", "Description", "ImageUrl", "Name", "Price", "Stock")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "Id";
+2025-09-08 23:43:58.561 +03:00 [INF] Executing RedirectResult, redirecting to /Admin/ProductList.
+2025-09-08 23:43:58.565 +03:00 [INF] Executed action AdminController.AddProduct (Notifico) in 348.796ms
+2025-09-08 23:43:58.567 +03:00 [INF] Executed endpoint 'AdminController.AddProduct (Notifico)'
+2025-09-08 23:43:58.572 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7193/Admin/AddProduct - 302 0 null 428.4923ms
+2025-09-08 23:43:58.576 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Admin/ProductList - null null
+2025-09-08 23:43:58.596 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:43:58.607 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:43:58.616 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:43:58.622 +03:00 [INF] Executing endpoint 'AdminController.ProductList (Notifico)'
+2025-09-08 23:43:58.626 +03:00 [INF] Route matched with {action = "ProductList", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ProductList() on controller AdminController (Notifico).
+2025-09-08 23:43:58.633 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+2025-09-08 23:43:58.638 +03:00 [INF] Admin ürün listesi görüntülendi.
+2025-09-08 23:43:58.640 +03:00 [INF] Executing ViewResult, running view ProductList.
+2025-09-08 23:43:58.648 +03:00 [INF] Executed ViewResult - view ProductList executed in 7.6367ms.
+2025-09-08 23:43:58.653 +03:00 [INF] Executed action AdminController.ProductList (Notifico) in 22.4619ms
+2025-09-08 23:43:58.656 +03:00 [INF] Executed endpoint 'AdminController.ProductList (Notifico)'
+2025-09-08 23:43:58.658 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Admin/ProductList - 200 null text/html; charset=utf-8 82.2789ms
+2025-09-08 23:43:58.663 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/uploads/products/11a810c8be424f81bfec03c35c4afd51.jpeg - null null
+2025-09-08 23:43:58.663 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:43:58.663 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:43:58.679 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 15.2807ms
+2025-09-08 23:43:58.691 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 27.13ms
+2025-09-08 23:43:58.730 +03:00 [INF] Sending file. Request path: '/uploads/products/11a810c8be424f81bfec03c35c4afd51.jpeg'. Physical path: 'C:\Users\Emre\Desktop\C#\repos\intro\Notifico\wwwroot\uploads\products\11a810c8be424f81bfec03c35c4afd51.jpeg'
+2025-09-08 23:43:58.733 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/uploads/products/11a810c8be424f81bfec03c35c4afd51.jpeg - 200 187632 image/jpeg 69.7282ms
+2025-09-08 23:44:04.111 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7193/Admin/DeleteProduct/6 - application/x-www-form-urlencoded 225
+2025-09-08 23:44:04.122 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:44:04.127 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:44:04.135 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:44:04.140 +03:00 [INF] Executing endpoint 'AdminController.DeleteProduct (Notifico)'
+2025-09-08 23:44:04.151 +03:00 [INF] Route matched with {action = "DeleteProduct", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] DeleteProduct(Int32) on controller AdminController (Notifico).
+2025-09-08 23:44:04.171 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+WHERE p."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:44:04.213 +03:00 [INF] Executed DbCommand (10ms) [Parameters=[@p0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM "Products"
+WHERE "Id" = @p0;
+2025-09-08 23:44:04.227 +03:00 [INF] Executing RedirectResult, redirecting to /Admin/ProductList.
+2025-09-08 23:44:04.231 +03:00 [INF] Executed action AdminController.DeleteProduct (Notifico) in 75.7177ms
+2025-09-08 23:44:04.234 +03:00 [INF] Executed endpoint 'AdminController.DeleteProduct (Notifico)'
+2025-09-08 23:44:04.239 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7193/Admin/DeleteProduct/6 - 302 0 null 128.3534ms
+2025-09-08 23:44:04.244 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Admin/ProductList - null null
+2025-09-08 23:44:04.265 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:44:04.275 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:44:04.283 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:44:04.287 +03:00 [INF] Executing endpoint 'AdminController.ProductList (Notifico)'
+2025-09-08 23:44:04.288 +03:00 [INF] Route matched with {action = "ProductList", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ProductList() on controller AdminController (Notifico).
+2025-09-08 23:44:04.294 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+2025-09-08 23:44:04.301 +03:00 [INF] Admin ürün listesi görüntülendi.
+2025-09-08 23:44:04.303 +03:00 [INF] Executing ViewResult, running view ProductList.
+2025-09-08 23:44:04.313 +03:00 [INF] Executed ViewResult - view ProductList executed in 9.7378ms.
+2025-09-08 23:44:04.317 +03:00 [INF] Executed action AdminController.ProductList (Notifico) in 26.1885ms
+2025-09-08 23:44:04.321 +03:00 [INF] Executed endpoint 'AdminController.ProductList (Notifico)'
+2025-09-08 23:44:04.323 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Admin/ProductList - 200 null text/html; charset=utf-8 79.1932ms
+2025-09-08 23:44:04.327 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:44:04.327 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:44:04.345 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 18.3622ms
+2025-09-08 23:44:04.351 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 24.6051ms
+2025-09-08 23:44:10.307 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7193/Account/Logout - application/x-www-form-urlencoded 225
+2025-09-08 23:44:10.323 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-08 23:44:10.328 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__normalizedRoleName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2025-09-08 23:44:10.336 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?', @__p_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."UserId", a."RoleId"
+FROM "AspNetUserRoles" AS a
+WHERE a."UserId" = @__p_0 AND a."RoleId" = @__p_1
+LIMIT 1
+2025-09-08 23:44:10.342 +03:00 [INF] Executing endpoint 'Notifico.Controllers.AccountController.Logout (Notifico)'
+2025-09-08 23:44:10.345 +03:00 [INF] Route matched with {action = "Logout", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Logout() on controller Notifico.Controllers.AccountController (Notifico).
+2025-09-08 23:44:10.352 +03:00 [INF] AuthenticationScheme: Identity.Application signed out.
+2025-09-08 23:44:10.355 +03:00 [INF] AuthenticationScheme: Identity.External signed out.
+2025-09-08 23:44:10.358 +03:00 [INF] AuthenticationScheme: Identity.TwoFactorUserId signed out.
+2025-09-08 23:44:10.361 +03:00 [INF] Executing RedirectResult, redirecting to /Account/Login.
+2025-09-08 23:44:10.365 +03:00 [INF] Executed action Notifico.Controllers.AccountController.Logout (Notifico) in 14.5277ms
+2025-09-08 23:44:10.367 +03:00 [INF] Executed endpoint 'Notifico.Controllers.AccountController.Logout (Notifico)'
+2025-09-08 23:44:10.370 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7193/Account/Logout - 302 0 null 63.1859ms
+2025-09-08 23:44:10.375 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Account/Login - null null
+2025-09-08 23:44:10.389 +03:00 [INF] Executing endpoint 'Notifico.Controllers.AccountController.Login (Notifico)'
+2025-09-08 23:44:10.392 +03:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller Notifico.Controllers.AccountController (Notifico).
+2025-09-08 23:44:10.398 +03:00 [INF] Executing ViewResult, running view Login.
+2025-09-08 23:44:10.410 +03:00 [INF] Executed ViewResult - view Login executed in 11.9809ms.
+2025-09-08 23:44:10.418 +03:00 [INF] Executed action Notifico.Controllers.AccountController.Login (Notifico) in 20.5068ms
+2025-09-08 23:44:10.421 +03:00 [INF] Executed endpoint 'Notifico.Controllers.AccountController.Login (Notifico)'
+2025-09-08 23:44:10.423 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-08 23:44:10.425 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-08 23:44:10.424 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Account/Login - 200 null text/html; charset=utf-8 49.1321ms
+2025-09-08 23:44:10.440 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 14.9545ms
+2025-09-08 23:44:10.447 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 23.7034ms
