@@ -4,51 +4,112 @@
     ViewData["Title"] = "Profilim";
 }
 
-<div class="card mx-auto mt-5" style="max-width:600px;">
-    <div class="card-body">
-        <h2 class="mb-4">Profilim</h2>
-        <table class="table">
-            <tr>
-                <th>Kullanıcı Adı</th>
-                <td>@Model.UserName</td>
-            </tr>
-            <tr>
-                <th>E-posta</th>
-                <td>@Model.Email</td>
-            </tr>
-            <tr>
-                <th>Ad</th>
-                <td>@Model.FirstName</td>
-            </tr>
-            <tr>
-                <th>Soyad</th>
-                <td>@Model.LastName</td>
-            </tr>
-            <tr>
-                <th>Telefon</th>
-                <td>@Model.PhoneNumber</td>
-            </tr>
-            <tr>
-                <th>Doğum Tarihi</th>
-                <td>@(Model.BirthDate.HasValue ? Model.BirthDate.Value.ToString("dd.MM.yyyy") : "-")</td>
-            </tr>
-            <tr>
-                <th>Adres</th>
-                <td>@Model.Address</td>
-            </tr>
-            <tr>
-                <th>Şehir</th>
-                <td>@Model.City</td>
-            </tr>
-            <tr>
-                <th>İlçe</th>
-                <td>@Model.District</td>
-            </tr>
-        </table>
-        <div class="mt-4">
-            <a asp-action="Edit" class="btn btn-primary">Düzenle</a>
-            <a asp-action="ChangePassword" class="btn btn-secondary">Şifre Değiştir</a>
+<style>
+    .profile-card-bg {
+        background: #fff;
+        border-radius: 1.15rem;
+        box-shadow: 0 2px 20px 0 rgba(70,110,200,0.12);
+        max-width: 540px;
+        margin: 3.2rem auto 0 auto;
+        padding: 2.2rem 2.4rem 1.2rem 2.4rem;
+        border: 1.2px solid #e3e9f6;
+    }
+    .profile-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #163d80;
+        margin-bottom: 1.45rem;
+        letter-spacing: -0.01em;
+        text-align: left;
+    }
+    .profile-info-list {
+        margin-bottom: 2.2rem;
+    }
+    .profile-info-row {
+        display: flex;
+        border-bottom: 1.1px solid #eaeef5;
+        padding: 0.72rem 0.1rem;
+        font-size: 1.09rem;
+    }
+    .profile-info-label {
+        font-weight: 700;
+        color: #35466b;
+        width: 145px;
+        min-width: 145px;
+        flex-shrink: 0;
+    }
+    .profile-info-value {
+        color: #21293c;
+        font-weight: 500;
+        margin-left: 1.25rem;
+        word-break: break-all;
+    }
+    .profile-actions {
+        margin-top: 1.6rem;
+        display: flex;
+        gap: 1.1rem;
+    }
+    .profile-actions .btn {
+        border-radius: 1.5rem !important;
+        font-weight: 700;
+        padding: 0.58rem 2.1rem !important;
+        font-size: 1.09rem !important;
+        box-shadow: 0 1px 6px 0 rgba(80,110,180,0.06);
+    }
+    media (max-width: 600px) {
+        .profile-card-bg { padding: 1.1rem 0.3rem 0.9rem 0.3rem; }
+        .profile-info-row { font-size: 0.99rem; }
+        .profile-title { font-size: 1.1rem; }
+        .profile-info-label { width: 100px; min-width: 90px; }
+        .profile-actions { flex-direction: column; gap: 0.7rem;}
+    }
+</style>
+
+<div class="profile-card-bg">
+    <div class="profile-title">Profilim</div>
+    <div class="profile-info-list">
+        <div class="profile-info-row">
+            <span class="profile-info-label">Kullanıcı Adı</span>
+            <span class="profile-info-value">@Model.UserName</span>
         </div>
+        <div class="profile-info-row">
+            <span class="profile-info-label">E-posta</span>
+            <span class="profile-info-value">@Model.Email</span>
+        </div>
+        <div class="profile-info-row">
+            <span class="profile-info-label">Ad</span>
+            <span class="profile-info-value">@Model.FirstName</span>
+        </div>
+        <div class="profile-info-row">
+            <span class="profile-info-label">Soyad</span>
+            <span class="profile-info-value">@Model.LastName</span>
+        </div>
+        <div class="profile-info-row">
+            <span class="profile-info-label">Telefon</span>
+            <span class="profile-info-value">@Model.PhoneNumber</span>
+        </div>
+        <div class="profile-info-row">
+            <span class="profile-info-label">Doğum Tarihi</span>
+            <span class="profile-info-value">
+                @(Model.BirthDate.HasValue ? Model.BirthDate.Value.ToString("dd.MM.yyyy") : "-")
+            </span>
+        </div>
+        <div class="profile-info-row">
+            <span class="profile-info-label">Adres</span>
+            <span class="profile-info-value">@Model.Address</span>
+        </div>
+        <div class="profile-info-row">
+            <span class="profile-info-label">Şehir</span>
+            <span class="profile-info-value">@Model.City</span>
+        </div>
+        <div class="profile-info-row" style="border-bottom:none;">
+            <span class="profile-info-label">İlçe</span>
+            <span class="profile-info-value">@Model.District</span>
+        </div>
+    </div>
+    <div class="profile-actions">
+        <a asp-action="Edit" class="btn btn-primary">Düzenle</a>
+        <a asp-action="ChangePassword" class="btn btn-outline-secondary">Şifre Değiştir</a>
     </div>
 </div>
 
@@ -65,6 +126,6 @@
         {
             <text>toastr.error("@TempData["Error"]", "Hata", { timeOut: 3000 }); </text>
         }
-                });
+        });
     </script>
 }

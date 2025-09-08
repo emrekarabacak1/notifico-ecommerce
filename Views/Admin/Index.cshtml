@@ -1,19 +1,139 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Notifico.Models.AppUser> SignInManager
+@inject UserManager<Notifico.Models.AppUser> UserManager
+
+@{
+    Layout = "_AdminLayout";
     ViewData["Title"] = "Admin Paneli";
+
+    string userName = "Admin";
+    if (SignInManager.IsSignedIn(User))
+    {
+        userName = UserManager.GetUserName(User) ?? "Admin";
+    }
+
+    ViewBag.ProductCount = ViewBag.ProductCount ?? 0;
+    ViewBag.OrderCount = ViewBag.OrderCount ?? 0;
+    ViewBag.TotalSales = ViewBag.TotalSales ?? 0m;
 }
 
-<div class="container mt-5">
-    <div class="card shadow p-4">
-        <h2 class="mb-3 text-primary">Admin Paneline Hoş Geldiniz!</h2>
-        <p class="lead mb-4">
-            Buradan ürünleri ekleyebilir, düzenleyebilir veya silebilir, siparişleri yönetebilirsiniz.
-        </p>
+<style>
+    .admin-index-container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding-top: 1.6rem;
+    }
 
+    .admin-index-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #183261;
+        margin-bottom: 2.2rem;
+        letter-spacing: -0.02em;
+    }
+
+    .admin-index-cards {
+        display: flex;
+        gap: 1.6rem;
+        flex-wrap: wrap;
+        margin-bottom: 2.7rem;
+    }
+
+    .admin-index-card {
+        flex: 1 1 200px;
+        background: #f6f8fc;
+        border-radius: 1.1rem;
+        box-shadow: 0 4px 16px 0 rgba(80,120,190,0.09);
+        padding: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 210px;
+    }
+
+    .admin-index-card-icon {
+        font-size: 2.1rem;
+        color: #2563eb;
+        background: #e4f0fe;
+        padding: 0.7rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .admin-index-card-content h5 {
+        font-weight: 700;
+        margin: 0;
+        font-size: 1.1rem;
+        color: #17346a;
+    }
+
+    .admin-index-card-content .big-val {
+        font-size: 1.38rem;
+        font-weight: 800;
+        color: #2171eb;
+        margin-top: 0.18rem;
+    }
+
+    .admin-index-actions {
+        margin-top: 1.7rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    media (max-width: 900px) {
+        .admin-index-title { font-size: 1.3rem; }
+        .admin-index-cards { flex-direction: column; gap: 1rem; }
+        .admin-index-card { min-width: 0; }
+    }
+
+    media (max-width: 600px) {
+        .admin-index-container { padding: 0.5rem 0.2rem 0 0.2rem; }
+        .admin-index-title { font-size: 1.1rem; }
+        .admin-index-actions { flex-direction: column; gap: 0.5rem; }
+    }
+</style>
+
+<div class="admin-index-container">
+    <div class="admin-index-title">
+        Hoş Geldiniz, <span style="color:#2563eb">@userName!</span>
+    </div>
+
+    <div class="admin-index-cards">
+        <div class="admin-index-card">
+            <div class="admin-index-card-icon"><i class="bi bi-box-seam"></i></div>
+            <div class="admin-index-card-content">
+                <h5>Toplam Ürün</h5>
+                <div class="big-val">@ViewBag.ProductCount</div>
+            </div>
+        </div>
+        <div class="admin-index-card">
+            <div class="admin-index-card-icon"><i class="bi bi-cart-check"></i></div>
+            <div class="admin-index-card-content">
+                <h5>Toplam Sipariş</h5>
+                <div class="big-val">@ViewBag.OrderCount</div>
+            </div>
+        </div>
+        <div class="admin-index-card">
+            <div class="admin-index-card-icon"><i class="bi bi-currency-exchange"></i></div>
+            <div class="admin-index-card-content">
+                <h5>Toplam Satış</h5>
+                <div class="big-val">@ViewBag.TotalSales.ToString("C")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-index-actions">
         <a class="btn btn-primary btn-lg" asp-controller="Admin" asp-action="ProductList">
-            Ürünler Tablosuna Git
+            <i class="bi bi-box-seam"></i> Ürünler Tablosuna Git
         </a>
-        <a class="btn btn-outline-success btn-lg ms-3" asp-controller="Admin" asp-action="OrderList">
-            Siparişler Tablosuna Git
+        <a class="btn btn-success btn-lg" asp-controller="Admin" asp-action="OrderList">
+            <i class="bi bi-cart-check"></i> Siparişler Tablosuna Git
         </a>
     </div>
 </div>

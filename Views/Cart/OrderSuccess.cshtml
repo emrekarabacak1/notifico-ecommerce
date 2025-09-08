@@ -1,16 +1,74 @@
 ﻿@{
     ViewData["Title"] = "Sipariş Başarılı";
 }
-<div class="container" style="max-width:520px;">
-    <div class="alert alert-success mt-5 text-center p-5 shadow rounded">
-        <img src="/images/success.svg" alt="Başarılı" style="width:60px; margin-bottom:18px;" />
-        <h2 class="mb-3">Siparişiniz başarıyla alındı!</h2>
-        <p class="mb-4">Sipariş bilgileriniz hesabınıza eklendi. Kısa süre içinde kargo işlemi başlayacak.</p>
-        <a href="@Url.Action("Index", "Product")" class="btn btn-primary mt-2 w-100">
-            <i class="bi bi-shop"></i> Alışverişe Devam Et
-        </a>
-        <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-outline-secondary mt-3 w-100">
-            <i class="bi bi-list"></i> Siparişlerimi Gör
-        </a>
+<style>
+    .order-success-card {
+        background: #e6f7ef;
+        border-radius: 18px;
+        box-shadow: 0 6px 32px 0 rgba(32,80,60,0.07);
+        max-width: 420px;
+        margin: 54px auto 0 auto;
+        padding: 2.7rem 2.2rem 2.4rem 2.2rem;
+        text-align: center;
+    }
+    .order-success-icon {
+        background: linear-gradient(145deg, #4ade80 35%, #16a34a 70%);
+        border-radius: 100%;
+        width: 70px; height: 70px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+        box-shadow: 0 1px 8px #bbf7d0;
+    }
+    .order-success-icon i {
+        color: #fff;
+        font-size: 2.2rem;
+    }
+    .order-success-title {
+        font-size: 1.58rem;
+        font-weight: 800;
+        color: #19523c;
+        margin-bottom: 1.15rem;
+    }
+    .order-success-desc {
+        font-size: 1.08rem;
+        color: #247055;
+        margin-bottom: 2.1rem;
+    }
+    .order-success-card .btn {
+        font-size: 1.08rem;
+        font-weight: 600;
+        border-radius: 9px;
+        padding: 0.85rem 0;
+        margin-bottom: 0.7rem;
+        box-shadow: 0 1px 7px 0 rgba(60,220,160,0.04);
+    }
+    .order-success-card .btn-outline-secondary {
+        background: #f4f8f6;
+    }
+    media (max-width: 600px) {
+        .order-success-card { padding: 1.6rem 0.6rem 1.3rem 0.6rem; }
+        .order-success-title { font-size: 1.13rem; }
+    }
+</style>
+<div class="order-success-card">
+    <div class="order-success-icon">
+        <i class="bi bi-check2-circle"></i>
     </div>
+    <div class="order-success-title">
+        Siparişiniz başarıyla alındı!
+    </div>
+    <div class="order-success-desc">
+        Sipariş bilgileriniz hesabınıza eklendi.<br>
+        Kısa süre içinde kargo işlemi başlayacak.
+    </div>
+    <a href="@Url.Action("Index", "Product")" class="btn btn-primary w-100 mb-2">
+        <i class="bi bi-shop"></i> Alışverişe Devam Et
+    </a>
+    <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-outline-secondary w-100">
+        <i class="bi bi-list"></i> Siparişlerimi Gör
+    </a>
 </div>

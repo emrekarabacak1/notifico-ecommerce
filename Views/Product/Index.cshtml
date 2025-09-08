@@ -1,30 +1,120 @@
-﻿    @model IEnumerable<Notifico.Models.Product>
-    @using Microsoft.AspNetCore.Identity
-    @inject SignInManager<Notifico.Models.AppUser> SignInManager
-    @inject UserManager<Notifico.Models.AppUser> UserManager
+﻿@model IEnumerable<Notifico.Models.Product>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Notifico.Models.AppUser> SignInManager
+@inject UserManager<Notifico.Models.AppUser> UserManager
 
-    <h1>Ürünler</h1>
+<style>
+    .search-bar-card {
+        background: #fff;
+        border-radius: 1.1rem;
+        box-shadow: 0 2px 20px 0 rgba(70,110,200,0.09);
+        padding: 1.2rem 1.3rem 1.1rem 1.3rem;
+        margin-bottom: 2.2rem;
+        border: 1px solid #e4eafd;
+    }
+    .table-products {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 2px 22px 0 rgba(70,110,200,0.08);
+        overflow: hidden;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 1.8rem;
+        font-size: 1.03rem;
+    }
+    .table-products thead th {
+        background: #f7fafd;
+        font-weight: 800;
+        color: #1a255e;
+        font-size: 1.01rem;
+        border-bottom: 2.3px solid #e4eafd !important;
+        padding-top: 1.05rem;
+        padding-bottom: 1.05rem;
+    }
+    .table-products tbody tr {
+        border-bottom: 1.2px solid #f1f3fa;
+        transition: background 0.13s;
+    }
+    .table-products tbody tr:hover {
+        background: #f3f7fe;
+        box-shadow: 0 2px 7px 0 rgba(80,150,240,0.10);
+    }
+    .table-products td, .table-products th {
+        vertical-align: middle !important;
+        padding: 0.86rem 1.02rem !important;
+        border: none;
+    }
+    .product-img-thumb {
+        width: 50px; height: 50px; object-fit: cover;
+        border-radius: 0.9rem; border: 1.3px solid #e4eafd;
+        background: #fafaff;
+    }
+    .btn-add-to-cart, .btn-info {
+        font-weight: 700;
+        border-radius: 1.4rem !important;
+        padding: 0.52rem 1.5rem !important;
+        font-size: 1.02rem !important;
+    }
+    .btn-add-to-cart[disabled] {
+        opacity: 0.55;
+    }
+    .btn-add-to-cart {
+        background: #18a052;
+        border: none;
+        color: #fff;
+        transition: background 0.16s;
+    }
+    .btn-add-to-cart:hover:enabled {
+        background: #12793d;
+    }
+    .btn-info {
+        background: #18b2eb !important;
+        color: #fff !important;
+        border: none;
+        transition: background 0.16s;
+    }
+    .btn-info:hover {
+        background: #0e74b4 !important;
+        color: #fff !important;
+    }
+    .table-responsive-products {
+        width: 100%;
+        overflow-x: auto;
+        margin-top: 0.2rem;
+    }
+    media (max-width: 800px) {
+        .search-bar-card, .table-products { border-radius: 0.7rem; }
+        .table-products { font-size: 0.96rem; }
+        .product-img-thumb { width: 37px; height: 37px; }
+    }
+    media (max-width: 600px) {
+        .search-bar-card { padding: 0.6rem 0.2rem 0.8rem 0.2rem; }
+        .table-products th, .table-products td { padding: 0.5rem 0.6rem !important; }
+    }
+</style>
 
-    <form method="get" class="row mb-4 g-2 align-items-end">
-        <div class="col-md-4">
+<h1 class="fw-bold mb-4" style="font-size:2.1rem; color:#1a255e;">Ürünler</h1>
+
+<div class="search-bar-card">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-5">
             <input type="text" name="search" class="form-control" placeholder="Ürün adı ile ara..." value="@ViewBag.Search" />
         </div>
-        <div class="col-md-3">
-        <select name="category" class="form-select">
-            <option value="">Kategori seçiniz</option>
-            @foreach (var cat in (ViewBag.Categories as List<string> ?? new List<string>()))
-            {
-                if (ViewBag.SelectedCategory == cat)
+        <div class="col-md-4">
+            <select name="category" class="form-select">
+                <option value="">Kategori seçiniz</option>
+                @foreach (var cat in (ViewBag.Categories as List<string> ?? new List<string>()))
                 {
-                    <option value="@cat" selected>@cat</option>
+                    if (ViewBag.SelectedCategory == cat)
+                    {
+                        <option value="@cat" selected>@cat</option>
+                    }
+                    else
+                    {
+                        <option value="@cat">@cat</option>
+                    }
                 }
-                else
-                {
-                    <option value="@cat">@cat</option>
-                }
-            }
-        </select>
-
+            </select>
         </div>
         <div class="col-md-2">
             <button class="btn btn-primary w-100" type="submit">
@@ -33,18 +123,20 @@
         </div>
         @if (!string.IsNullOrEmpty(ViewBag.Search as string) || !string.IsNullOrEmpty(ViewBag.SelectedCategory as string))
         {
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <a href="@Url.Action("Index", "Product")" class="btn btn-secondary w-100">Temizle</a>
             </div>
         }
     </form>
+</div>
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
-    }
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 
-    <table class="table align-middle">
+<div class="table-responsive-products">
+    <table class="table table-products align-middle mb-0">
         <thead>
             <tr>
                 <th>Adı</th>
@@ -63,7 +155,9 @@
             {
                 <tr>
                     <td>
-                        <a asp-action="Details" asp-route-id="@p.Id">@p.Name</a>
+                        <a asp-action="Details" asp-route-id="@p.Id" style="font-weight:600; color:#216adb;">
+                            @p.Name
+                        </a>
                     </td>
                     <td>
                         @(p.Description?.Length > 70
@@ -77,15 +171,15 @@
                     <td>
                         <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "/images/no-image.png" : p.ImageUrl)"
                              alt="@(p.Name)"
-                             style="width:40px; height:40px; object-fit:cover; border-radius:6px;" />
+                             class="product-img-thumb" />
                     </td>
                     <td>
                         @if (SignInManager.IsSignedIn(User) && !User.IsInRole("Admin"))
                         {
                             <button type="button"
-                                    class="btn btn-success btn-sm btn-add-to-cart"
+                                    class="btn btn-add-to-cart btn-sm"
                                     data-id="@p.Id"
-                            @(p.Stock == 0 ? "disabled" : "")
+                                    @(p.Stock == 0 ? "disabled" : "")
                                     title="@(p.Stock == 0 ? "Stokta yok" : "Sepete Ekle")">
                                 Sepete Ekle
                             </button>
@@ -100,24 +194,25 @@
             }
         </tbody>
     </table>
+</div>
 
-    @section Scripts {
-        <script>
-            $(document).on("click", ".btn-add-to-cart", function (e) {
-                e.preventDefault();
-                var pid = $(this).data("id");
-                $.post("/Cart/AddToCartAjax", { productId: pid }, function (res) {
-                    if (res.success) {
-                        if (typeof reloadSideCart === "function") {
-                            reloadSideCart();
-                        }
-                        if (!$("#sideCartPanel").hasClass("active") && typeof openSideCart === "function") {
-                            openSideCart();
-                        }
-                    } else {
-                        alert(res.error || "Ürün sepete eklenemedi");
+@section Scripts {
+    <script>
+        $(document).on("click", ".btn-add-to-cart", function (e) {
+            e.preventDefault();
+            var pid = $(this).data("id");
+            $.post("/Cart/AddToCartAjax", { productId: pid }, function (res) {
+                if (res.success) {
+                    if (typeof reloadSideCart === "function") {
+                        reloadSideCart();
                     }
-                });
+                    if (!$("#sideCartPanel").hasClass("active") && typeof openSideCart === "function") {
+                        openSideCart();
+                    }
+                } else {
+                    alert(res.error || "Ürün sepete eklenemedi");
+                }
             });
-        </script>
-    }
+        });
+    </script>
+}

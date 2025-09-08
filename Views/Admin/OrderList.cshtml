@@ -3,23 +3,129 @@
 @model IEnumerable<Order>
 
 @{
+    Layout = "_AdminLayout";
     ViewData["Title"] = "Tüm Siparişler";
     var tr = new CultureInfo("tr-TR");
     string currentSearch = Context.Request.Query["search"];
     string currentStatus = Context.Request.Query["status"];
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Tüm Siparişler</h2>
-    </div>
+<style>
+.admin-orders-main {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0;
+    background: #f7fafd;
+}
+.admin-orders-card {
+    background: #fff;
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 24px 0 rgba(60,110,180,0.09);
+    margin-top: 2.2rem;
+    margin-bottom: 2.2rem;
+    padding: 2rem 2.2rem;
+    width: 100%;
+}
+.admin-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.7rem;
+}
+.admin-title-row .icon {
+    font-size: 2rem;
+    color: #2563eb;
+}
+.admin-title-row h2 {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #183261;
+    margin: 0;
+}
+.order-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background: #f8fbff;
+    border-radius: 10px;
+    padding: 1rem 1.3rem;
+    box-shadow: 0 1px 8px 0 rgba(70,120,210,0.04);
+}
+.order-filter-row .form-control,
+.order-filter-row .form-select {
+    border-radius: 8px;
+    font-size: 1rem;
+    border: 1.2px solid #dbe5f4;
+    min-width: 170px;
+    max-width: 250px;
+}
+.order-filter-row button, .order-filter-row a.btn {
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 0.45rem 1.2rem;
+    font-size: 1rem;
+    margin-left: 3px;
+}
+.admin-orders-table {
+    width: 100%;
+    border-radius: 10px;
+    font-size: 1.04rem;
+    box-shadow: 0 1px 10px 0 rgba(80,110,180,0.04);
+    background: #fff;
+    overflow-x: auto;
+}
+.admin-orders-table th,
+.admin-orders-table td {
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.order-status {
+    font-weight: 700;
+    border-radius: 8px;
+    font-size: 0.99rem;
+    padding: 0.35em 1.1em;
+    display: inline-block;
+    letter-spacing: 0.01em;
+}
+.order-status.beklemede { background: #fffbe7; color: #b48801; border: 1px solid #ffe49b;}
+.order-status.iptal { background: #ffe4e7; color: #d42c35; border: 1px solid #fabfc7;}
+.order-status.teslim, .order-status.onay { background: #d3fae2; color: #228143; border: 1px solid #6be69b;}
+.order-action-btns .btn { min-width: 62px; }
+.order-action-btns .btn-primary { background: #2563eb; border: none;}
+.order-action-btns .btn-warning { background: #f9b820; border: none; color: #222;}
+.order-action-btns .btn-outline-danger { border: 1.2px solid #ec5353; color: #d13b3b;}
+.order-action-btns .btn-outline-danger[disabled] { opacity: .7;}
+media (max-width:1200px) {
+    .admin-orders-card { padding: 1rem 0.5rem;}
+}
+media (max-width: 900px) {
+    .admin-orders-card { padding: 0.4rem 0.05rem; }
+    .admin-title-row h2 { font-size: 1.18rem;}
+    .order-filter-row { flex-direction: column; gap: 0.6rem;}
+    .admin-orders-table { font-size: 0.95rem;}
+}
+media (max-width: 600px) {
+    .admin-title-row .icon { font-size: 1.3rem;}
+    .admin-title-row h2 { font-size: 1rem;}
+    .order-status { padding: 0.26em 0.5em; font-size: 0.89rem;}
+    .admin-orders-card { margin: 1.1rem 0 0 0; min-height: 0; }
+}
+</style>
 
-    <form method="get" class="row g-3 mb-4">
-        <div class="col-md-4">
+<div class="admin-orders-main">
+    <div class="admin-orders-card">
+        <div class="admin-title-row">
+            <i class="bi bi-bag-check-fill icon"></i>
+            <h2>Tüm Siparişler</h2>
+        </div>
+
+        <form method="get" class="order-filter-row mb-4">
             <input type="text" class="form-control" name="search" placeholder="Kullanıcı adı ile ara"
                    value="@currentSearch" />
-        </div>
-        <div class="col-md-3">
             <select name="status" class="form-select">
                 <option value="">Tüm Statüler</option>
                 @foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
@@ -34,53 +140,55 @@
                     }
                 }
             </select>
-        </div>
-        <div class="col-md-2 d-flex align-items-center">
-            <button type="submit" class="btn btn-primary me-2">Filtrele</button>
+            <button type="submit" class="btn btn-primary">Filtrele</button>
             <a href="@Url.Action("OrderList", "Admin")" class="btn btn-outline-secondary">Temizle</a>
-        </div>
-    </form>
+        </form>
 
-    @if (Model == null || !Model.Any())
-    {
-        <div class="alert alert-info" role="alert">
-            Henüz sipariş bulunmuyor.
-        </div>
-    }
-    else
-    {
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Sipariş No</th>
-                        <th>Kullanıcı</th>
-                        <th>Tarih</th>
-                        <th>Tutar</th>
-                        <th>Statü</th>
-                        <th class="text-end">İşlem</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var order in Model)
-                    {
-                        var cancelDisabled = (order.Status == OrderStatus.IptalEdildi || order.Status == OrderStatus.TeslimEdildi);
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info" role="alert">
+                Henüz sipariş bulunmuyor.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle admin-orders-table">
+                    <thead class="table-light">
                         <tr>
-                            <td>@order.Id</td>
-                            <td>@(order?.User?.UserName ?? order?.UserId.ToString())</td>
-                            <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
-                            <td>@order.TotalAmount.ToString("C", tr)</td>
-                            <td>@order.Status.ToString()</td>
-                            <td class="text-end">
-                                <div class="d-inline-flex gap-1">
-
+                            <th>Sipariş No</th>
+                            <th>Kullanıcı</th>
+                            <th>Tarih</th>
+                            <th>Tutar</th>
+                            <th>Statü</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            var cancelDisabled = (order.Status == OrderStatus.IptalEdildi || order.Status == OrderStatus.TeslimEdildi);
+                            var statusClass = order.Status == OrderStatus.Beklemede ? "beklemede"
+                                : order.Status == OrderStatus.IptalEdildi ? "iptal"
+                                : order.Status == OrderStatus.TeslimEdildi ? "teslim"
+                                : "onay";
+                            <tr>
+                                <td>@order.Id</td>
+                                <td>@(order?.User?.UserName ?? order?.UserId.ToString())</td>
+                                <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@order.TotalAmount.ToString("C", tr)</td>
+                                <td>
+                                    <span class="order-status @statusClass">
+                                        @order.Status.ToString()
+                                    </span>
+                                </td>
+                                <td class="text-end order-action-btns">
                                     <a class="btn btn-sm btn-primary"
                                        asp-controller="Admin"
                                        asp-action="OrderDetail"
                                        asp-route-id="@order.Id">
                                         Detay
                                     </a>
-
                                     @if (!cancelDisabled)
                                     {
                                         <form asp-controller="Admin"
@@ -95,7 +203,6 @@
                                             </button>
                                         </form>
                                     }
-
                                     <form asp-controller="Admin"
                                           asp-action="DeleteOrder"
                                           method="post"
@@ -104,18 +211,18 @@
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@order.Id" />
                                         <button type="submit" class="btn btn-sm btn-outline-danger"
-                                            @(order.Status == OrderStatus.IptalEdildi ? "disabled" : null)>
+                                                @(order.Status == OrderStatus.IptalEdildi ? "disabled" : null)>
                                             Sil
                                         </button>
                                     </form>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
 </div>
 
 @section Scripts {

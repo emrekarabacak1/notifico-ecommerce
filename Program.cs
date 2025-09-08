@@ -74,6 +74,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -87,6 +88,24 @@ app.UseStatusCodePagesWithReExecute("/Error/{0}");
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.Use(async (context, next) =>
+{
+    if (context.User.Identity != null && context.User.Identity.IsAuthenticated)
+    {
+        var userManager = context.RequestServices.GetRequiredService<UserManager<AppUser>>();
+        var user = await userManager.GetUserAsync(context.User);
+
+        if (user != null && await userManager.IsInRoleAsync(user, "Admin") &&
+            context.Request.Path == "/")
+        {
+            context.Response.Redirect("/Admin/Index");
+            return;
+        }
+    }
+
+    await next();
+});
 
 app.MapControllerRoute(
     name: "default",

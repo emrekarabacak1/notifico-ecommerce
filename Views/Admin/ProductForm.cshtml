@@ -1,59 +1,134 @@
 ﻿@model Notifico.Models.Product
 
 @{
+    Layout = "_AdminLayout";
     ViewData["Title"] = Model?.Id > 0 ? "Ürünü Düzenle" : "Yeni Ürün";
 }
 
-<h2>@ViewData["Title"]</h2>
+<style>
+.admin-form-outer {
+    min-height: 80vh;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background: transparent;
+}
+.admin-form-card {
+    width: 100%;
+    max-width: 500px;
+    margin: 2.7rem auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 3px 24px 0 rgba(51,71,120,0.13);
+    padding: 2.3rem 2.3rem 2.1rem 2.3rem;
+}
+.admin-form-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #193661;
+    margin-bottom: 1.6rem;
+    text-align: left;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.admin-form .form-label {
+    font-weight: 600;
+    color: #223b64;
+}
+.admin-form .form-control {
+    border-radius: 9px;
+    border: 1.2px solid #dbe5f4;
+    font-size: 1.05rem;
+    margin-bottom: 0.7rem;
+    background: #fafdff;
+    transition: border .15s;
+}
+.admin-form .form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px #e8f0fd;
+    background: #f4faff;
+}
+.admin-form .text-danger { font-size: 0.99rem; }
+.admin-form-btn-row {
+    display: flex; gap: 0.65rem; margin-top: 1.1rem;
+}
+.admin-form-btn {
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.09rem;
+    padding: 0.7rem 2.1rem;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    transition: background .14s;
+    box-shadow: 0 1px 8px 0 rgba(60,110,180,0.09);
+}
+.admin-form-btn:hover { background: #143079; color: #fff; }
+.admin-form-btn.cancel {
+    background: #9aa5b9;
+    color: #fff;
+}
+.admin-form-btn.cancel:hover {
+    background: #6b7280;
+}
+media (max-width: 700px) {
+    .admin-form-card { padding: 1.1rem 0.25rem; }
+    .admin-form-title { font-size: 1.13rem;}
+}
+</style>
 
-<form asp-action="@(Model?.Id > 0 ? "EditProduct" : "AddProduct")" asp-controller="Admin" method="post" novalidate>
-    @Html.AntiForgeryToken()
-
-    <input type="hidden" asp-for="Id" />
-
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" placeholder="Ürün adı giriniz" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+<div class="admin-form-outer">
+    <div class="admin-form-card">
+        <div class="admin-form-title">
+            <i class="bi bi-plus-circle" style="color:#2563eb;font-size:1.17em;vertical-align:-0.15em"></i>
+            @ViewData["Title"]
+        </div>
+        <form asp-action="@(Model?.Id > 0 ? "EditProduct" : "AddProduct")" asp-controller="Admin" method="post" class="admin-form" novalidate>
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" placeholder="Ürün adı giriniz" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3" placeholder="Ürün açıklamasını giriniz"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Price" class="form-label"></label>
+                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Stock" class="form-label"></label>
+                <input asp-for="Stock" class="form-control" type="number" min="0" placeholder="0" />
+                <span asp-validation-for="Stock" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Category" class="form-label"></label>
+                <input asp-for="Category" class="form-control" placeholder="Kategori giriniz" />
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ImageUrl" class="form-label"></label>
+                <input asp-for="ImageUrl" class="form-control" type="url" placeholder="https://..." />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+            <div class="admin-form-btn-row">
+                <button type="submit" class="admin-form-btn">
+                    @(Model?.Id > 0 ? "Güncelle" : "Kaydet")
+                </button>
+                <a asp-action="ProductList" asp-controller="Admin" class="admin-form-btn cancel">İptal</a>
+            </div>
+        </form>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Ürün açıklamasını giriniz"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Price" class="form-label"></label>
-        <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
-        <span asp-validation-for="Price" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Stock" class="form-label"></label>
-        <input asp-for="Stock" class="form-control" type="number" min="0" placeholder="0" />
-        <span asp-validation-for="Stock" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Category" class="form-label"></label>
-        <input asp-for="Category" class="form-control" placeholder="Kategori giriniz" />
-        <span asp-validation-for="Category" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="ImageUrl" class="form-label"></label>
-        <input asp-for="ImageUrl" class="form-control" type="url" placeholder="https://..." />
-        <span asp-validation-for="ImageUrl" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-        @(Model?.Id > 0 ? "Güncelle" : "Kaydet")
-    </button>
-    <a asp-action="ProductList" asp-controller="Admin" class="btn btn-secondary ms-2">İptal</a>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -70,17 +145,16 @@
             if (errors.length > 0) {
                 toastr.error(errors.join("<br>"), "Form Hataları", { timeOut: 3200, closeButton: true, progressBar: true });
             }
-
-        @if (TempData["StatusMessage"] != null)
-        {
-            var msg = TempData["StatusMessage"].ToString().Replace("'", "\\'");
-            <text>toastr.success('@msg', 'Başarılı', { timeOut: 2000 }); </text>
-        }
-        @if (TempData["ErrorMessage"] != null)
-        {
-            var msg = TempData["ErrorMessage"].ToString().Replace("'", "\\'");
-            <text>toastr.error('@msg', 'Hata', { timeOut: 2800 }); </text>
-        }
-                });
+            @if (TempData["StatusMessage"] != null)
+            {
+                var msg = TempData["StatusMessage"].ToString().Replace("'", "\\'");
+                <text>toastr.success('@msg', 'Başarılı', { timeOut: 2000 }); </text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                var msg = TempData["ErrorMessage"].ToString().Replace("'", "\\'");
+                <text>toastr.error('@msg', 'Hata', { timeOut: 2800 }); </text>
+            }
+        });
     </script>
 }

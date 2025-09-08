@@ -1,3 +1,4 @@
 ﻿@{
-    Layout = "_Layout";
+    var isAdmin = Context.User.Identity.IsAuthenticated && Context.User.IsInRole("Admin");
+    Layout = isAdmin ? "_AdminLayout" : "_Layout";
 }

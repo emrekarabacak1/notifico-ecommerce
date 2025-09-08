@@ -2,82 +2,203 @@
 @using System.Globalization
 
 @{
-    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Yönetici Paneli";
     var tr = new CultureInfo("tr-TR");
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">Yönetici Paneli</h2>
+@section Styles {
+<style>
+.dashboard-main-container {
+    margin: 0;
+    padding: 2.5rem 1.2rem 2rem 1.2rem;
+    background: #f7fafd;
+    min-height: 90vh;
+    width: 100%;
+    box-sizing: border-box;
+}
+.dashboard-title {
+    font-size: 2.3rem;
+    font-weight: 800;
+    color: #183261;
+    margin-bottom: 1.2rem;
+    letter-spacing: -0.02em;
+}
+.dashboard-cards-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2.1rem;
+    flex-wrap: wrap;
+}
+.dashboard-info-card {
+    flex: 1 1 200px;
+    background: #fff;
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 24px 0 rgba(70,110,200,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 1rem 1.2rem;
+    min-width: 0;
+    min-height: 85px;
+}
+.dashboard-card-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #3b4866;
+    margin-bottom: 0.18rem;
+}
+.dashboard-card-value {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #2171eb;
+}
+.dashboard-section-card {
+    background: #fff;
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 24px 0 rgba(70,110,200,0.07);
+    width: 100%;
+    margin-bottom: 1.5rem;
+    padding: 0;
+    overflow: hidden;
+}
+.dashboard-card-header {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #1b2b44;
+    padding: 1rem 1.15rem 0.5rem 1.15rem;
+    background: transparent;
+}
+.dashboard-card-body {
+    padding: 0 1.1rem 1.1rem 1.1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+.dashboard-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+    font-size: 0.99rem;
+    table-layout: fixed;
+}
+.dashboard-orders-table th,
+.dashboard-orders-table td {
+    padding: 0.33rem 0.15rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #eaeef7;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-align: left;
+}
+.dashboard-orders-table th:last-child,
+.dashboard-orders-table td:last-child {
+    text-align: center;
+}
+.dashboard-orders-table thead th {
+    background: #f7fafd;
+    font-weight: 700;
+    color: #324668;
+    font-size: 0.99rem;
+}
+.dashboard-orders-table tbody tr:last-child td {
+    border-bottom: none;
+}
+.badge-status {
+    display: inline-block;
+    min-width: 77px;
+    padding: 0.13rem 0.39rem;
+    border-radius: 1rem;
+    font-size: 0.97rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.17;
+    letter-spacing: 0.01em;
+}
+.badge-onay { background: #d5f7e2; color: #209a49; }
+.badge-iptal { background: #ffe6e4; color: #db3544; }
+.badge-bekle { background: #fff6db; color: #b29422; }
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card text-bg-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Toplam Sipariş</h5>
-                    <p class="card-text display-6">@Model.TotalOrderCount</p>
-                </div>
-            </div>
+media (max-width: 900px) {
+    .dashboard-cards-row { flex-direction: column; gap: 0.7rem; }
+    .dashboard-title { font-size: 1.32rem; }
+    .dashboard-section-card, .dashboard-card-body { padding: 0.7rem; }
+}
+</style>
+}
+
+<div class="dashboard-main-container">
+    <h2 class="dashboard-title">Yönetici Paneli</h2>
+
+    <div class="dashboard-cards-row">
+        <div class="dashboard-info-card">
+            <div class="dashboard-card-label">Toplam Sipariş</div>
+            <div class="dashboard-card-value">@Model.TotalOrderCount</div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Toplam Satış</h5>
-                    <p class="card-text display-6">@Model.TotalSales.ToString("C", tr)</p>
-                </div>
-            </div>
+        <div class="dashboard-info-card">
+            <div class="dashboard-card-label">Toplam Satış</div>
+            <div class="dashboard-card-value text-primary">@Model.TotalSales.ToString("C", tr)</div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-info mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Toplam Müşteri</h5>
-                    <p class="card-text display-6">@Model.TotalCustomerCount</p>
-                </div>
-            </div>
+        <div class="dashboard-info-card">
+            <div class="dashboard-card-label">Toplam Müşteri</div>
+            <div class="dashboard-card-value">@Model.TotalCustomerCount</div>
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header fw-semibold">Aylık Satış Grafiği</div>
-        <div class="card-body">
-            <canvas id="salesChart" height="120"></canvas>
+    <div class="dashboard-section-card">
+        <div class="dashboard-card-header">Aylık Satış Grafiği</div>
+        <div class="dashboard-card-body">
+            <canvas id="salesChart" height="160"></canvas>
         </div>
     </div>
 
-    <div class="card mb-5">
-        <div class="card-header fw-semibold">Son 5 Sipariş</div>
-        <div class="card-body p-0">
-            @if (Model.RecentOrders == null || !Model.RecentOrders.Any())
-            {
-                <div class="alert alert-light m-3">Kayıt yok.</div>
-            }
-            else
-            {
-                <table class="table mb-0">
-                    <thead class="table-light">
+    <div class="dashboard-section-card">
+        <div class="dashboard-card-header">Son 5 Sipariş</div>
+        <div class="dashboard-card-body" style="padding:0;">
+            <table class="dashboard-orders-table">
+                <colgroup>
+                    <col style="width:13%">
+                    <col style="width:18%">
+                    <col style="width:26%">
+                    <col style="width:18%">
+                    <col style="width:15%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Sipariş No</th>
+                        <th>Kullanıcı</th>
+                        <th>Tarih</th>
+                        <th>Tutar</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model.RecentOrders)
+                    {
                         <tr>
-                            <th>Sipariş No</th>
-                            <th>Kullanıcı</th>
-                            <th>Tarih</th>
-                            <th>Tutar</th>
-                            <th>Durum</th>
+                            <td>@o.Id</td>
+                            <td>@(o.User?.UserName ?? o.UserId.ToString())</td>
+                            <td>@o.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>@o.TotalAmount.ToString("C", tr)</td>
+                            <td>
+                                @if (o.Status.ToString() == "Onaylandı")
+                                {
+                                    <span class="badge-status badge-onay">Onaylandı</span>
+                                }
+                                else if (o.Status.ToString() == "IptalEdildi")
+                                {
+                                    <span class="badge-status badge-iptal">İptal Edildi</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-status badge-bekle">Beklemede</span>
+                                }
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var o in Model.RecentOrders)
-                        {
-                            <tr>
-                                <td>@o.Id</td>
-                                <td>@(o.User?.UserName ?? o.UserId.ToString())</td>
-                                <td>@o.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
-                                <td>@o.TotalAmount.ToString("C", tr)</td>
-                                <td>
-                                    <span class="badge bg-secondary">@o.Status.ToString()</span>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -87,7 +208,6 @@
     <script>
         const chartLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartLabels));
         const chartData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartData));
-
         const ctx = document.getElementById('salesChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
@@ -96,16 +216,15 @@
                 datasets: [{
                     label: 'Aylık Satış (₺)',
                     data: chartData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.55)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: { display: false }
-                },
+                plugins: { legend: { display: false }},
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,

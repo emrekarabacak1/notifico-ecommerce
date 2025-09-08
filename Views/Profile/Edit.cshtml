@@ -4,53 +4,131 @@
     ViewData["Title"] = "Profil Bilgilerini Düzenle";
 }
 
-<h2>Profil Bilgilerini Düzenle</h2>
+<style>
+    .profile-edit-bg {
+        background: #fff;
+        border-radius: 1.1rem;
+        box-shadow: 0 2px 24px 0 rgba(70,110,200,0.11);
+        padding: 2.2rem 2.4rem 2rem 2.4rem;
+        max-width: 520px;
+        margin: 2.7rem auto 2.1rem auto;
+        border: 1.2px solid #e3e9f6;
+    }
+    .profile-edit-title {
+        font-size: 1.56rem;
+        font-weight: 900;
+        color: #143166;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        letter-spacing: -0.01em;
+    }
+    .profile-edit-form .form-label {
+        font-weight: 700;
+        color: #37446d;
+        font-size: 1.03rem;
+    }
+    .profile-edit-form .form-control, .profile-edit-form .form-select, .profile-edit-form textarea {
+        border-radius: 0.9rem;
+        border: 1.3px solid #dbe7f7;
+        font-size: 1.04rem;
+        padding: 0.7rem 1.08rem;
+        background: #fcfcff;
+        transition: border .15s;
+    }
+    .profile-edit-form .form-control:focus, .profile-edit-form .form-select:focus {
+        border-color: #82a8ef;
+        box-shadow: 0 0 0 2px #e5f0ff;
+        background: #f4f9ff;
+    }
+    .profile-edit-form .form-group {
+        margin-bottom: 1.17rem;
+    }
+    .profile-edit-form .text-danger { font-size: 0.99rem; }
+    .profile-edit-btn-row {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        justify-content: flex-end;
+        margin-top: 0.9rem;
+    }
+    .profile-edit-btn {
+        border-radius: 1.8rem !important;
+        padding: 0.62rem 2.15rem !important;
+        font-size: 1.09rem !important;
+        font-weight: 800;
+        box-shadow: 0 1px 9px 0 rgba(80,110,180,0.09);
+        border: none;
+    }
+    .profile-edit-btn-cancel {
+        border-radius: 1.6rem !important;
+        font-weight: 700;
+        padding: 0.62rem 1.7rem !important;
+        background: #f4f4f6;
+        color: #37446d;
+        border: none;
+        transition: background 0.17s;
+    }
+    .profile-edit-btn-cancel:hover {
+        background: #e0eafd;
+        color: #163268;
+    }
+    media (max-width: 600px) {
+        .profile-edit-bg { padding: 1.1rem 0.6rem 1.1rem 0.6rem; }
+        .profile-edit-title { font-size: 1.12rem; }
+        .profile-edit-btn-row { flex-direction: column; align-items: stretch; gap: 0.6rem;}
+    }
+</style>
 
-<form asp-action="Edit" method="post" autocomplete="off">
-    @Html.AntiForgeryToken()
+<div class="profile-edit-bg">
+    <div class="profile-edit-title">Profil Bilgilerini Düzenle</div>
+    <form asp-action="Edit" method="post" autocomplete="off" class="profile-edit-form">
+        @Html.AntiForgeryToken()
 
-    <div class="mb-3">
-        <label asp-for="FirstName" class="form-label"></label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="LastName" class="form-label"></label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="PhoneNumber" class="form-label"></label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="BirthDate" class="form-label"></label>
-        <input asp-for="BirthDate" type="date" class="form-control" />
-        <span asp-validation-for="BirthDate" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Address" class="form-label"></label>
-        <textarea asp-for="Address" class="form-control" rows="2"></textarea>
-        <span asp-validation-for="Address" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="City" class="form-label"></label>
-        <select id="citySelect" asp-for="City" class="form-select">
-            <option value="">-- İl seçiniz --</option>
-        </select>
-        <span asp-validation-for="City" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="District" class="form-label"></label>
-        <select id="districtSelect" asp-for="District" class="form-select">
-            <option value="">-- İlçe seçiniz --</option>
-        </select>
-        <span asp-validation-for="District" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Kaydet</button>
-    <a asp-action="Index" class="btn btn-secondary">Vazgeç</a>
-</form>
+        <div class="form-group mb-3">
+            <label asp-for="FirstName" class="form-label">Ad</label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="LastName" class="form-label">Soyad</label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="PhoneNumber" class="form-label">Telefon</label>
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="BirthDate" class="form-label">Doğum Tarihi</label>
+            <input asp-for="BirthDate" type="date" class="form-control" />
+            <span asp-validation-for="BirthDate" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Address" class="form-label">Adres Detayı</label>
+            <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="City" class="form-label">Şehir</label>
+            <select id="citySelect" asp-for="City" class="form-select">
+                <option value="">-- İl seçiniz --</option>
+            </select>
+            <span asp-validation-for="City" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="District" class="form-label">İlçe</label>
+            <select id="districtSelect" asp-for="District" class="form-select">
+                <option value="">-- İlçe seçiniz --</option>
+            </select>
+            <span asp-validation-for="District" class="text-danger"></span>
+        </div>
+        <div class="profile-edit-btn-row">
+            <button type="submit" class="btn btn-primary profile-edit-btn">Kaydet</button>
+            <a asp-action="Index" class="profile-edit-btn-cancel btn">Vazgeç</a>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -58,7 +136,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         let cityDistrictData = [];
-
         function fillCities(selectedCity) {
             var citySelect = document.getElementById('citySelect');
             citySelect.innerHTML = '<option value="">-- İl seçiniz --</option>';
@@ -72,7 +149,6 @@
                 citySelect.appendChild(option);
             });
         }
-
         function fillDistricts(cityName, selectedDistrict) {
             var districtSelect = document.getElementById('districtSelect');
             districtSelect.innerHTML = '<option value="">-- İlçe seçiniz --</option>';
@@ -88,7 +164,6 @@
                 districtSelect.appendChild(option);
             });
         }
-
         document.addEventListener("DOMContentLoaded", function () {
             fetch('/data/cityDistricts.json')
                 .then(response => response.json())
@@ -108,7 +183,6 @@
                     console.error("Şehir-ilçe verisi yüklenemedi:", error);
                 });
         });
-
         $(function () {
         @if (TempData["ProfileSuccess"] != null)
         {
@@ -118,6 +192,6 @@
         {
             <text>toastr.error("@TempData["Error"]", "Hata", { timeOut: 3000 }); </text>
         }
-                });
+        });
     </script>
 }

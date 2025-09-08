@@ -4,70 +4,180 @@
     ViewData["Title"] = "Siparişi Onayla";
 }
 
-<h2>Siparişi Onayla</h2>
+<style>
+    .checkout-main-card {
+        max-width: 900px;
+        margin: 36px auto 0 auto;
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 3px 26px 0 rgba(51,71,120,0.09);
+        padding: 2.2rem 2.7rem 2.5rem 2.7rem;
+    }
+    .checkout-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a2a5c;
+        letter-spacing: -0.02em;
+        margin-bottom: 2.4rem;
+    }
+    .checkout-section {
+        margin-bottom: 2.2rem;
+    }
+    .checkout-card {
+        border-radius: 13px;
+        background: #f8fafd;
+        box-shadow: 0 2px 10px 0 rgba(40,80,160,0.05);
+        padding: 1.1rem 1.45rem 1.3rem 1.45rem;
+        margin-bottom: 1.6rem;
+    }
+    .checkout-card label {
+        font-weight: 600;
+        color: #1a365d;
+    }
+    .checkout-card select, .checkout-card input, .checkout-card textarea {
+        border-radius: 7px !important;
+        border: 1.1px solid #d6e2f4;
+        font-size: 1.06rem;
+        margin-top: 5px;
+    }
+    .checkout-card .btn-link {
+        font-size: 0.98rem;
+        color: #2563eb;
+        text-decoration: underline;
+        margin-left: 0.7rem;
+        padding: 0;
+    }
+    .checkout-table {
+        background: #fff;
+        border-radius: 13px;
+        box-shadow: 0 2px 14px 0 rgba(60,110,180,0.06);
+    }
+    .checkout-table th {
+        background: #f4f8ff;
+        color: #193d71;
+        font-weight: 700;
+        font-size: 1.04rem;
+        border-bottom: 2px solid #e9f0fc;
+    }
+    .checkout-table td {
+        vertical-align: middle;
+        font-size: 1.05rem;
+    }
+    .checkout-total-box {
+        background: #ecf2fa;
+        border-radius: 8px;
+        padding: 1.1rem 2.1rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #153265;
+        text-align: right;
+        margin-top: 1.1rem;
+    }
+    .checkout-btn {
+        margin-top: 2.1rem;
+        display: block;
+        width: 100%;
+        max-width: 310px;
+        margin-left: auto;
+        margin-right: 0;
+        padding: 1rem 0;
+        border-radius: 15px;
+        background: #2563eb;
+        color: #fff;
+        font-size: 1.17rem;
+        font-weight: 700;
+        border: none;
+        transition: background .15s;
+        box-shadow: 0 1px 9px 0 rgba(47,101,208,0.08);
+    }
+    .checkout-btn:disabled {
+        background: #b7c6e6;
+        color: #fff;
+        cursor: not-allowed;
+    }
+    media (max-width: 900px) {
+        .checkout-main-card { padding: 1.3rem 0.7rem 2.3rem 0.7rem; }
+    }
+    media (max-width: 600px) {
+        .checkout-title { font-size: 1.24rem;}
+        .checkout-main-card { padding: 1.1rem 0.2rem 1.6rem 0.2rem; }
+        .checkout-total-box { font-size: 1rem; }
+    }
+</style>
 
-<form asp-action="Checkout" method="post">
-    <div class="mb-3">
-        <label class="form-label">Teslimat Adresi</label>
-        @if (Model.Addresses != null && Model.Addresses.Any())
-        {
-            <select asp-for="SelectedAddressId" class="form-select" required>
-                <option value="">Adres seçiniz</option>
-                @foreach (var addr in Model.Addresses)
+<div class="checkout-main-card">
+    <div class="checkout-title">Siparişi Onayla</div>
+    <form asp-action="Checkout" method="post">
+
+        <div class="checkout-section">
+            <div class="checkout-card">
+                <label class="form-label">Teslimat Adresi</label>
+                @if (Model.Addresses != null && Model.Addresses.Any())
                 {
-                    if (Model.SelectedAddressId == addr.Id)
-                    {
-                        <option value="@addr.Id" selected="selected">
-                            @addr.Title - @addr.FullAddress, @addr.District, @addr.City
-                        </option>
-                    }
-                    else
-                    {
-                        <option value="@addr.Id">
-                            @addr.Title - @addr.FullAddress, @addr.District, @addr.City
-                        </option>
-                    }
+                    <select asp-for="SelectedAddressId" class="form-select" required>
+                        <option value="">Adres seçiniz</option>
+                        @foreach (var addr in Model.Addresses)
+                        {
+                            if (Model.SelectedAddressId == addr.Id)
+                            {
+                                <option value="@addr.Id" selected>
+                                    @addr.Title - @addr.FullAddress, @addr.District, @addr.City
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@addr.Id">
+                                    @addr.Title - @addr.FullAddress, @addr.District, @addr.City
+                                </option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="SelectedAddressId" class="text-danger"></span>
                 }
-            </select>
-            <span asp-validation-for="SelectedAddressId" class="text-danger"></span>
-        }
-        else
-        {
-            <div class="alert alert-warning mb-2">
-                Sipariş verebilmek için adres eklemelisiniz.
+                else
+                {
+                    <div class="alert alert-warning mb-2">
+                        Sipariş verebilmek için adres eklemelisiniz.
+                    </div>
+                }
+                <a href="/Address/Add" class="btn btn-link">+ Yeni Adres Ekle</a>
             </div>
-        }
-        <a href="/Address/Add" class="btn btn-link">+ Yeni Adres Ekle</a>
-    </div>
-    <h4>Sepetiniz</h4>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Ürün</th>
-                <th>Adet</th>
-                <th>Fiyat</th>
-                <th>Toplam</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.CartItems)
-            {
-                <tr>
-                    <td>@item.Product?.Name</td>
-                    <td>@item.Quantity</td>
-                    <td>@(item.Product != null ? $"{item.Product.Price:C}" : "-")</td>
-                    <td>@(item.Product != null ? (item.Quantity * item.Product.Price).ToString("C") : "-")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <div class="text-end">
-        <strong>Toplam: @Model.CartItems.Sum(x => (x.Product?.Price ?? 0) * x.Quantity).ToString("C")</strong>
-    </div>
-    <button type="submit" class="btn btn-primary mt-3" @(Model.Addresses == null || !Model.Addresses.Any() ? "disabled" : "")>
-        Siparişi Tamamla
-    </button>
-</form>
+        </div>
+
+        <div class="checkout-section">
+            <div class="checkout-table">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Ürün</th>
+                            <th>Adet</th>
+                            <th>Fiyat</th>
+                            <th>Toplam</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.CartItems)
+                        {
+                            <tr>
+                                <td>@item.Product?.Name</td>
+                                <td>@item.Quantity</td>
+                                <td>@(item.Product != null ? $"{item.Product.Price:C}" : "-")</td>
+                                <td>@(item.Product != null ? (item.Quantity * item.Product.Price).ToString("C") : "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="checkout-total-box">
+            Toplam: @Model.CartItems.Sum(x => (x.Product?.Price ?? 0) * x.Quantity).ToString("C")
+        </div>
+        <button type="submit" class="checkout-btn" @(Model.Addresses == null || !Model.Addresses.Any() ? "disabled" : "")>
+            <i class="bi bi-check2-circle"></i> Siparişi Tamamla
+        </button>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

@@ -4,14 +4,101 @@
     var tr = new System.Globalization.CultureInfo("tr-TR");
     string GetStatusBadge(Notifico.Models.OrderStatus status) => status switch
     {
-        Notifico.Models.OrderStatus.Beklemede => "<span class='badge bg-secondary'>Beklemede</span>",
-        Notifico.Models.OrderStatus.Onaylandı => "<span class='badge bg-info text-dark'>Onaylandı</span>",
-        Notifico.Models.OrderStatus.KargoyaVerildi => "<span class='badge bg-warning text-dark'>Kargoya Verildi</span>",
-        Notifico.Models.OrderStatus.TeslimEdildi => "<span class='badge bg-success'>Teslim Edildi</span>",
-        Notifico.Models.OrderStatus.IptalEdildi => "<span class='badge bg-danger'>İptal Edildi</span>",
-        _ => $"<span class='badge bg-light'>{status}</span>"
+        Notifico.Models.OrderStatus.Beklemede => "<span class='badge rounded-pill bg-secondary'>Beklemede</span>",
+        Notifico.Models.OrderStatus.Onaylandı => "<span class='badge rounded-pill bg-info text-dark'>Onaylandı</span>",
+        Notifico.Models.OrderStatus.KargoyaVerildi => "<span class='badge rounded-pill bg-warning text-dark'>Kargoya Verildi</span>",
+        Notifico.Models.OrderStatus.TeslimEdildi => "<span class='badge rounded-pill bg-success'>Teslim Edildi</span>",
+        Notifico.Models.OrderStatus.IptalEdildi => "<span class='badge rounded-pill bg-danger'>İptal Edildi</span>",
+        _ => $"<span class='badge rounded-pill bg-light text-dark'>{status}</span>"
     };
 }
+
+<style>
+    .order-detail-bg {
+        background: #fff;
+        border-radius: 1.2rem;
+        box-shadow: 0 4px 32px 0 rgba(70,110,200,0.11);
+        padding: 2.1rem 2.4rem 2.3rem 2.4rem;
+        max-width: 1200px;
+        margin: 0 auto 2.4rem auto;
+        margin-top: 2.5rem;
+        border: 1.1px solid #e3e9f6;
+    }
+    .order-summary-card,
+    .order-address-card,
+    .order-products-card {
+        background: #f9fbfe;
+        border-radius: 1rem;
+        box-shadow: 0 2px 18px 0 rgba(70,110,200,0.05);
+        border: 1px solid #e7eefd;
+        margin-bottom: 1.25rem;
+    }
+    .order-summary-card .card-body,
+    .order-address-card .card-body,
+    .order-products-card .card-body {
+        padding: 1.18rem 1.5rem 1.19rem 1.5rem;
+    }
+    .order-summary-title {
+        font-size: 1.22rem;
+        font-weight: 700;
+        color: #1a255e;
+        margin-bottom: 1.09rem;
+        letter-spacing: -0.01em;
+    }
+    .order-listinfo li {
+        font-size: 1.09rem;
+        margin-bottom: 0.36rem;
+    }
+    .order-listinfo b {
+        font-weight: 700;
+        color: #183261;
+        min-width: 96px;
+        display: inline-block;
+    }
+    .order-products-table th, .order-products-table td {
+        vertical-align: middle !important;
+        border: none !important;
+        font-size: 1.04rem;
+    }
+    .order-products-table th {
+        background: #f7fafd !important;
+        font-weight: 800;
+        color: #37446d;
+        border-bottom: 2.3px solid #e4eafd !important;
+    }
+    .order-products-table td {
+        background: #fff !important;
+    }
+    .order-products-table img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 0.7rem;
+        border: 1px solid #e4eafd;
+        background: #fafaff;
+    }
+    .order-detail-btn {
+        border-radius: 1.3rem !important;
+        padding: 0.56rem 1.7rem !important;
+        font-size: 1.01rem !important;
+        font-weight: 700;
+    }
+    .order-address-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a255e;
+        margin-bottom: 0.2rem;
+    }
+    .order-address-content {
+        color: #687494;
+        font-size: 1.01rem;
+        font-style: italic;
+    }
+    media (max-width: 900px) {
+        .order-detail-bg { padding: 1rem 0.2rem; }
+        .order-summary-card .card-body, .order-address-card .card-body, .order-products-card .card-body { padding: 1rem 0.7rem; }
+    }
+</style>
 
 @if (Model == null)
 {
@@ -19,13 +106,13 @@
 }
 else
 {
-    <div class="container mt-4">
+    <div class="order-detail-bg">
         <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-0">
+            <div class="col-lg-5 col-md-6 mb-4">
+                <div class="order-summary-card card shadow-sm border-0">
                     <div class="card-body">
-                        <h4 class="card-title mb-2">Sipariş Özeti</h4>
-                        <ul class="list-unstyled mb-0">
+                        <div class="order-summary-title mb-3">Sipariş Özeti</div>
+                        <ul class="list-unstyled order-listinfo mb-0">
                             <li><b>Sipariş No:</b> #@Model.Id</li>
                             <li><b>Tarih:</b> @Model.OrderDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</li>
                             <li><b>Durum:</b> @Html.Raw(GetStatusBadge(Model.Status))</li>
@@ -33,10 +120,10 @@ else
                         </ul>
                     </div>
                 </div>
-                <div class="card shadow-sm border-0 mt-3">
+                <div class="order-address-card card shadow-sm border-0 mt-3">
                     <div class="card-body">
-                        <h5 class="card-title mb-2">Teslimat Adresi</h5>
-                        <div class="text-muted small">
+                        <div class="order-address-title mb-2">Teslimat Adresi</div>
+                        <div class="order-address-content">
                             @(!string.IsNullOrWhiteSpace(Model.AddressSnapshot)
                                 ? Model.AddressSnapshot
                                 : "Adres bilgisi bulunamadı.")
@@ -44,12 +131,12 @@ else
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-0 h-100">
+            <div class="col-lg-7 col-md-6 mb-4">
+                <div class="order-products-card card shadow-sm border-0 h-100">
                     <div class="card-body">
-                        <h5 class="card-title mb-3">Ürünler</h5>
+                        <div class="order-summary-title mb-2">Ürünler</div>
                         <div class="table-responsive">
-                            <table class="table table-sm align-middle">
+                            <table class="table table-sm order-products-table align-middle mb-0">
                                 <thead>
                                     <tr>
                                         <th>Görsel</th>
@@ -65,8 +152,7 @@ else
                                         <tr>
                                             <td>
                                                 <img src="@(!string.IsNullOrEmpty(item.Product?.ImageUrl) ? item.Product.ImageUrl : "/images/noimage.png")"
-                                                     alt="Görsel"
-                                                     style="width:48px; height:48px; object-fit:cover; border-radius:8px;" />
+                                                     alt="Görsel" />
                                             </td>
                                             <td><strong>@item.Product?.Name</strong></td>
                                             <td>@item.Quantity</td>
@@ -78,7 +164,7 @@ else
                             </table>
                         </div>
                         <div class="text-end mt-3">
-                            <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-outline-secondary">Tüm Siparişlerim</a>
+                            <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-outline-secondary order-detail-btn">Tüm Siparişlerim</a>
                         </div>
                     </div>
                 </div>

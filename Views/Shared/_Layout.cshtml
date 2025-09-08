@@ -34,6 +34,7 @@
         media (max-width: 600px) {
             #sideCartPanel { width: 99vw; }
         }
+        .fullpage-footer { max-width: 100vw !important; width: 100vw !important; }
     </style>
 </head>
 <body>
@@ -126,11 +127,23 @@
         </div>
     </div>
 
-    <div class="container">
+    @{
+        var isFullPage = ViewData["FullPage"] as bool? ?? false;
+    }
+    @if (isFullPage)
+    {
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
-    </div>
+    }
+    else
+    {
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    }
 
     @if (User.IsInRole("Admin"))
     {
@@ -147,7 +160,7 @@
     }
 
     <footer class="border-top footer text-muted">
-        <div class="container">
+        <div class="@(isFullPage ? "fullpage-footer" : "container")">
             &copy; 2025 - Notifico - <a asp-controller="Product" asp-action="Index">Ürünler</a>
         </div>
     </footer>
