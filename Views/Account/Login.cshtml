@@ -1,27 +1,30 @@
-﻿@{
+﻿@model Notifico.Models.LoginViewModel
+
+@{
     ViewData["Title"] = "Giriş Yap";
 }
 
-<h2>Giriş Yap</h2>
+<h2 class="mb-4">Giriş Yap</h2>
 
-
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger">@ViewBag.Error</div>
-}
-
-<form asp-action="Login" method="post">
+<form asp-action="Login" method="post" autocomplete="off">
     @Html.AntiForgeryToken()
     <div class="mb-3">
-        <label for="Email" class="form-label">E-posta</label>
-        <input type="email" class="form-control" id="Email" name="Email" required placeholder="E-posta adresiniz" />
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" placeholder="E-posta adresiniz" autocomplete="username" />
+        <span asp-validation-for="Email" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label for="Password" class="form-label">Şifre</label>
-        <input type="password" class="form-control" id="Password" name="Password" required placeholder="Şifreniz" />
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control" type="password" placeholder="Şifreniz" autocomplete="current-password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
     </div>
     <div class="text-end mb-3">
         <a asp-action="ForgotPassword" asp-controller="Account">Şifremi Unuttum?</a>
     </div>
     <button type="submit" class="btn btn-primary">Giriş Yap</button>
+    <span class="ms-2">veya <a asp-action="Register" asp-controller="Account">Kayıt Ol</a></span>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

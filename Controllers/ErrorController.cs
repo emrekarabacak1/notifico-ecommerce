@@ -15,17 +15,28 @@ namespace Notifico.Controllers
         [Route("Error/404")]
         public IActionResult Error404()
         {
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-            _logger.LogWarning("404 Not Found | IP: {Ip} | Path: {Path}", ip, HttpContext.Request.Path);
+            _logger.LogWarning("404 Not Found | IP: {Ip} | Path: {Path}",
+                HttpContext.Connection.RemoteIpAddress,
+                HttpContext.Request.Path);
             return View("404");
         }
 
         [Route("Error/403")]
         public IActionResult Error403()
         {
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-            _logger.LogWarning("403 Forbidden | IP: {Ip} | Path: {Path}", ip, HttpContext.Request.Path);
+            _logger.LogWarning("403 Forbidden | IP: {Ip} | Path: {Path}",
+                HttpContext.Connection.RemoteIpAddress,
+                HttpContext.Request.Path);
             return View("403");
+        }
+
+        [Route("Error")]
+        public IActionResult Error()
+        {
+            _logger.LogError("Genel Hata | IP: {Ip} | Path: {Path}",
+                HttpContext.Connection.RemoteIpAddress,
+                HttpContext.Request.Path);
+            return View("Error");
         }
     }
 }

@@ -4,25 +4,24 @@
     ViewData["Title"] = "Kayıt Ol";
 }
 
-<h2>Kayıt Ol</h2>
+<h2 class="mb-4">Kayıt Ol</h2>
 
-<form asp-action="Register" method="post">
+<form asp-action="Register" method="post" autocomplete="off">
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="text-danger"></div>
 
     <div class="mb-3">
         <label asp-for="UserName" class="form-label"></label>
-        <input asp-for="UserName" class="form-control" />
+        <input asp-for="UserName" class="form-control" autocomplete="username" />
         <span asp-validation-for="UserName" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" />
+        <input asp-for="Email" class="form-control" autocomplete="email" />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="Password" class="form-label"></label>
-        <input asp-for="Password" class="form-control" type="password" />
+        <input asp-for="Password" class="form-control" type="password" autocomplete="new-password" />
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
     <div class="mb-3">
@@ -37,7 +36,7 @@
     </div>
     <div class="mb-3">
         <label asp-for="PhoneNumber" class="form-label"></label>
-        <input asp-for="PhoneNumber" class="form-control" />
+        <input asp-for="PhoneNumber" class="form-control" autocomplete="tel" />
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
     <div class="mb-3">
@@ -47,33 +46,33 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Şehir</label>
-        <select id="citySelect" name="City" class="form-select">
+        <label asp-for="City" class="form-label"></label>
+        <select id="citySelect" name="City" asp-for="City" class="form-select">
             <option value="">-- İl seçiniz --</option>
         </select>
-        <span class="text-danger" asp-validation-for="City"></span>
+        <span asp-validation-for="City" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label">İlçe</label>
-        <select id="districtSelect" name="District" class="form-select">
+        <label asp-for="District" class="form-label"></label>
+        <select id="districtSelect" name="District" asp-for="District" class="form-select">
             <option value="">-- İlçe seçiniz --</option>
         </select>
-        <span class="text-danger" asp-validation-for="District"></span>
+        <span asp-validation-for="District" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label">Adres Detayı</label>
-        <textarea name="Address" class="form-control">@Model.Address</textarea>
-        <span class="text-danger" asp-validation-for="Address"></span>
+        <label asp-for="Address" class="form-label"></label>
+        <textarea asp-for="Address" class="form-control"></textarea>
+        <span asp-validation-for="Address" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+    <span class="ms-2">veya <a asp-action="Login" asp-controller="Account">Giriş Yap</a></span>
 </form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         let cityDistrictData = [];
-
         function fillCities(selectedCity) {
             var citySelect = document.getElementById('citySelect');
             citySelect.innerHTML = '<option value="">-- İl seçiniz --</option>';
@@ -87,7 +86,6 @@
                 citySelect.appendChild(option);
             });
         }
-
         function fillDistricts(cityName, selectedDistrict) {
             var districtSelect = document.getElementById('districtSelect');
             districtSelect.innerHTML = '<option value="">-- İlçe seçiniz --</option>';
@@ -103,7 +101,6 @@
                 districtSelect.appendChild(option);
             });
         }
-
         document.addEventListener("DOMContentLoaded", function () {
             fetch('/data/cityDistricts.json')
                 .then(response => response.json())
@@ -112,11 +109,7 @@
                     var initialCity = '@(Model.City ?? "")';
                     var initialDistrict = '@(Model.District ?? "")';
                     fillCities(initialCity);
-
-                    if (initialCity) {
-                        fillDistricts(initialCity, initialDistrict);
-                    }
-
+                    if (initialCity) fillDistricts(initialCity, initialDistrict);
                     document.getElementById('citySelect').addEventListener('change', function () {
                         fillDistricts(this.value, null);
                     });

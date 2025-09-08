@@ -1,8 +1,9 @@
 ﻿@model IEnumerable<Notifico.Models.CartItem>
-
 @{
     ViewData["Title"] = "Sepetim";
     decimal toplamTutar = Model?.Sum(item => (item.Product?.Price ?? 0) * item.Quantity) ?? 0;
+    var success = TempData["Success"] as string;
+    var error = TempData["Error"] as string;
 }
 
 <h2>Sepetim</h2>
@@ -75,6 +76,8 @@ else
 @Html.AntiForgeryToken()
 
 @section Scripts {
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(function () {
@@ -90,8 +93,9 @@ else
                         $("#qty_" + id).text(result.quantity);
                         $("#line_" + id).text(result.lineTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
                         $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                        toastr.success("Ürün adedi artırıldı", "Başarılı", { timeOut: 1500 });
                     } else {
-                        alert(result.error);
+                        toastr.error(result.error || "Hata oluştu!", "Hata", { timeOut: 2500 });
                     }
                 });
             });
@@ -105,8 +109,9 @@ else
                         if (result.quantity == 0) {
                             $("tr[data-id='" + id + "']").remove();
                         }
+                        toastr.success("Ürün adedi azaltıldı", "Başarılı", { timeOut: 1500 });
                     } else {
-                        alert(result.error);
+                        toastr.error(result.error || "Hata oluştu!", "Hata", { timeOut: 2500 });
                     }
                 });
             });
@@ -117,8 +122,9 @@ else
                     if (result.success) {
                         $("tr[data-id='" + id + "']").remove();
                         $("#cartTotal").text(result.cartTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                        toastr.success("Ürün sepetten çıkarıldı", "Başarılı", { timeOut: 1600 });
                     } else {
-                        alert(result.error);
+                        toastr.error(result.error || "Hata oluştu!", "Hata", { timeOut: 2500 });
                     }
                 });
             });
@@ -128,11 +134,25 @@ else
                     if (result.success) {
                         $("tbody").empty();
                         $("#cartTotal").text("0,00 ₺");
+                        toastr.success("Sepetiniz tamamen temizlendi", "Başarılı", { timeOut: 1600 });
                     } else {
-                        alert("Hata: " + result.error);
+                        toastr.error("Sepet temizlenemedi: " + result.error, "Hata", { timeOut: 2500 });
                     }
                 });
             });
-        });
+
+        @if (!string.IsNullOrEmpty(success))
+        {
+            <text>
+                    toastr.success("@success", "Başarılı", { timeOut: 2000 });
+            </text>
+        }
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <text>
+                    toastr.error("@error", "Hata", { timeOut: 2500 });
+            </text>
+        }
+                });
     </script>
 }

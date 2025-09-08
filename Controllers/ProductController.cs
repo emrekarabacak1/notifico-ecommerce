@@ -18,7 +18,7 @@ namespace Notifico.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search, string category)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
@@ -35,7 +35,24 @@ namespace Notifico.Controllers
 
             _logger.LogInformation("Product/Index: User (ID: {UserId}) viewed product list.", userId);
 
-            var products = await _context.Products.ToListAsync();
+            var query = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(p => p.Name.ToLower().Contains(search.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(category))
+                query = query.Where(p => p.Category.ToLower() == category.ToLower());
+
+            var categories = await _context.Products
+                .Select(p => p.Category)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToListAsync();
+            ViewBag.Categories = categories;
+            ViewBag.SelectedCategory = category;
+            ViewBag.Search = search;
+
+            var products = await query.ToListAsync();
             return View(products);
         }
 

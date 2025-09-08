@@ -1,8 +1,16 @@
 ﻿@{
     ViewData["Title"] = "Sipariş Başarılı";
 }
-<div class="alert alert-success mt-5">
-    <h2>Siparişiniz başarıyla alındı!</h2>
-    <a href="@Url.Action("Index", "Product")" class="btn btn-primary mt-3">Alışverişe Devam Et</a>
-    <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-outline-secondary mt-3 ms-2">Siparişlerimi Gör</a>
+<div class="container" style="max-width:520px;">
+    <div class="alert alert-success mt-5 text-center p-5 shadow rounded">
+        <img src="/images/success.svg" alt="Başarılı" style="width:60px; margin-bottom:18px;" />
+        <h2 class="mb-3">Siparişiniz başarıyla alındı!</h2>
+        <p class="mb-4">Sipariş bilgileriniz hesabınıza eklendi. Kısa süre içinde kargo işlemi başlayacak.</p>
+        <a href="@Url.Action("Index", "Product")" class="btn btn-primary mt-2 w-100">
+            <i class="bi bi-shop"></i> Alışverişe Devam Et
+        </a>
+        <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-outline-secondary mt-3 w-100">
+            <i class="bi bi-list"></i> Siparişlerimi Gör
+        </a>
+    </div>
 </div>

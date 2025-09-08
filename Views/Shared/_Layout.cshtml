@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Notifico.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <style>
         #sideCartOverlay {
             display: none;
@@ -21,9 +22,7 @@
             background: rgba(0,0,0,0.16);
             transition: backdrop-filter 0.25s;
         }
-        #sideCartOverlay.active {
-            display: block;
-        }
+        #sideCartOverlay.active { display: block; }
         #sideCartPanel {
             position: fixed; top: 0; right: -370px; width: 360px; max-width: 98vw;
             height: 100vh; background: #fff; z-index: 1250;
@@ -157,6 +156,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     @if (User.IsInRole("Admin"))
     {
@@ -226,6 +226,27 @@
 
             window.reloadSideCart = function () {
                 $("#sideCartContent").load("/Cart/SideCartPartial");
+            }
+        });
+    </script>
+
+    <script>
+        $(function () {
+            @if (TempData["Success"] != null)
+            {
+                <text>toastr.success("@TempData["Success"].ToString().Replace("\"", "\\\"")", "Başarılı", { timeOut: 2200 });</text>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <text>toastr.error("@TempData["Error"].ToString().Replace("\"", "\\\"")", "Hata", { timeOut: 3500 });</text>
+            }
+            @if (TempData["Info"] != null)
+            {
+                <text>toastr.info("@TempData["Info"].ToString().Replace("\"", "\\\"")", "Bilgi", { timeOut: 3000 });</text>
+            }
+            @if (TempData["Warning"] != null)
+            {
+                <text>toastr.warning("@TempData["Warning"].ToString().Replace("\"", "\\\"")", "Uyarı", { timeOut: 3000 });</text>
             }
         });
     </script>

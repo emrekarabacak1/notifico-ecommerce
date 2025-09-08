@@ -22,11 +22,15 @@
         <div class="col-md-3">
             <select name="status" class="form-select">
                 <option value="">Tüm Statüler</option>
-                @{
-                    foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
+                @foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
+                {
+                    if (currentStatus == ((int)s).ToString())
                     {
-                        var isSelected = currentStatus == ((int)s).ToString() ? "selected" : "";
-                        @:<option value="@( (int)s )" @isSelected>@s</option>
+                        <option value="@((int)s)" selected>@s</option>
+                    }
+                    else
+                    {
+                        <option value="@((int)s)">@s</option>
                     }
                 }
             </select>
@@ -113,3 +117,22 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $(function () {
+            @if (TempData["StatusMessage"] != null)
+            {
+                var msg = TempData["StatusMessage"].ToString().Replace("'", "\\'");
+                <text>toastr.success('@msg', 'Başarılı', { timeOut: 2500 });</text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                var msg = TempData["ErrorMessage"].ToString().Replace("'", "\\'");
+                <text>toastr.error('@msg', 'Hata', { timeOut: 3000 });</text>
+            }
+        });
+    </script>
+}

@@ -54,6 +54,8 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         let cityDistrictData = [];
 
@@ -95,11 +97,9 @@
                     var initialCity = '@(Model.City ?? "")';
                     var initialDistrict = '@(Model.District ?? "")';
                     fillCities(initialCity);
-
                     if (initialCity) {
                         fillDistricts(initialCity, initialDistrict);
                     }
-
                     document.getElementById('citySelect').addEventListener('change', function () {
                         fillDistricts(this.value, null);
                     });
@@ -108,5 +108,16 @@
                     console.error("Şehir-ilçe verisi yüklenemedi:", error);
                 });
         });
+
+        $(function () {
+        @if (TempData["ProfileSuccess"] != null)
+        {
+            <text>toastr.success("@TempData["ProfileSuccess"]", "Başarılı", { timeOut: 2200 }); </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>toastr.error("@TempData["Error"]", "Hata", { timeOut: 3000 }); </text>
+        }
+                });
     </script>
 }

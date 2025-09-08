@@ -447,3 +447,465 @@ ORDER BY t."Id", t0."Id"
 2025-09-07 10:51:29.578 +03:00 [INF] Executed action Notifico.Controllers.CartController.SideCartPartial (Notifico) in 48.6378ms
 2025-09-07 10:51:29.580 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.SideCartPartial (Notifico)'
 2025-09-07 10:51:29.583 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Cart/SideCartPartial - 200 null text/html; charset=utf-8 86.7928ms
+2025-09-07 11:46:34.366 +03:00 [INF] User profile is available. Using 'C:\Users\Emre\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-09-07 11:46:35.867 +03:00 [INF] Executed DbCommand (69ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2025-09-07 11:46:35.949 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2025-09-07 11:46:35.973 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@__normalizedEmail_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2025-09-07 11:46:36.623 +03:00 [INF] Now listening on: https://localhost:7193
+2025-09-07 11:46:36.628 +03:00 [INF] Now listening on: http://localhost:5232
+2025-09-07 11:46:36.635 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-09-07 11:46:36.641 +03:00 [INF] Hosting environment: Development
+2025-09-07 11:46:36.643 +03:00 [INF] Content root path: C:\Users\Emre\Desktop\C#\repos\intro\Notifico
+2025-09-07 11:46:37.344 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/ - null null
+2025-09-07 11:46:37.631 +03:00 [INF] Executed DbCommand (8ms) [Parameters=[@__p_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."Address", a."BirthDate", a."City", a."ConcurrencyStamp", a."District", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName"
+FROM "AspNetUsers" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+2025-09-07 11:46:37.702 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__user_Id_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ClaimType", a."ClaimValue", a."UserId"
+FROM "AspNetUserClaims" AS a
+WHERE a."UserId" = @__user_Id_0
+2025-09-07 11:46:37.731 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__userId_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a0."Name"
+FROM "AspNetUserRoles" AS a
+INNER JOIN "AspNetRoles" AS a0 ON a."RoleId" = a0."Id"
+WHERE a."UserId" = @__userId_0
+2025-09-07 11:46:37.738 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM "AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2025-09-07 11:46:37.748 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__role_Id_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."ClaimType", a."ClaimValue"
+FROM "AspNetRoleClaims" AS a
+WHERE a."RoleId" = @__role_Id_0
+2025-09-07 11:46:37.769 +03:00 [INF] Executing endpoint 'Notifico.Controllers.HomeController.Index (Notifico)'
+2025-09-07 11:46:37.790 +03:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller Notifico.Controllers.HomeController (Notifico).
+2025-09-07 11:46:37.824 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-07 11:46:37.960 +03:00 [INF] Executed ViewResult - view Index executed in 128.2527ms.
+2025-09-07 11:46:37.960 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-07 11:46:37.960 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-07 11:46:37.967 +03:00 [INF] Executed action Notifico.Controllers.HomeController.Index (Notifico) in 155.3432ms
+2025-09-07 11:46:37.972 +03:00 [INF] Executed endpoint 'Notifico.Controllers.HomeController.Index (Notifico)'
+2025-09-07 11:46:37.989 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 28.2475ms
+2025-09-07 11:46:37.999 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/ - 200 null text/html; charset=utf-8 664.4142ms
+2025-09-07 11:46:38.026 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 65.9919ms
+2025-09-07 11:46:41.168 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Product - null null
+2025-09-07 11:46:41.209 +03:00 [INF] Executing endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:46:41.245 +03:00 [INF] Route matched with {action = "Index", controller = "Product"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.String) on controller Notifico.Controllers.ProductController (Notifico).
+2025-09-07 11:46:41.315 +03:00 [INF] Product/Index: User (ID: 97cd7234-1567-49a1-a7bb-4c758ddd82c9) viewed product list.
+2025-09-07 11:46:41.376 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Category"
+FROM (
+    SELECT DISTINCT p."Category"
+    FROM "Products" AS p
+) AS t
+ORDER BY t."Category"
+2025-09-07 11:46:41.472 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+2025-09-07 11:46:41.541 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-07 11:46:41.669 +03:00 [INF] Executed ViewResult - view Index executed in 129.4889ms.
+2025-09-07 11:46:41.675 +03:00 [INF] Executed action Notifico.Controllers.ProductController.Index (Notifico) in 422.4099ms
+2025-09-07 11:46:41.685 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-07 11:46:41.685 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-07 11:46:41.686 +03:00 [INF] Executed endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:46:41.706 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 20.8976ms
+2025-09-07 11:46:41.758 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 61.7998ms
+2025-09-07 11:46:41.715 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Product - 200 null text/html; charset=utf-8 548.0716ms
+2025-09-07 11:46:47.080 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Product?search=&category=E%C4%9Fitim - null null
+2025-09-07 11:46:47.120 +03:00 [INF] Executing endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:46:47.125 +03:00 [INF] Route matched with {action = "Index", controller = "Product"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.String) on controller Notifico.Controllers.ProductController (Notifico).
+2025-09-07 11:46:47.146 +03:00 [INF] Product/Index: User (ID: 97cd7234-1567-49a1-a7bb-4c758ddd82c9) viewed product list.
+2025-09-07 11:46:47.155 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Category"
+FROM (
+    SELECT DISTINCT p."Category"
+    FROM "Products" AS p
+) AS t
+ORDER BY t."Category"
+2025-09-07 11:46:47.201 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__ToLower_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+WHERE lower(p."Category") = @__ToLower_0
+2025-09-07 11:46:47.208 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-07 11:46:47.235 +03:00 [INF] Executed ViewResult - view Index executed in 26.6616ms.
+2025-09-07 11:46:47.238 +03:00 [INF] Executed action Notifico.Controllers.ProductController.Index (Notifico) in 108.1451ms
+2025-09-07 11:46:47.241 +03:00 [INF] Executed endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:46:47.244 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Product?search=&category=E%C4%9Fitim - 200 null text/html; charset=utf-8 164.166ms
+2025-09-07 11:46:47.249 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-07 11:46:47.249 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-07 11:46:47.254 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 5.6089ms
+2025-09-07 11:46:47.276 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 26.7446ms
+2025-09-07 11:46:51.703 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Product?search=&category=Teknoloji - null null
+2025-09-07 11:46:51.719 +03:00 [INF] Executing endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:46:51.728 +03:00 [INF] Route matched with {action = "Index", controller = "Product"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.String) on controller Notifico.Controllers.ProductController (Notifico).
+2025-09-07 11:46:51.737 +03:00 [INF] Product/Index: User (ID: 97cd7234-1567-49a1-a7bb-4c758ddd82c9) viewed product list.
+2025-09-07 11:46:51.752 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Category"
+FROM (
+    SELECT DISTINCT p."Category"
+    FROM "Products" AS p
+) AS t
+ORDER BY t."Category"
+2025-09-07 11:46:51.764 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__ToLower_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+WHERE lower(p."Category") = @__ToLower_0
+2025-09-07 11:46:51.774 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-07 11:46:51.785 +03:00 [INF] Executed ViewResult - view Index executed in 10.7335ms.
+2025-09-07 11:46:51.789 +03:00 [INF] Executed action Notifico.Controllers.ProductController.Index (Notifico) in 52.2019ms
+2025-09-07 11:46:51.792 +03:00 [INF] Executed endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:46:51.799 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-07 11:46:51.799 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-07 11:46:51.800 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Product?search=&category=Teknoloji - 200 null text/html; charset=utf-8 97.2789ms
+2025-09-07 11:46:51.819 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 19.7993ms
+2025-09-07 11:46:51.833 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 33.8613ms
+2025-09-07 11:46:56.356 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Product?search=Huawei&category=Teknoloji - null null
+2025-09-07 11:46:56.373 +03:00 [INF] Executing endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:46:56.379 +03:00 [INF] Route matched with {action = "Index", controller = "Product"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.String) on controller Notifico.Controllers.ProductController (Notifico).
+2025-09-07 11:46:56.392 +03:00 [INF] Product/Index: User (ID: 97cd7234-1567-49a1-a7bb-4c758ddd82c9) viewed product list.
+2025-09-07 11:46:56.405 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Category"
+FROM (
+    SELECT DISTINCT p."Category"
+    FROM "Products" AS p
+) AS t
+ORDER BY t."Category"
+2025-09-07 11:46:56.457 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[@__ToLower_0_contains='?', @__ToLower_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+WHERE lower(p."Name") LIKE @__ToLower_0_contains AND lower(p."Category") = @__ToLower_1
+2025-09-07 11:46:56.472 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-07 11:46:56.484 +03:00 [INF] Executed ViewResult - view Index executed in 10.844ms.
+2025-09-07 11:46:56.493 +03:00 [INF] Executed action Notifico.Controllers.ProductController.Index (Notifico) in 101.3751ms
+2025-09-07 11:46:56.500 +03:00 [INF] Executed endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:46:56.503 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-07 11:46:56.505 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-07 11:46:56.505 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Product?search=Huawei&category=Teknoloji - 200 null text/html; charset=utf-8 149.9048ms
+2025-09-07 11:46:56.542 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 36.1755ms
+2025-09-07 11:46:56.546 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 42.4371ms
+2025-09-07 11:47:00.711 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Product?search=Bilgisayar&category=Teknoloji - null null
+2025-09-07 11:47:00.730 +03:00 [INF] Executing endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:47:00.737 +03:00 [INF] Route matched with {action = "Index", controller = "Product"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.String) on controller Notifico.Controllers.ProductController (Notifico).
+2025-09-07 11:47:00.747 +03:00 [INF] Product/Index: User (ID: 97cd7234-1567-49a1-a7bb-4c758ddd82c9) viewed product list.
+2025-09-07 11:47:00.757 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Category"
+FROM (
+    SELECT DISTINCT p."Category"
+    FROM "Products" AS p
+) AS t
+ORDER BY t."Category"
+2025-09-07 11:47:00.773 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__ToLower_0_contains='?', @__ToLower_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+WHERE lower(p."Name") LIKE @__ToLower_0_contains AND lower(p."Category") = @__ToLower_1
+2025-09-07 11:47:00.786 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-07 11:47:00.800 +03:00 [INF] Executed ViewResult - view Index executed in 13.8462ms.
+2025-09-07 11:47:00.804 +03:00 [INF] Executed action Notifico.Controllers.ProductController.Index (Notifico) in 58.1322ms
+2025-09-07 11:47:00.807 +03:00 [INF] Executed endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:47:00.810 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Product?search=Bilgisayar&category=Teknoloji - 200 null text/html; charset=utf-8 99.7204ms
+2025-09-07 11:47:00.811 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-07 11:47:00.811 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-07 11:47:00.823 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 12.1877ms
+2025-09-07 11:47:00.845 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 34.283ms
+2025-09-07 11:47:05.415 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Product - null null
+2025-09-07 11:47:05.424 +03:00 [INF] Executing endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:47:05.429 +03:00 [INF] Route matched with {action = "Index", controller = "Product"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.String) on controller Notifico.Controllers.ProductController (Notifico).
+2025-09-07 11:47:05.438 +03:00 [INF] Product/Index: User (ID: 97cd7234-1567-49a1-a7bb-4c758ddd82c9) viewed product list.
+2025-09-07 11:47:05.455 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Category"
+FROM (
+    SELECT DISTINCT p."Category"
+    FROM "Products" AS p
+) AS t
+ORDER BY t."Category"
+2025-09-07 11:47:05.463 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+2025-09-07 11:47:05.467 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-07 11:47:05.473 +03:00 [INF] Executed ViewResult - view Index executed in 6.5243ms.
+2025-09-07 11:47:05.475 +03:00 [INF] Executed action Notifico.Controllers.ProductController.Index (Notifico) in 36.8372ms
+2025-09-07 11:47:05.485 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-07 11:47:05.485 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-07 11:47:05.486 +03:00 [INF] Executed endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:47:05.514 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Product - 200 null text/html; charset=utf-8 98.9545ms
+2025-09-07 11:47:05.512 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 27.4361ms
+2025-09-07 11:47:05.509 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 23.677ms
+2025-09-07 11:47:13.944 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Cart/Mycart - null null
+2025-09-07 11:47:13.971 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.MyCart (Notifico)'
+2025-09-07 11:47:13.985 +03:00 [INF] Route matched with {action = "MyCart", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] MyCart() on controller Notifico.Controllers.CartController (Notifico).
+2025-09-07 11:47:14.108 +03:00 [INF] Executed DbCommand (10ms) [Parameters=[@__userId_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Id", t."UserId", t0."Id", t0."CartId", t0."ProductId", t0."Quantity", t0."Id0", t0."Category", t0."DateAdded", t0."Description", t0."ImageUrl", t0."Name", t0."Price", t0."Stock"
+FROM (
+    SELECT c."Id", c."UserId"
+    FROM "Carts" AS c
+    WHERE c."UserId" = @__userId_0
+    LIMIT 1
+) AS t
+LEFT JOIN (
+    SELECT c0."Id", c0."CartId", c0."ProductId", c0."Quantity", p."Id" AS "Id0", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+    FROM "CartItems" AS c0
+    INNER JOIN "Products" AS p ON c0."ProductId" = p."Id"
+) AS t0 ON t."Id" = t0."CartId"
+ORDER BY t."Id", t0."Id"
+2025-09-07 11:47:14.176 +03:00 [INF] Kullanıcı sepetini görüntüledi. User: 97cd7234-1567-49a1-a7bb-4c758ddd82c9, Ürün Sayısı: 1
+2025-09-07 11:47:14.185 +03:00 [INF] Executing ViewResult, running view MyCart.
+2025-09-07 11:47:14.210 +03:00 [INF] Executed ViewResult - view MyCart executed in 26.6283ms.
+2025-09-07 11:47:14.217 +03:00 [INF] Executed action Notifico.Controllers.CartController.MyCart (Notifico) in 222.3052ms
+2025-09-07 11:47:14.219 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.MyCart (Notifico)'
+2025-09-07 11:47:14.222 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Cart/Mycart - 200 null text/html; charset=utf-8 277.359ms
+2025-09-07 11:47:14.226 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-07 11:47:14.226 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-07 11:47:14.235 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 9.0666ms
+2025-09-07 11:47:14.259 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 33.3276ms
+2025-09-07 11:47:17.752 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7193/Cart/RemoveFromCartAjax - application/x-www-form-urlencoded; charset=UTF-8 5
+2025-09-07 11:47:17.773 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.RemoveFromCartAjax (Notifico)'
+2025-09-07 11:47:17.786 +03:00 [INF] Route matched with {action = "RemoveFromCartAjax", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RemoveFromCartAjax(Int32) on controller Notifico.Controllers.CartController (Notifico).
+2025-09-07 11:47:17.844 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[@__id_0='?' (DbType = Int32), @__userId_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."CartId", c."ProductId", c."Quantity", c0."Id", c0."UserId"
+FROM "CartItems" AS c
+INNER JOIN "Carts" AS c0 ON c."CartId" = c0."Id"
+WHERE c."Id" = @__id_0 AND c0."UserId" = @__userId_1
+LIMIT 1
+2025-09-07 11:47:17.998 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM "CartItems"
+WHERE "Id" = @p0;
+2025-09-07 11:47:18.069 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[@__cartId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(p."Price" * c."Quantity"::numeric), 0.0)
+FROM "CartItems" AS c
+INNER JOIN "Products" AS p ON c."ProductId" = p."Id"
+WHERE c."CartId" = @__cartId_0
+2025-09-07 11:47:18.079 +03:00 [INF] AJAX - Ürün sepetten çıkarıldı. User: 97cd7234-1567-49a1-a7bb-4c758ddd82c9, ProductId: 3
+2025-09-07 11:47:18.083 +03:00 [INF] Executing JsonResult, writing value of type '<>f__AnonymousType6`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-09-07 11:47:18.176 +03:00 [INF] Executed action Notifico.Controllers.CartController.RemoveFromCartAjax (Notifico) in 380.5644ms
+2025-09-07 11:47:18.180 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.RemoveFromCartAjax (Notifico)'
+2025-09-07 11:47:18.182 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7193/Cart/RemoveFromCartAjax - 200 null application/json; charset=utf-8 430.4845ms
+2025-09-07 11:47:19.436 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Cart/SideCartPartial - null null
+2025-09-07 11:47:19.442 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.SideCartPartial (Notifico)'
+2025-09-07 11:47:19.457 +03:00 [INF] Route matched with {action = "SideCartPartial", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SideCartPartial() on controller Notifico.Controllers.CartController (Notifico).
+2025-09-07 11:47:19.472 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[@__userId_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Id", t."UserId", t0."Id", t0."CartId", t0."ProductId", t0."Quantity", t0."Id0", t0."Category", t0."DateAdded", t0."Description", t0."ImageUrl", t0."Name", t0."Price", t0."Stock"
+FROM (
+    SELECT c."Id", c."UserId"
+    FROM "Carts" AS c
+    WHERE c."UserId" = @__userId_0
+    LIMIT 1
+) AS t
+LEFT JOIN (
+    SELECT c0."Id", c0."CartId", c0."ProductId", c0."Quantity", p."Id" AS "Id0", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+    FROM "CartItems" AS c0
+    INNER JOIN "Products" AS p ON c0."ProductId" = p."Id"
+) AS t0 ON t."Id" = t0."CartId"
+ORDER BY t."Id", t0."Id"
+2025-09-07 11:47:19.481 +03:00 [INF] SideCartPartial çağrıldı. User: 97cd7234-1567-49a1-a7bb-4c758ddd82c9, Ürün Sayısı: 0
+2025-09-07 11:47:19.488 +03:00 [INF] Executing PartialViewResult, running view SideCartPartial.
+2025-09-07 11:47:19.507 +03:00 [INF] Executed PartialViewResult - view SideCartPartial executed in 20.9118ms.
+2025-09-07 11:47:19.515 +03:00 [INF] Executed action Notifico.Controllers.CartController.SideCartPartial (Notifico) in 51.3529ms
+2025-09-07 11:47:19.524 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.SideCartPartial (Notifico)'
+2025-09-07 11:47:19.535 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Cart/SideCartPartial - 200 null text/html; charset=utf-8 99.6315ms
+2025-09-07 11:47:21.735 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Product - null null
+2025-09-07 11:47:21.747 +03:00 [INF] Executing endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:47:21.750 +03:00 [INF] Route matched with {action = "Index", controller = "Product"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.String, System.String) on controller Notifico.Controllers.ProductController (Notifico).
+2025-09-07 11:47:21.755 +03:00 [INF] Product/Index: User (ID: 97cd7234-1567-49a1-a7bb-4c758ddd82c9) viewed product list.
+2025-09-07 11:47:21.763 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Category"
+FROM (
+    SELECT DISTINCT p."Category"
+    FROM "Products" AS p
+) AS t
+ORDER BY t."Category"
+2025-09-07 11:47:21.777 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+2025-09-07 11:47:21.782 +03:00 [INF] Executing ViewResult, running view Index.
+2025-09-07 11:47:21.789 +03:00 [INF] Executed ViewResult - view Index executed in 7.2792ms.
+2025-09-07 11:47:21.792 +03:00 [INF] Executed action Notifico.Controllers.ProductController.Index (Notifico) in 37.4761ms
+2025-09-07 11:47:21.796 +03:00 [INF] Executed endpoint 'Notifico.Controllers.ProductController.Index (Notifico)'
+2025-09-07 11:47:21.798 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Product - 200 null text/html; charset=utf-8 62.6485ms
+2025-09-07 11:47:21.801 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-07 11:47:21.803 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-07 11:47:21.809 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 7.4863ms
+2025-09-07 11:47:21.831 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 28.4984ms
+2025-09-07 11:47:23.730 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7193/Cart/AddToCartAjax - application/x-www-form-urlencoded; charset=UTF-8 11
+2025-09-07 11:47:23.744 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.AddToCartAjax (Notifico)'
+2025-09-07 11:47:23.754 +03:00 [INF] Route matched with {action = "AddToCartAjax", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] AddToCartAjax(Int32) on controller Notifico.Controllers.CartController (Notifico).
+2025-09-07 11:47:23.775 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@__productId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "Products" AS p
+WHERE p."Id" = @__productId_0
+LIMIT 1
+2025-09-07 11:47:23.813 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__userId_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Id", t."UserId", c0."Id", c0."CartId", c0."ProductId", c0."Quantity"
+FROM (
+    SELECT c."Id", c."UserId"
+    FROM "Carts" AS c
+    WHERE c."UserId" = @__userId_0
+    LIMIT 1
+) AS t
+LEFT JOIN "CartItems" AS c0 ON t."Id" = c0."CartId"
+ORDER BY t."Id"
+2025-09-07 11:47:23.875 +03:00 [INF] AddToCartAjax: Ürün sepete eklendi. User: 97cd7234-1567-49a1-a7bb-4c758ddd82c9, ProductId: 1
+2025-09-07 11:47:23.925 +03:00 [INF] Executed DbCommand (8ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "CartItems" ("CartId", "ProductId", "Quantity")
+VALUES (@p0, @p1, @p2)
+RETURNING "Id";
+2025-09-07 11:47:23.964 +03:00 [INF] Executing JsonResult, writing value of type '<>f__AnonymousType4`1[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-09-07 11:47:23.974 +03:00 [INF] Executed action Notifico.Controllers.CartController.AddToCartAjax (Notifico) in 215.5996ms
+2025-09-07 11:47:23.978 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.AddToCartAjax (Notifico)'
+2025-09-07 11:47:23.983 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7193/Cart/AddToCartAjax - 200 null application/json; charset=utf-8 253.5374ms
+2025-09-07 11:47:23.987 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Cart/SideCartPartial - null null
+2025-09-07 11:47:23.999 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.SideCartPartial (Notifico)'
+2025-09-07 11:47:24.003 +03:00 [INF] Route matched with {action = "SideCartPartial", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SideCartPartial() on controller Notifico.Controllers.CartController (Notifico).
+2025-09-07 11:47:24.012 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__userId_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Id", t."UserId", t0."Id", t0."CartId", t0."ProductId", t0."Quantity", t0."Id0", t0."Category", t0."DateAdded", t0."Description", t0."ImageUrl", t0."Name", t0."Price", t0."Stock"
+FROM (
+    SELECT c."Id", c."UserId"
+    FROM "Carts" AS c
+    WHERE c."UserId" = @__userId_0
+    LIMIT 1
+) AS t
+LEFT JOIN (
+    SELECT c0."Id", c0."CartId", c0."ProductId", c0."Quantity", p."Id" AS "Id0", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+    FROM "CartItems" AS c0
+    INNER JOIN "Products" AS p ON c0."ProductId" = p."Id"
+) AS t0 ON t."Id" = t0."CartId"
+ORDER BY t."Id", t0."Id"
+2025-09-07 11:47:24.020 +03:00 [INF] SideCartPartial çağrıldı. User: 97cd7234-1567-49a1-a7bb-4c758ddd82c9, Ürün Sayısı: 1
+2025-09-07 11:47:24.026 +03:00 [INF] Executing PartialViewResult, running view SideCartPartial.
+2025-09-07 11:47:24.030 +03:00 [INF] Executed PartialViewResult - view SideCartPartial executed in 4.1165ms.
+2025-09-07 11:47:24.032 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Cart/SideCartPartial - null null
+2025-09-07 11:47:24.032 +03:00 [INF] Executed action Notifico.Controllers.CartController.SideCartPartial (Notifico) in 24.6037ms
+2025-09-07 11:47:24.045 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.SideCartPartial (Notifico)'
+2025-09-07 11:47:24.047 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.SideCartPartial (Notifico)'
+2025-09-07 11:47:24.051 +03:00 [INF] Route matched with {action = "SideCartPartial", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SideCartPartial() on controller Notifico.Controllers.CartController (Notifico).
+2025-09-07 11:47:24.064 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__userId_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Id", t."UserId", t0."Id", t0."CartId", t0."ProductId", t0."Quantity", t0."Id0", t0."Category", t0."DateAdded", t0."Description", t0."ImageUrl", t0."Name", t0."Price", t0."Stock"
+FROM (
+    SELECT c."Id", c."UserId"
+    FROM "Carts" AS c
+    WHERE c."UserId" = @__userId_0
+    LIMIT 1
+) AS t
+LEFT JOIN (
+    SELECT c0."Id", c0."CartId", c0."ProductId", c0."Quantity", p."Id" AS "Id0", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+    FROM "CartItems" AS c0
+    INNER JOIN "Products" AS p ON c0."ProductId" = p."Id"
+) AS t0 ON t."Id" = t0."CartId"
+ORDER BY t."Id", t0."Id"
+2025-09-07 11:47:24.066 +03:00 [WRN] Unable to configure Browser Link script injection on the response. 
+2025-09-07 11:47:24.069 +03:00 [INF] SideCartPartial çağrıldı. User: 97cd7234-1567-49a1-a7bb-4c758ddd82c9, Ürün Sayısı: 1
+2025-09-07 11:47:24.070 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Cart/SideCartPartial - 200 null text/html; charset=utf-8 82.5849ms
+2025-09-07 11:47:24.071 +03:00 [INF] Executing PartialViewResult, running view SideCartPartial.
+2025-09-07 11:47:24.084 +03:00 [INF] Executed PartialViewResult - view SideCartPartial executed in 13.0452ms.
+2025-09-07 11:47:24.088 +03:00 [INF] Executed action Notifico.Controllers.CartController.SideCartPartial (Notifico) in 32.5081ms
+2025-09-07 11:47:24.091 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.SideCartPartial (Notifico)'
+2025-09-07 11:47:24.094 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Cart/SideCartPartial - 200 null text/html; charset=utf-8 62.7141ms
+2025-09-07 11:47:26.327 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/Cart/MyCart - null null
+2025-09-07 11:47:26.336 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.MyCart (Notifico)'
+2025-09-07 11:47:26.338 +03:00 [INF] Route matched with {action = "MyCart", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] MyCart() on controller Notifico.Controllers.CartController (Notifico).
+2025-09-07 11:47:26.345 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__userId_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT t."Id", t."UserId", t0."Id", t0."CartId", t0."ProductId", t0."Quantity", t0."Id0", t0."Category", t0."DateAdded", t0."Description", t0."ImageUrl", t0."Name", t0."Price", t0."Stock"
+FROM (
+    SELECT c."Id", c."UserId"
+    FROM "Carts" AS c
+    WHERE c."UserId" = @__userId_0
+    LIMIT 1
+) AS t
+LEFT JOIN (
+    SELECT c0."Id", c0."CartId", c0."ProductId", c0."Quantity", p."Id" AS "Id0", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+    FROM "CartItems" AS c0
+    INNER JOIN "Products" AS p ON c0."ProductId" = p."Id"
+) AS t0 ON t."Id" = t0."CartId"
+ORDER BY t."Id", t0."Id"
+2025-09-07 11:47:26.352 +03:00 [INF] Kullanıcı sepetini görüntüledi. User: 97cd7234-1567-49a1-a7bb-4c758ddd82c9, Ürün Sayısı: 1
+2025-09-07 11:47:26.354 +03:00 [INF] Executing ViewResult, running view MyCart.
+2025-09-07 11:47:26.361 +03:00 [INF] Executed ViewResult - view MyCart executed in 6.8081ms.
+2025-09-07 11:47:26.364 +03:00 [INF] Executed action Notifico.Controllers.CartController.MyCart (Notifico) in 22.8188ms
+2025-09-07 11:47:26.366 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.MyCart (Notifico)'
+2025-09-07 11:47:26.367 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/Cart/MyCart - 200 null text/html; charset=utf-8 40.1729ms
+2025-09-07 11:47:26.371 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_vs/browserLink - null null
+2025-09-07 11:47:26.371 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - null null
+2025-09-07 11:47:26.386 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_framework/aspnetcore-browser-refresh.js - 200 13751 application/javascript; charset=utf-8 15.93ms
+2025-09-07 11:47:26.393 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7193/_vs/browserLink - 200 null text/javascript; charset=UTF-8 22.9766ms
+2025-09-07 11:47:29.086 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7193/Cart/IncreaseQuantityAjax - application/x-www-form-urlencoded; charset=UTF-8 5
+2025-09-07 11:47:29.093 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.IncreaseQuantityAjax (Notifico)'
+2025-09-07 11:47:29.103 +03:00 [INF] Route matched with {action = "IncreaseQuantityAjax", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] IncreaseQuantityAjax(Int32) on controller Notifico.Controllers.CartController (Notifico).
+2025-09-07 11:47:29.125 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__id_0='?' (DbType = Int32), @__userId_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."CartId", c."ProductId", c."Quantity", c0."Id", c0."UserId", p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "CartItems" AS c
+INNER JOIN "Carts" AS c0 ON c."CartId" = c0."Id"
+INNER JOIN "Products" AS p ON c."ProductId" = p."Id"
+WHERE c."Id" = @__id_0 AND c0."UserId" = @__userId_1
+LIMIT 1
+2025-09-07 11:47:29.146 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "CartItems" SET "Quantity" = @p0
+WHERE "Id" = @p1;
+2025-09-07 11:47:29.161 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__cartItem_CartId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(p."Price" * c."Quantity"::numeric), 0.0)
+FROM "CartItems" AS c
+INNER JOIN "Products" AS p ON c."ProductId" = p."Id"
+WHERE c."CartId" = @__cartItem_CartId_0
+2025-09-07 11:47:29.167 +03:00 [INF] AJAX - Ürün adedi artırıldı. User: 97cd7234-1567-49a1-a7bb-4c758ddd82c9, ProductId: 1, Yeni Adet: 2
+2025-09-07 11:47:29.172 +03:00 [INF] Executing JsonResult, writing value of type '<>f__AnonymousType5`4[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-09-07 11:47:29.183 +03:00 [INF] Executed action Notifico.Controllers.CartController.IncreaseQuantityAjax (Notifico) in 75.8793ms
+2025-09-07 11:47:29.186 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.IncreaseQuantityAjax (Notifico)'
+2025-09-07 11:47:29.189 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7193/Cart/IncreaseQuantityAjax - 200 null application/json; charset=utf-8 103.4455ms
+2025-09-07 11:47:34.181 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7193/Cart/IncreaseQuantityAjax - application/x-www-form-urlencoded; charset=UTF-8 5
+2025-09-07 11:47:34.187 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.IncreaseQuantityAjax (Notifico)'
+2025-09-07 11:47:34.192 +03:00 [INF] Route matched with {action = "IncreaseQuantityAjax", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] IncreaseQuantityAjax(Int32) on controller Notifico.Controllers.CartController (Notifico).
+2025-09-07 11:47:34.197 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[@__id_0='?' (DbType = Int32), @__userId_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."CartId", c."ProductId", c."Quantity", c0."Id", c0."UserId", p."Id", p."Category", p."DateAdded", p."Description", p."ImageUrl", p."Name", p."Price", p."Stock"
+FROM "CartItems" AS c
+INNER JOIN "Carts" AS c0 ON c."CartId" = c0."Id"
+INNER JOIN "Products" AS p ON c."ProductId" = p."Id"
+WHERE c."Id" = @__id_0 AND c0."UserId" = @__userId_1
+LIMIT 1
+2025-09-07 11:47:34.210 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "CartItems" SET "Quantity" = @p0
+WHERE "Id" = @p1;
+2025-09-07 11:47:34.215 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__cartItem_CartId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(p."Price" * c."Quantity"::numeric), 0.0)
+FROM "CartItems" AS c
+INNER JOIN "Products" AS p ON c."ProductId" = p."Id"
+WHERE c."CartId" = @__cartItem_CartId_0
+2025-09-07 11:47:34.220 +03:00 [INF] AJAX - Ürün adedi artırıldı. User: 97cd7234-1567-49a1-a7bb-4c758ddd82c9, ProductId: 1, Yeni Adet: 3
+2025-09-07 11:47:34.225 +03:00 [INF] Executing JsonResult, writing value of type '<>f__AnonymousType5`4[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-09-07 11:47:34.227 +03:00 [INF] Executed action Notifico.Controllers.CartController.IncreaseQuantityAjax (Notifico) in 33.28ms
+2025-09-07 11:47:34.230 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.IncreaseQuantityAjax (Notifico)'
+2025-09-07 11:47:34.236 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7193/Cart/IncreaseQuantityAjax - 200 null application/json; charset=utf-8 54.8469ms
+2025-09-07 11:47:38.944 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7193/Cart/RemoveFromCartAjax - application/x-www-form-urlencoded; charset=UTF-8 5
+2025-09-07 11:47:38.968 +03:00 [INF] Executing endpoint 'Notifico.Controllers.CartController.RemoveFromCartAjax (Notifico)'
+2025-09-07 11:47:38.973 +03:00 [INF] Route matched with {action = "RemoveFromCartAjax", controller = "Cart"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RemoveFromCartAjax(Int32) on controller Notifico.Controllers.CartController (Notifico).
+2025-09-07 11:47:38.998 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__id_0='?' (DbType = Int32), @__userId_1='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."CartId", c."ProductId", c."Quantity", c0."Id", c0."UserId"
+FROM "CartItems" AS c
+INNER JOIN "Carts" AS c0 ON c."CartId" = c0."Id"
+WHERE c."Id" = @__id_0 AND c0."UserId" = @__userId_1
+LIMIT 1
+2025-09-07 11:47:39.029 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[@p0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM "CartItems"
+WHERE "Id" = @p0;
+2025-09-07 11:47:39.044 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__cartId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(p."Price" * c."Quantity"::numeric), 0.0)
+FROM "CartItems" AS c
+INNER JOIN "Products" AS p ON c."ProductId" = p."Id"
+WHERE c."CartId" = @__cartId_0
+2025-09-07 11:47:39.049 +03:00 [INF] AJAX - Ürün sepetten çıkarıldı. User: 97cd7234-1567-49a1-a7bb-4c758ddd82c9, ProductId: 1
+2025-09-07 11:47:39.052 +03:00 [INF] Executing JsonResult, writing value of type '<>f__AnonymousType6`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-09-07 11:47:39.054 +03:00 [INF] Executed action Notifico.Controllers.CartController.RemoveFromCartAjax (Notifico) in 62.5016ms
+2025-09-07 11:47:39.057 +03:00 [INF] Executed endpoint 'Notifico.Controllers.CartController.RemoveFromCartAjax (Notifico)'
+2025-09-07 11:47:39.060 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7193/Cart/RemoveFromCartAjax - 200 null application/json; charset=utf-8 117.119ms

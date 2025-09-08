@@ -511,6 +511,7 @@ namespace Notifico.Controllers
             return RedirectToAction("OrderSuccess", "Cart");
         }
 
+
         [HttpPost]
         public async Task<IActionResult> RemoveFromCartAjax(int id)
         {
