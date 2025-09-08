@@ -6,7 +6,88 @@
     var error = TempData["Error"] as string;
 }
 
-<h2>Sepetim</h2>
+<style>
+    .cart-header {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #183261;
+        margin-bottom: 1.4rem;
+        letter-spacing: -0.03em;
+    }
+    .cart-table {
+        background: #fff;
+        border-radius: 1.2rem;
+        box-shadow: 0 3px 16px 0 rgba(48,80,160,0.09);
+        overflow: hidden;
+    }
+    .cart-table thead {
+        background: #f4f8ff;
+    }
+    .cart-table th {
+        color: #193d71;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+    .cart-table td {
+        vertical-align: middle;
+        font-size: 1.02rem;
+    }
+    .cart-img {
+        width: 56px; height: 56px; border-radius: 10px; object-fit: cover;
+        border: 1.2px solid #e8e8f1;
+        background: #f6f8fb;
+    }
+    .cart-prod-name {
+        font-weight: 700; color: #1a2e4a;
+    }
+    .cart-btn-qty {
+        width: 32px; height: 32px; border-radius: 7px;
+        border: none; background: #eaf0fa;
+        color: #20477a; font-weight: 700; font-size: 1.17rem;
+        transition: background .15s;
+    }
+    .cart-btn-qty:hover { background: #d2e3fa; }
+    .cart-btn-remove {
+        border-radius: 7px; font-weight: 600; border: none;
+        background: #e14d4d; color: #fff; font-size: 1rem;
+        padding: 0.43rem 1.17rem;
+        transition: background .14s;
+    }
+    .cart-btn-remove:hover { background: #af1f1f; }
+    .cart-btn-clear {
+        border-radius: 1.1rem;
+        background: #fff;
+        color: #e14d4d;
+        border: 1.2px solid #ffb2b2;
+        font-weight: 700;
+        padding: 0.5rem 1.35rem;
+        margin-bottom: 1.5rem;
+        transition: background .13s, color .13s;
+    }
+    .cart-btn-clear:hover { background: #fff3f3; color: #a82222; }
+    .cart-total-row {
+        font-size: 1.15rem; font-weight: 700; color: #122344;
+        margin: 1.6rem 0 1rem 0; text-align: right;
+    }
+    .cart-checkout-row {
+        text-align: right; margin-top: 2rem;
+    }
+    .cart-btn-checkout {
+        border-radius: 1.15rem; font-size: 1.15rem;
+        font-weight: 700; padding: 0.73rem 2.3rem;
+        background: #2563eb; color: #fff; border: none;
+        box-shadow: 0 1px 9px 0 rgba(47,101,208,0.08);
+        transition: background .16s;
+    }
+    .cart-btn-checkout:hover { background: #153265; }
+    media (max-width: 800px) {
+        .cart-header { font-size: 1.2rem; }
+        .cart-table th, .cart-table td { font-size: 0.98rem; }
+        .cart-btn-checkout { font-size: 1rem; padding: 0.7rem 1.7rem;}
+    }
+</style>
+
+<div class="cart-header">Sepetim</div>
 
 @if (Model == null || !Model.Any())
 {
@@ -16,61 +97,72 @@
 }
 else
 {
-    <button id="clearCartBtn" class="btn btn-danger mb-3">
-        Sepeti Boşalt
+    <button id="clearCartBtn" class="cart-btn-clear">
+        <i class="bi bi-trash"></i> Sepeti Boşalt
     </button>
 
-    <table class="table table-bordered table-striped mt-4">
-        <thead>
-            <tr>
-                <th>Ürün</th>
-                <th>Fiyat</th>
-                <th>Adet</th>
-                <th>Toplam</th>
-                <th>İşlem</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                var satirTutar = (item.Product != null ? item.Product.Price : 0) * item.Quantity;
-                <tr data-id="@item.Id">
-                    <td>@item.Product?.Name</td>
-                    <td>@(item.Product != null ? $"{item.Product.Price:C}" : "-")</td>
-                    <td>
-                        <button class="btn btn-outline-secondary btn-sm btn-decrease"
-                                data-id="@item.Id"
-                        @(item.Quantity == 1 ? "disabled" : "")>
-                            -
-                        </button>
-                        <span class="mx-2" id="qty_@item.Id">@item.Quantity</span>
-                        <button class="btn btn-outline-secondary btn-sm btn-increase"
-                                data-id="@item.Id"
-                        @(item.Product != null && item.Quantity == item.Product.Stock ? "disabled" : "")>
-                            +
-                        </button>
-                    </td>
-                    <td id="line_@item.Id">@satirTutar.ToString("C")</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm btn-remove" data-id="@item.Id">
-                            Sepetten Çıkar
-                        </button>
-                    </td>
+    <div class="cart-table mb-4">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Ürün</th>
+                    <th>Fiyat</th>
+                    <th>Adet</th>
+                    <th>Toplam</th>
+                    <th style="width:115px">İşlem</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-
-    <div class="mt-3 text-end">
-        <strong>Sepet Toplamı: <span id="cartTotal">@toplamTutar.ToString("C")</span></strong>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var satirTutar = (item.Product != null ? item.Product.Price : 0) * item.Quantity;
+                    <tr data-id="@item.Id">
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="@(string.IsNullOrEmpty(item.Product?.ImageUrl) ? "/images/no-image.png" : item.Product.ImageUrl)"
+                                     alt="@item.Product?.Name"
+                                     class="cart-img" />
+                                <span class="cart-prod-name">@item.Product?.Name</span>
+                            </div>
+                        </td>
+                        <td>@(item.Product != null ? $"{item.Product.Price:C}" : "-")</td>
+                        <td>
+                            <button class="cart-btn-qty btn-decrease"
+                                    data-id="@item.Id"
+                            @(item.Quantity == 1 ? "disabled" : "")>
+                                -
+                            </button>
+                            <span class="mx-2" id="qty_@item.Id">@item.Quantity</span>
+                            <button class="cart-btn-qty btn-increase"
+                                    data-id="@item.Id"
+                            @(item.Product != null && item.Quantity == item.Product.Stock ? "disabled" : "")>
+                                +
+                            </button>
+                        </td>
+                        <td id="line_@item.Id">@satirTutar.ToString("C")</td>
+                        <td>
+                            <button class="cart-btn-remove btn-remove" data-id="@item.Id">
+                                <i class="bi bi-x-circle"></i> Çıkar
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 
-    <form asp-action="Checkout" asp-controller="Cart" method="get" class="text-end mt-4">
-        <button type="submit" class="btn btn-primary btn-lg"
-        @(Model == null || !Model.Any() ? "disabled" : "")>
-            Siparişi Onayla
-        </button>
-    </form>
+    <div class="cart-total-row">
+        Sepet Toplamı: <span id="cartTotal">@toplamTutar.ToString("C")</span>
+    </div>
+
+    <div class="cart-checkout-row">
+        <form asp-action="Checkout" asp-controller="Cart" method="get">
+            <button type="submit" class="cart-btn-checkout"
+            @(Model == null || !Model.Any() ? "disabled" : "")>
+                Siparişi Onayla
+            </button>
+        </form>
+    </div>
 }
 
 @Html.AntiForgeryToken()

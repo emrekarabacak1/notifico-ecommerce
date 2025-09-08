@@ -1,70 +1,190 @@
 ﻿@model IEnumerable<Notifico.Models.Product>
-
 @{
+    Layout = "_AdminLayout";
     ViewData["Title"] = "Ürünler";
+    var tr = new System.Globalization.CultureInfo("tr-TR");
 }
 
-<h2>Ürünler</h2>
+<style>
+.admin-products-main {
+    width: 100%;
+    max-width: 1100px;
+    margin: 2.5rem auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px 0 rgba(60,110,180,0.09);
+    padding: 2.3rem 2.1rem 2.1rem 2.1rem;
+}
+.admin-products-header {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    margin-bottom: 1.8rem;
+}
+.admin-products-header h2 {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #174272;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+.admin-add-btn {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.09rem;
+    border-radius: 10px;
+    padding: 0.61rem 1.42rem;
+    margin-left: auto;
+    box-shadow: 0 1px 8px 0 rgba(60,110,180,0.10);
+    transition: background .13s;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+.admin-add-btn:hover {
+    background: #143079;
+    color: #fff;
+}
+.admin-products-table {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 3px 20px 0 rgba(60,110,180,0.07);
+    overflow: hidden;
+    margin-top: 0.9rem;
+}
+.admin-products-table th {
+    background: #f5f9ff;
+    color: #223b64;
+    font-weight: 700;
+    font-size: 1.02rem;
+    border-bottom: 2.5px solid #e7edfa !important;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.admin-products-table td {
+    vertical-align: middle;
+    font-size: 1.01rem;
+    text-align: center;
+}
+.admin-products-table tbody tr:nth-child(even) { background: #f7fbff; }
+.product-img {
+    width: 44px; height: 44px; border-radius: 8px; object-fit: cover;
+    border: 1.3px solid #dde6f9; background: #f7fafc;
+}
+.admin-action-btn {
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.97rem;
+    padding: 0.35rem 0.92rem;
+    margin-right: 0.22rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.24rem;
+}
+.admin-action-btn.edit {
+    background: #fbbf24;
+    color: #173250;
+    border: none;
+}
+.admin-action-btn.edit:hover {
+    background: #f59e0b;
+    color: #fff;
+}
+.admin-action-btn.delete {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+}
+.admin-action-btn.delete:hover {
+    background: #b91c1c;
+    color: #fff;
+}
+.desc-short {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+    display: inline-block;
+    vertical-align: middle;
+}
+media (max-width: 1200px) {
+    .admin-products-main { max-width: 99vw; padding: 1.3rem 0.3rem;}
+    .admin-products-header h2 { font-size: 1.18rem;}
+}
+media (max-width: 700px) {
+    .admin-products-main { max-width: 100vw; margin: 0; padding: 0.5rem 0.03rem; border-radius: 0;}
+    .admin-products-header { flex-direction: column; align-items: flex-start; gap: 0.7rem;}
+    .admin-add-btn { margin-left: 0;}
+    .admin-products-table th, .admin-products-table td { font-size: 0.91rem;}
+    .desc-short { max-width: 70px;}
+}
+</style>
 
-<a class="btn btn-primary mb-3" asp-controller="Admin" asp-action="AddProduct">Yeni Ürün Ekle</a>
+<div class="admin-products-main">
+    <div class="admin-products-header">
+        <i class="bi bi-box-seam" style="font-size:1.6rem;vertical-align:-0.22em;color:#2563eb"></i>
+        <h2>Ürünler</h2>
+        <a class="admin-add-btn" asp-controller="Admin" asp-action="AddProduct">
+            <i class="bi bi-plus-circle"></i> Yeni Ürün Ekle
+        </a>
+    </div>
 
-<div class="table-responsive">
-    <table class="table table-bordered table-striped align-middle">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Adı</th>
-                <th>Açıklama</th>
-                <th>Fiyat</th>
-                <th>Stok</th>
-                <th>Kategori</th>
-                <th>Tarih</th>
-                <th>Resim</th>
-                <th>İşlemler</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var p in Model)
-            {
+    <div class="table-responsive admin-products-table">
+        <table class="table align-middle mb-0">
+            <thead>
                 <tr>
-                    <td>@p.Id</td>
-                    <td>@p.Name</td>
-                    <td>
-                        @(p.Description?.Length > 50
-                            ? p.Description.Substring(0, 50) + "..."
-                            : p.Description)
-                    </td>
-                    <td>@($"{p.Price:C}")</td>
-                    <td>@p.Stock</td>
-                    <td>@p.Category</td>
-                    <td>@p.DateAdded.ToString("dd.MM.yyyy")</td>
-                    <td>
-                        <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "/images/no-image.png" : p.ImageUrl)"
-                             alt="Ürün Resmi" style="width:40px; height:40px; object-fit:cover; border-radius:6px;" />
-                    </td>
-                    <td>
-                        <a class="btn btn-warning btn-sm" asp-action="EditProduct" asp-route-id="@p.Id">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
-                        <form asp-action="DeleteProduct" asp-route-id="@p.Id" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Bu ürünü silmek istediğinize emin misiniz?');">
-                                <i class="bi bi-trash"></i> Delete
-                            </button>
-                        </form>
-                    </td>
+                    <th style="width:44px;">ID</th>
+                    <th>Adı</th>
+                    <th>Açıklama</th>
+                    <th>Fiyat</th>
+                    <th>Stok</th>
+                    <th>Kategori</th>
+                    <th>Tarih</th>
+                    <th>Resim</th>
+                    <th style="min-width:120px;">İşlemler</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td>@p.Id</td>
+                        <td>@p.Name</td>
+                        <td>
+                            <span class="desc-short" title="@p.Description">
+                                @(p.Description?.Length > 40 ? p.Description.Substring(0, 40) + "..." : p.Description)
+                            </span>
+                        </td>
+                        <td>@p.Price.ToString("C", tr)</td>
+                        <td>@p.Stock</td>
+                        <td>@p.Category</td>
+                        <td>@p.DateAdded.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "/images/no-image.png" : p.ImageUrl)" class="product-img" alt="Ürün Resmi" />
+                        </td>
+                        <td>
+                            <a class="admin-action-btn edit" asp-action="EditProduct" asp-route-id="@p.Id">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <form asp-action="DeleteProduct" asp-route-id="@p.Id" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="admin-action-btn delete" onclick="return confirm('Bu ürünü silmek istediğinize emin misiniz?');">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @section Scripts {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.js"></script>
-
     <script>
         $(function () {
         @if (TempData["StatusMessage"] != null)
@@ -72,6 +192,6 @@
             var msg = TempData["StatusMessage"].ToString().Replace("'", "\\'");
             <text>toastr.success('@msg', 'Bilgi', { timeOut: 2400 }); </text>
         }
-                });
+        });
     </script>
 }

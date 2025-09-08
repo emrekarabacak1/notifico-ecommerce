@@ -2,67 +2,145 @@
 @{
     ViewData["Title"] = "Adreslerim";
 }
-<h2 class="mb-4">Adreslerim</h2>
+<style>
+    .address-card-outer {
+        margin: 2.5rem auto 0 auto;
+        max-width: 880px;
+    }
+    .address-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 1.6rem;
+    }
+    .address-header-row h2 {
+        margin-bottom: 0;
+        font-weight: 800;
+        color: #153261;
+        font-size: 2.1rem;
+        letter-spacing: -0.02em;
+    }
+    .address-add-btn {
+        font-weight: 700;
+        border-radius: 1.5rem;
+        font-size: 1.09rem;
+        padding: 0.5rem 1.3rem;
+        box-shadow: 0 2px 10px 0 rgba(47,101,208,0.09);
+    }
+    .address-table thead th {
+        background: #f4f8fd;
+        color: #3a4865;
+        font-weight: 700;
+        font-size: 1.03rem;
+        border-bottom: 2px solid #e0e5f3;
+    }
+    .address-table td, .address-table th {
+        vertical-align: middle !important;
+    }
+    .address-badge {
+        font-size: 1rem;
+        border-radius: 1.2rem;
+        padding: 0.36rem 1.3rem 0.35rem 1.3rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+    }
+    .address-default-btn {
+        font-size: 0.97rem;
+        border-radius: 1.1rem;
+        padding: 0.32rem 1.2rem 0.31rem 1.2rem;
+        font-weight: 700;
+    }
+    .address-action-btns .btn {
+        min-width: 80px;
+        border-radius: 1.2rem;
+        font-weight: 700;
+    }
+    .address-action-btns .btn-warning {
+        background: #ffc107;
+        border: none;
+        color: #153261;
+    }
+    .address-action-btns .btn-warning:hover {
+        background: #ffd642;
+        color: #153261;
+    }
+    .address-action-btns .btn-danger {
+        background: #f44336;
+        border: none;
+    }
+    .address-action-btns .btn-danger:hover {
+        background: #d32f2f;
+    }
+    media (max-width: 800px) {
+        .address-card-outer { max-width: 99vw; }
+        .address-header-row h2 { font-size: 1.18rem; }
+    }
+</style>
 
-<a asp-action="Add" class="btn btn-primary mb-3">+ Yeni Adres Ekle</a>
+<div class="address-card-outer">
+    <div class="address-header-row">
+        <h2>Adreslerim</h2>
+        <a asp-action="Add" class="btn btn-primary address-add-btn">+ Yeni Adres Ekle</a>
+    </div>
 
-@if (Model == null || !Model.Any())
-{
-    <div class="alert alert-info mt-4">Henüz kayıtlı adresiniz yok.</div>
-}
-else
-{
-    <div class="table-responsive">
-        <table class="table align-middle table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>Başlık</th>
-                    <th>Adres</th>
-                    <th>Şehir</th>
-                    <th>İlçe</th>
-                    <th class="text-center">Varsayılan</th>
-                    <th class="text-center">İşlem</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var a in Model)
-                {
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info mt-4">Henüz kayıtlı adresiniz yok.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table address-table align-middle table-bordered table-hover">
+                <thead>
                     <tr>
-                        <td>@a.Title</td>
-                        <td style="max-width:220px;word-break:break-word;">@a.FullAddress</td>
-                        <td>@a.City</td>
-                        <td>@a.District</td>
-                        <td class="text-center">
-                            @if (a.IsDefault)
-                            {
-                                <span class="badge bg-success px-3 py-2">Varsayılan</span>
-                            }
-                            else
-                            {
-                                <form asp-action="SetDefault" method="post" style="display:inline;" asp-route-id="@a.Id">
+                        <th>Başlık</th>
+                        <th>Adres</th>
+                        <th>Şehir</th>
+                        <th>İlçe</th>
+                        <th class="text-center">Varsayılan</th>
+                        <th class="text-center">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td style="font-weight:700;">@a.Title</td>
+                            <td style="max-width:220px;word-break:break-word;">@a.FullAddress</td>
+                            <td>@a.City</td>
+                            <td>@a.District</td>
+                            <td class="text-center">
+                                @if (a.IsDefault)
+                                {
+                                    <span class="badge bg-success address-badge">Varsayılan</span>
+                                }
+                                else
+                                {
+                                    <form asp-action="SetDefault" method="post" style="display:inline;" asp-route-id="@a.Id">
+                                        @Html.AntiForgeryToken()
+                                        <button class="btn btn-outline-secondary btn-sm address-default-btn" type="submit" title="Varsayılan Yap">
+                                            Yap
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                            <td class="text-center address-action-btns">
+                                <a asp-action="Edit" asp-route-id="@a.Id" class="btn btn-warning btn-sm me-1">Düzenle</a>
+                                <form asp-action="Delete" method="post" style="display:inline;" asp-route-id="@a.Id">
                                     @Html.AntiForgeryToken()
-                                    <button class="btn btn-outline-secondary btn-sm" type="submit" title="Varsayılan Yap">
-                                        Yap
+                                    <button class="btn btn-danger btn-sm" type="submit"
+                                            onclick="return confirm('Bu adres silinsin mi?');">
+                                        Sil
                                     </button>
                                 </form>
-                            }
-                        </td>
-                        <td class="text-center">
-                            <a asp-action="Edit" asp-route-id="@a.Id" class="btn btn-warning btn-sm me-1">Düzenle</a>
-                            <form asp-action="Delete" method="post" style="display:inline;" asp-route-id="@a.Id">
-                                @Html.AntiForgeryToken()
-                                <button class="btn btn-danger btn-sm" type="submit"
-                                        onclick="return confirm('Bu adres silinsin mi?');">
-                                    Sil
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
 
 @section Scripts {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
@@ -77,6 +155,6 @@ else
         {
             <text>toastr.error("@ViewBag.Error", "Hata", { timeOut: 2500 }); </text>
         }
-                });
+        });
     </script>
 }

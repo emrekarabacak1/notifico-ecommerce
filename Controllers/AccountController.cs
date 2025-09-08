@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
 using Notifico.Models;
-using System.Security.Claims;
 
 namespace Notifico.Controllers
 {
@@ -30,26 +29,21 @@ namespace Notifico.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register()
-        {
-            return View(new RegisterViewModel());
-        }
+        public IActionResult Register() => View(new RegisterViewModel());
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid) return View(model);
 
-            var existingEmail = await _userManager.FindByEmailAsync(model.Email);
-            if (existingEmail != null)
+            if (await _userManager.FindByEmailAsync(model.Email) != null)
             {
                 TempData["Error"] = "Bu e-posta ile zaten kayıt olunmuş.";
                 return View(model);
             }
-            var existingUser = await _userManager.FindByNameAsync(model.UserName);
-            if (existingUser != null)
+
+            if (await _userManager.FindByNameAsync(model.UserName) != null)
             {
                 TempData["Error"] = "Bu kullanıcı adı zaten alınmış.";
                 return View(model);
@@ -77,7 +71,7 @@ namespace Notifico.Controllers
                     !string.IsNullOrWhiteSpace(model.City) &&
                     !string.IsNullOrWhiteSpace(model.District))
                 {
-                    var address = new Address
+                    _context.Addresses.Add(new Address
                     {
                         UserId = user.Id,
                         Title = "Varsayılan Adres",
@@ -86,18 +80,13 @@ namespace Notifico.Controllers
                         District = model.District,
                         ZipCode = "",
                         IsDefault = true
-                    };
-
-                    _context.Addresses.Add(address);
+                    });
                     await _context.SaveChangesAsync();
                 }
 
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var encodedToken = System.Net.WebUtility.UrlEncode(token);
-
-                var confirmLink = Url.Action("ConfirmEmail", "Account",
-                    new { userId = user.Id, token = encodedToken },
-                    protocol: HttpContext.Request.Scheme);
+                var confirmLink = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = encodedToken }, Request.Scheme);
 
                 try
                 {
@@ -110,14 +99,16 @@ namespace Notifico.Controllers
                     TempData["Info"] = "Kayıt başarılı! E-posta adresinize bir onay maili gönderildi.";
                     TempData["EmailConfirmationLink"] = confirmLink;
                 }
-                catch (Exception)
+                catch
                 {
                     await _userManager.DeleteAsync(user);
                     TempData["Error"] = "Kayıt sırasında e-posta gönderilemedi. Lütfen geçerli bir adres kullanın.";
                     return View(model);
                 }
+
                 return RedirectToAction("RegisterConfirmation");
             }
+
             foreach (var error in result.Errors)
                 TempData["Error"] = error.Description;
 
@@ -125,12 +116,7 @@ namespace Notifico.Controllers
         }
 
         [HttpGet]
-        public IActionResult RegisterConfirmation()
-        {
-            if (TempData["Info"] == null)
-                TempData["Info"] = "Lütfen e-posta adresinizi kontrol ederek hesabınızı onaylayın.";
-            return View();
-        }
+        public IActionResult RegisterConfirmation() => View();
 
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
@@ -149,46 +135,27 @@ namespace Notifico.Controllers
             }
 
             token = System.Net.WebUtility.UrlDecode(token);
-
             var result = await _userManager.ConfirmEmailAsync(user, token);
+
             if (result.Succeeded)
             {
                 TempData["Success"] = "E-posta onayı başarılı! Artık giriş yapabilirsiniz.";
                 return View("ConfirmEmailSuccess");
             }
-            else
-            {
-                TempData["Error"] = "E-posta onayında bir hata oluştu.";
-                return View("ConfirmEmailError");
-            }
+
+            TempData["Error"] = "E-posta onayında bir hata oluştu.";
+            return View("ConfirmEmailError");
         }
 
         [HttpGet]
-        public IActionResult ConfirmEmailSuccess()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public IActionResult ConfirmEmailError()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View(new LoginViewModel());
-        }
+        public IActionResult Login() => View(new LoginViewModel());
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
@@ -201,28 +168,33 @@ namespace Notifico.Controllers
             if (result.Succeeded)
             {
                 TempData["Success"] = "Giriş başarılı!";
-                return RedirectToAction("Index", "Product");
+
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    return RedirectToAction("Index", "Admin");
+
+                return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError("", "E-posta veya şifre hatalı.");
             return View(model);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+
+            HttpContext.Session.Clear();
+
+            TempData.Clear();
             TempData["Info"] = "Çıkış yapıldı.";
+
             return RedirectToAction("Login");
         }
 
         [HttpGet]
-        public IActionResult ForgotPassword()
-        {
-            return View();
-        }
+        public IActionResult ForgotPassword() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -231,11 +203,10 @@ namespace Notifico.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Lütfen geçerli bir e-posta giriniz.";
-                return View(model);
+                return View();
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
-
             if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
             {
                 TempData["Info"] = "Eğer bu e-posta adresi kayıtlıysa şifre sıfırlama maili gönderildi.";
@@ -252,7 +223,7 @@ namespace Notifico.Controllers
 
                 TempData["Success"] = "Şifre sıfırlama maili gönderildi!";
             }
-            catch (Exception)
+            catch
             {
                 TempData["Error"] = "Şifre sıfırlama e-postası gönderilemedi.";
             }
@@ -268,6 +239,7 @@ namespace Notifico.Controllers
                 TempData["Error"] = "Şifre sıfırlama linki hatalı veya eksik.";
                 return RedirectToAction("Index", "Home");
             }
+
             return View(new ResetPasswordViewModel { Token = token, Email = email });
         }
 
@@ -294,10 +266,17 @@ namespace Notifico.Controllers
                 TempData["Success"] = "Şifre başarıyla sıfırlandı. Giriş yapabilirsiniz.";
                 return RedirectToAction("Login");
             }
+
             foreach (var error in result.Errors)
                 TempData["Error"] = error.Description;
 
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult ConfirmEmailSuccess() => View();
+
+        [HttpGet]
+        public IActionResult ConfirmEmailError() => View();
     }
 }

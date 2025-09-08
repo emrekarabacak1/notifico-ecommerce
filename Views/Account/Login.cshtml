@@ -2,28 +2,155 @@
 
 @{
     ViewData["Title"] = "Giriş Yap";
+    ViewData["FullPage"] = true; 
 }
 
-<h2 class="mb-4">Giriş Yap</h2>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: #f7fafd;
+        min-height: 100vh;
+    }
+    .login-center-wrapper {
+        min-height: 80vh;
+        width: 100vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .login-box {
+        width: 100%;
+        max-width: 380px;
+        background: #fff;
+        border-radius: 1.2rem;
+        box-shadow: 0 4px 30px 0 rgba(70,110,200,0.09);
+        padding: 2.5rem 2.1rem 2.1rem 2.1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1.5px solid #e6eefd;
+    }
+    .login-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #183261;
+        margin-bottom: 1.1rem;
+        text-align: center;
+        letter-spacing: -0.02em;
+    }
+    .login-form {
+        width: 100%;
+        margin-top: 0.3rem;
+    }
+    .login-form label {
+        font-weight: 600;
+        color: #37446d;
+        font-size: 1rem;
+        margin-bottom: 0.18rem;
+    }
+    .login-form .form-group {
+        margin-bottom: 1.09rem;
+    }
+    .login-form .form-control {
+        border-radius: 0.9rem;
+        border: 1.3px solid #d4e0f5;
+        font-size: 1rem;
+        padding: 0.74rem 1.13rem;
+        background: #fcfcff;
+        transition: border .15s;
+    }
+    .login-form .form-control:focus {
+        border-color: #7aa7e7;
+        box-shadow: 0 0 0 2px #e5f0ff;
+        background: #f4f9ff;
+    }
+    .login-form .text-danger { font-size: 0.95rem; }
+    .login-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-bottom: 1.2rem;
+        margin-top: -0.5rem;
+    }
+    .login-forgot-link {
+        font-size: 0.98rem;
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .login-forgot-link:hover {
+        text-decoration: underline;
+        color: #153265;
+    }
+    .login-btn-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 1.1rem;
+        margin-top: 0.3rem;
+    }
+    .login-btn {
+        background: #2563eb;
+        color: #fff;
+        border-radius: 2rem;
+        padding: 0.76rem 2.2rem;
+        font-size: 1.09rem;
+        font-weight: 700;
+        border: none;
+        transition: background .18s;
+        box-shadow: 0 2px 10px 0 rgba(47,101,208,0.09);
+    }
+    .login-btn:hover {
+        background: #153265;
+    }
+    .login-register-link {
+        color: #2563eb;
+        font-weight: 600;
+        font-size: 1.05rem;
+        text-decoration: none;
+        padding: 0.43rem 0.9rem;
+        border-radius: 1.1rem;
+        transition: background 0.18s, color 0.18s;
+    }
+    .login-register-link:hover {
+        background: #eaf2ff;
+        color: #153265;
+        text-decoration: underline;
+    }
+    media (max-width: 600px) {
+        .login-box { max-width: 97vw; padding: 1.1rem 0.5rem; }
+        .login-title { font-size: 1.19rem; }
+        .login-btn-row { flex-direction: column; gap: 0.67rem; align-items: stretch;}
+    }
+</style>
 
-<form asp-action="Login" method="post" autocomplete="off">
-    @Html.AntiForgeryToken()
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" placeholder="E-posta adresiniz" autocomplete="username" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+<div class="login-center-wrapper">
+    <div class="login-box">
+        <div class="login-title">Giriş Yap</div>
+        <form asp-action="Login" method="post" autocomplete="off" class="login-form">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label asp-for="Email">E-posta</label>
+                <input asp-for="Email" class="form-control" placeholder="E-posta adresiniz" autocomplete="username" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password">Şifre</label>
+                <input asp-for="Password" class="form-control" type="password" placeholder="Şifreniz" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="login-actions">
+                <a asp-action="ForgotPassword" asp-controller="Account" class="login-forgot-link">Şifremi Unuttum?</a>
+            </div>
+            <div class="login-btn-row">
+                <button type="submit" class="login-btn">Giriş Yap</button>
+                <a asp-action="Register" asp-controller="Account" class="login-register-link">Kayıt Ol</a>
+            </div>
+        </form>
     </div>
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label"></label>
-        <input asp-for="Password" class="form-control" type="password" placeholder="Şifreniz" autocomplete="current-password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="text-end mb-3">
-        <a asp-action="ForgotPassword" asp-controller="Account">Şifremi Unuttum?</a>
-    </div>
-    <button type="submit" class="btn btn-primary">Giriş Yap</button>
-    <span class="ms-2">veya <a asp-action="Register" asp-controller="Account">Kayıt Ol</a></span>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
