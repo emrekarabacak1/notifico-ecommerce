@@ -1,7 +1,10 @@
 ﻿@model Notifico.Models.Product
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Notifico.Models.AppUser> SignInManager
 
 @{
     ViewData["Title"] = "Ürün Detayı";
+    bool isFav = ViewBag.IsFavorite as bool? ?? false;
 }
 
 <style>
@@ -13,6 +16,7 @@
         margin: 36px auto 0 auto;
         max-width: 950px;
     }
+
     .product-img-box {
         background: #f5f7fb;
         border-radius: 13px;
@@ -23,22 +27,29 @@
         margin-bottom: 18px;
         box-shadow: 0 2px 12px 0 rgba(130,160,230,0.04);
     }
-    .product-img-box img {
-        max-height: 300px;
-        max-width: 100%;
-        object-fit: contain;
-    }
+
+        .product-img-box img {
+            max-height: 300px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
     .product-info-box h2 {
         font-weight: 700;
         font-size: 2rem;
         margin-bottom: .65rem;
         color: #1a265c;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
     }
+
     .product-info-box .lead {
         font-size: 1.1rem;
         color: #456;
         margin-bottom: 1.35rem;
     }
+
     .product-info-box .product-price {
         color: #2563eb;
         font-size: 2rem;
@@ -46,6 +57,7 @@
         margin-bottom: 1.15rem;
         letter-spacing: -.02em;
     }
+
     .product-info-box .stock-badge {
         font-size: 1rem;
         padding: 6px 13px;
@@ -54,21 +66,25 @@
         margin-bottom: .7rem;
         display: inline-block;
     }
-    .product-info-box .stock-badge.instock {
-        background: #e3f7e8;
-        color: #17833e;
-        border: 1px solid #abe1bd;
-    }
-    .product-info-box .stock-badge.nostock {
-        background: #ffeaea;
-        color: #c32929;
-        border: 1px solid #e3bbbb;
-    }
+
+        .product-info-box .stock-badge.instock {
+            background: #e3f7e8;
+            color: #17833e;
+            border: 1px solid #abe1bd;
+        }
+
+        .product-info-box .stock-badge.nostock {
+            background: #ffeaea;
+            color: #c32929;
+            border: 1px solid #e3bbbb;
+        }
+
     .product-info-box .product-category {
         color: #3b3b4f;
         font-size: 1.08rem;
         margin-bottom: 1.7rem;
     }
+
     .product-info-box .btn-success {
         min-width: 150px;
         font-weight: 600;
@@ -76,21 +92,68 @@
         border-radius: 14px;
         padding: .75rem 0;
     }
+
     .product-info-box .btn-outline-secondary {
         border-radius: 10px;
         font-size: .99rem;
         margin-top: 1.2rem;
         min-width: 160px;
     }
-    media (max-width: 900px) {
-        .product-detail-card { padding: 1.1rem 0.7rem 1.1rem 0.7rem;}
-        .product-info-box h2 { font-size: 1.28rem;}
-        .product-info-box .product-price { font-size: 1.3rem;}
+    /* Favori iconu stilleri ve animasyonu */
+    .btn-fav-heart {
+        background: transparent !important;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        margin-left: 2px;
+        font-size: 1.35rem;
+        line-height: 1;
+        cursor: pointer;
+        color: @(isFav ? "red" : "#bbb");
+        transition: color .16s, transform .16s;
+        vertical-align: -0.12em;
     }
+
+        .btn-fav-heart:active {
+            transform: scale(1.18);
+        }
+
+        .btn-fav-heart:focus {
+            outline: none;
+        }
+
+    media (max-width: 900px) {
+        .product-detail-card
+
+    {
+        padding: 1.1rem 0.7rem 1.1rem 0.7rem;
+    }
+
+    .product-info-box h2 {
+        font-size: 1.28rem;
+    }
+
+    .product-info-box .product-price {
+        font-size: 1.3rem;
+    }
+
+    }
+
     media (max-width: 600px) {
-        .product-img-box { min-height: 180px; }
-        .product-info-box h2 { font-size: 1.05rem;}
-        .product-info-box .product-price { font-size: 1.09rem;}
+        .product-img-box
+
+    {
+        min-height: 180px;
+    }
+
+    .product-info-box h2 {
+        font-size: 1.05rem;
+    }
+
+    .product-info-box .product-price {
+        font-size: 1.09rem;
+    }
+
     }
 </style>
 
@@ -102,7 +165,19 @@
             </div>
         </div>
         <div class="col-md-6 product-info-box">
-            <h2>@Model.Name</h2>
+            <h2>
+                @Model.Name
+                @if (SignInManager.IsSignedIn(User) && !User.IsInRole("Admin"))
+                {
+                    <form asp-action="ToggleFavorite" asp-controller="Product" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn-fav-heart" title="Favorile">
+                            <i class="bi bi-heart@(isFav ? "-fill" : "")"></i>
+                        </button>
+                    </form>
+                }
+            </h2>
             <div class="lead">@Model.Description</div>
             <div class="product-price">@Model.Price.ToString("C")</div>
             @if (Model.Stock > 0)

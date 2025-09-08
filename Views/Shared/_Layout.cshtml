@@ -90,6 +90,11 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-success" asp-controller="Address" asp-action="Index">Adreslerim</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-danger" asp-controller="Product" asp-action="MyFavorites">
+                                        <i class="bi bi-heart-fill"></i> Favorilerim
+                                    </a>
+                                </li>
                             }
                             <li class="nav-item ms-auto d-flex align-items-center">
                                 <span class="nav-link text-success">Hoş Geldin, @UserManager.GetUserName(User)!</span>
