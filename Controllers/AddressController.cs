@@ -87,6 +87,18 @@ namespace Notifico.Controllers
             _context.Add(address);
             await _context.SaveChangesAsync();
 
+            if (address.IsDefault)
+            {
+                var user = await _context.Users.FindAsync(userId);
+                if (user != null)
+                {
+                    user.Address = address.FullAddress;
+                    user.City = address.City;
+                    user.District = address.District;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             _logger.LogInformation("User {UserId} added new address. AddressId: {AddressId}", userId, address.Id);
             TempData["Success"] = "Adres başarıyla eklendi.";
             return RedirectToAction(nameof(Index));
@@ -160,6 +172,18 @@ namespace Notifico.Controllers
 
             await _context.SaveChangesAsync();
 
+            if (addressDb.IsDefault)
+            {
+                var user = await _context.Users.FindAsync(userId);
+                if (user != null)
+                {
+                    user.Address = addressDb.FullAddress;
+                    user.City = addressDb.City;
+                    user.District = addressDb.District;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             _logger.LogInformation("User {UserId} updated address {AddressId}.", userId, address.Id);
             TempData["Success"] = "Adres güncellendi.";
             return RedirectToAction(nameof(Index));
@@ -213,13 +237,13 @@ namespace Notifico.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var addresses = await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
-            bool found = false;
+            Address? selectedDefault = null;
             foreach (var address in addresses)
             {
                 if (address.Id == id)
                 {
                     address.IsDefault = true;
-                    found = true;
+                    selectedDefault = address;
                 }
                 else
                 {
@@ -227,17 +251,28 @@ namespace Notifico.Controllers
                 }
             }
 
-            if (!found)
+            if (selectedDefault == null)
             {
                 TempData["Error"] = "Adres bulunamadı.";
                 _logger.LogWarning("User {UserId} tried to set default address {AddressId} which does not exist.", userId, id);
                 return RedirectToAction(nameof(Index));
             }
 
-            await _context.SaveChangesAsync();
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null)
+            {
+                user.Address = selectedDefault.FullAddress;
+                user.City = selectedDefault.City;
+                user.District = selectedDefault.District;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                await _context.SaveChangesAsync();
+            }
 
-            _logger.LogInformation("User {UserId} set address {AddressId} as default.", userId, id);
-            TempData["Success"] = "Varsayılan adres ayarlandı.";
+            _logger.LogInformation("User {UserId} set address {AddressId} as default and updated profile address.", userId, id);
+            TempData["Success"] = "Varsayılan adres ayarlandı ve profil adresiniz de güncellendi.";
             return RedirectToAction(nameof(Index));
         }
     }

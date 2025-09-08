@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging; 
+using Microsoft.Extensions.Logging;
+using Notifico.Data;
 using Notifico.Models;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace Notifico.Controllers
 {
@@ -11,12 +14,17 @@ namespace Notifico.Controllers
     public class ProfileController : Controller
     {
         private readonly UserManager<AppUser> userManager;
-        private readonly ILogger<ProfileController> logger; 
+        private readonly ILogger<ProfileController> logger;
+        private readonly ApplicationDbContext _context;
 
-        public ProfileController(UserManager<AppUser> userManager, ILogger<ProfileController> logger)
+        public ProfileController(
+            UserManager<AppUser> userManager,
+            ILogger<ProfileController> logger,
+            ApplicationDbContext context)
         {
             this.userManager = userManager;
             this.logger = logger;
+            this._context = context;
         }
 
         private bool IsAdmin() => User.IsInRole("Admin");
@@ -124,6 +132,16 @@ namespace Notifico.Controllers
             }
 
             await userManager.UpdateAsync(user);
+
+            var userId = user.Id;
+            var defaultAddress = _context.Addresses.FirstOrDefault(a => a.UserId == userId && a.IsDefault);
+            if (defaultAddress != null)
+            {
+                defaultAddress.FullAddress = model.Address;  
+                defaultAddress.City = model.City;
+                defaultAddress.District = model.District;
+                await _context.SaveChangesAsync();
+            }
 
             logger.LogInformation("Profil bilgileri güncellendi. UserId: {UserId}", user.Id);
 
@@ -261,6 +279,15 @@ namespace Notifico.Controllers
             }
 
             await userManager.UpdateAsync(user);
+
+            var defaultAddress = _context.Addresses.FirstOrDefault(a => a.UserId == userId && a.IsDefault);
+            if (defaultAddress != null)
+            {
+                defaultAddress.FullAddress = model.Address; 
+                defaultAddress.City = model.City;
+                defaultAddress.District = model.District;
+                await _context.SaveChangesAsync();
+            }
 
             logger.LogInformation("Profil düzenleme tamamlandı. UserId: {UserId}", user.Id);
 
