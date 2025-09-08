@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Notifico.Data;
 using Notifico.Models;
@@ -7,6 +8,7 @@ using System.Security.Claims;
 
 namespace Notifico.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -53,6 +55,13 @@ namespace Notifico.Controllers
             ViewBag.Search = search;
 
             var products = await query.ToListAsync();
+
+            var favoriteIds = await _context.FavoriteProducts
+                .Where(f => f.UserId == userId)
+                .Select(f => f.ProductId)
+                .ToListAsync();
+            ViewBag.FavoriteIds = favoriteIds;
+
             return View(products);
         }
 
@@ -73,9 +82,56 @@ namespace Notifico.Controllers
                 return NotFound();
             }
 
+            var isFavorite = await _context.FavoriteProducts
+                .AnyAsync(f => f.UserId == userId && f.ProductId == id);
+            ViewBag.IsFavorite = isFavorite;
+
             _logger.LogInformation("Product/Details: User (ID: {UserId}) viewed product (ProductId: {ProductId})", userId, id);
 
             return View(product);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleFavorite(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+
+            var existing = await _context.FavoriteProducts
+                .FirstOrDefaultAsync(f => f.UserId == userId && f.ProductId == id);
+
+            if (existing == null)
+            {
+                _context.FavoriteProducts.Add(new FavoriteProduct
+                {
+                    UserId = userId,
+                    ProductId = id,
+                    DateAdded = DateTime.UtcNow
+                });
+                TempData["Success"] = "Ürün favorilere eklendi!";
+            }
+            else
+            {
+                _context.FavoriteProducts.Remove(existing);
+                TempData["Info"] = "Ürün favorilerden kaldırıldı!";
+            }
+            await _context.SaveChangesAsync();
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
+
+        [Authorize]
+        public async Task<IActionResult> MyFavorites()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var favorites = await _context.FavoriteProducts
+                .Where(f => f.UserId == userId)
+                .Include(f => f.Product)
+                .OrderByDescending(f => f.DateAdded)
+                .ToListAsync();
+
+            return View("FavoriteList", favorites);
         }
     }
 }
