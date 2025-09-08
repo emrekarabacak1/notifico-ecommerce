@@ -70,7 +70,9 @@
                                 <td>@(o.User?.UserName ?? o.UserId.ToString())</td>
                                 <td>@o.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
                                 <td>@o.TotalAmount.ToString("C", tr)</td>
-                                <td>@o.Status.ToString()</td>
+                                <td>
+                                    <span class="badge bg-secondary">@o.Status.ToString()</span>
+                                </td>
                             </tr>
                         }
                     </tbody>

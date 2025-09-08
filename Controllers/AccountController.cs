@@ -32,7 +32,6 @@ namespace Notifico.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            _logger.LogInformation("Kayıt sayfası görüntülendi. IP: {Ip}", HttpContext.Connection.RemoteIpAddress);
             return View(new RegisterViewModel());
         }
 
@@ -46,15 +45,13 @@ namespace Notifico.Controllers
             var existingEmail = await _userManager.FindByEmailAsync(model.Email);
             if (existingEmail != null)
             {
-                _logger.LogWarning("Kayıt denemesi başarısız: Email zaten kayıtlı. Email: {Email}", model.Email);
-                ModelState.AddModelError("Email", "Bu e-posta ile zaten kayıt olunmuş.");
+                TempData["Error"] = "Bu e-posta ile zaten kayıt olunmuş.";
                 return View(model);
             }
             var existingUser = await _userManager.FindByNameAsync(model.UserName);
             if (existingUser != null)
             {
-                _logger.LogWarning("Kayıt denemesi başarısız: Kullanıcı adı zaten alınmış. UserName: {UserName}", model.UserName);
-                ModelState.AddModelError("UserName", "Bu kullanıcı adı zaten alınmış.");
+                TempData["Error"] = "Bu kullanıcı adı zaten alınmış.";
                 return View(model);
             }
 
@@ -74,7 +71,6 @@ namespace Notifico.Controllers
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                _logger.LogInformation("Yeni kullanıcı kaydı başarılı. UserId: {UserId}, UserName: {UserName}, Email: {Email}", user.Id, user.UserName, user.Email);
                 await _userManager.AddToRoleAsync(user, "User");
 
                 if (!string.IsNullOrWhiteSpace(model.Address) &&
@@ -94,7 +90,6 @@ namespace Notifico.Controllers
 
                     _context.Addresses.Add(address);
                     await _context.SaveChangesAsync();
-                    _logger.LogInformation("Varsayılan adres oluşturuldu. UserId: {UserId}", user.Id);
                 }
 
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -111,24 +106,20 @@ namespace Notifico.Controllers
                         <p>Hesabınızı aktifleştirmek için <a href='{confirmLink}'>buraya tıklayın</a>.</p>
                         <p>Link çalışmazsa: <br/><code>{confirmLink}</code></p>";
                     await _emailHelper.SendEmailAsync(user.Email, "E-posta Onayı", mailBody);
-                    _logger.LogInformation("Kullanıcıya e-posta onay maili gönderildi. Email: {Email}", user.Email);
 
+                    TempData["Info"] = "Kayıt başarılı! E-posta adresinize bir onay maili gönderildi.";
                     TempData["EmailConfirmationLink"] = confirmLink;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    _logger.LogError(ex, "E-posta gönderilemedi, kullanıcı siliniyor. Email: {Email}", user.Email);
                     await _userManager.DeleteAsync(user);
-                    ModelState.AddModelError("", "Kayıt sırasında e-posta gönderilemedi. Lütfen geçerli bir adres kullanın.");
+                    TempData["Error"] = "Kayıt sırasında e-posta gönderilemedi. Lütfen geçerli bir adres kullanın.";
                     return View(model);
                 }
                 return RedirectToAction("RegisterConfirmation");
             }
             foreach (var error in result.Errors)
-            {
-                _logger.LogWarning("Kullanıcı kaydı hatası: {Error} | UserName: {UserName}, Email: {Email}", error.Description, model.UserName, model.Email);
-                ModelState.AddModelError("", error.Description);
-            }
+                TempData["Error"] = error.Description;
 
             return View(model);
         }
@@ -136,7 +127,8 @@ namespace Notifico.Controllers
         [HttpGet]
         public IActionResult RegisterConfirmation()
         {
-            _logger.LogInformation("Kayıt başarılı, onay bekleniyor.");
+            if (TempData["Info"] == null)
+                TempData["Info"] = "Lütfen e-posta adresinizi kontrol ederek hesabınızı onaylayın.";
             return View();
         }
 
@@ -145,14 +137,14 @@ namespace Notifico.Controllers
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
             {
-                _logger.LogWarning("E-posta onay linki hatalı veya eksik.");
+                TempData["Error"] = "E-posta onay linki hatalı veya eksik.";
                 return View("ConfirmEmailError");
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                _logger.LogWarning("E-posta onayında kullanıcı bulunamadı. UserId: {UserId}", userId);
+                TempData["Error"] = "E-posta onayında kullanıcı bulunamadı.";
                 return View("ConfirmEmailError");
             }
 
@@ -161,12 +153,12 @@ namespace Notifico.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (result.Succeeded)
             {
-                _logger.LogInformation("E-posta onayı başarılı. UserId: {UserId}", userId);
+                TempData["Success"] = "E-posta onayı başarılı! Artık giriş yapabilirsiniz.";
                 return View("ConfirmEmailSuccess");
             }
             else
             {
-                _logger.LogWarning("E-posta onayında hata. UserId: {UserId}", userId);
+                TempData["Error"] = "E-posta onayında bir hata oluştu.";
                 return View("ConfirmEmailError");
             }
         }
@@ -174,69 +166,61 @@ namespace Notifico.Controllers
         [HttpGet]
         public IActionResult ConfirmEmailSuccess()
         {
-            _logger.LogInformation("Kullanıcı e-posta onayını başarılı tamamladı.");
             return View();
         }
 
         [HttpGet]
         public IActionResult ConfirmEmailError()
         {
-            _logger.LogWarning("Kullanıcı e-posta onayını başarısız tamamladı.");
             return View();
         }
 
         [HttpGet]
         public IActionResult Login()
         {
-            _logger.LogInformation("Login sayfası görüntülendi.");
-            return View();
+            return View(new LoginViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            if (!ModelState.IsValid)
             {
-                _logger.LogWarning("Boş e-posta veya şifre ile giriş denemesi.");
-                ViewBag.Error = "E-posta ve şifre gereklidir.";
-                return View();
+                return View(model);
             }
 
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
             {
-                _logger.LogWarning("Kullanıcı bulunamadı ya da email onaylanmamış. Email: {Email}", email);
-                ViewBag.Error = "E-posta adresi bulunamadı ya da onaylanmamış.";
-                return View();
+                ModelState.AddModelError("", "E-posta adresi bulunamadı ya da onaylanmamış.");
+                return View(model);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
+            var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
             if (result.Succeeded)
             {
-                _logger.LogInformation("Giriş başarılı. UserId: {UserId}, Email: {Email}", user.Id, user.Email);
+                TempData["Success"] = "Giriş başarılı!";
                 return RedirectToAction("Index", "Product");
             }
 
-            _logger.LogWarning("Giriş başarısız. Email: {Email}", email);
-            ViewBag.Error = "E-posta veya şifre hatalı.";
-            return View();
+            ModelState.AddModelError("", "E-posta veya şifre hatalı.");
+            return View(model);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            var userName = User.Identity?.Name ?? "Anonim";
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("Kullanıcı çıkış yaptı. User: {UserName}", userName);
+            TempData["Info"] = "Çıkış yapıldı.";
             return RedirectToAction("Login");
         }
 
         [HttpGet]
         public IActionResult ForgotPassword()
         {
-            _logger.LogInformation("Şifremi unuttum sayfası görüntülendi.");
             return View();
         }
 
@@ -246,16 +230,15 @@ namespace Notifico.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Error"] = "Lütfen geçerli bir e-posta giriniz.";
                 return View(model);
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            TempData["ResetPasswordInfo"] = "Eğer bu e-posta adresi kayıtlıysa şifre sıfırlama maili gönderildi.";
-
             if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
             {
-                _logger.LogWarning("Şifre sıfırlama isteği: kullanıcı yok veya email onaylanmamış. Email: {Email}", model.Email);
+                TempData["Info"] = "Eğer bu e-posta adresi kayıtlıysa şifre sıfırlama maili gönderildi.";
                 return View();
             }
 
@@ -267,13 +250,11 @@ namespace Notifico.Controllers
                 var mailBody = $"<p>Şifrenizi sıfırlamak için <a href='{link}'>buraya tıklayın</a>.</p>";
                 await _emailHelper.SendEmailAsync(model.Email, "Notifico Şifre Sıfırlama", mailBody);
 
-                _logger.LogInformation("Şifre sıfırlama maili gönderildi. Email: {Email}", model.Email);
-
-                TempData["ResetPasswordLink"] = link;
+                TempData["Success"] = "Şifre sıfırlama maili gönderildi!";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Şifre sıfırlama e-postası gönderilemedi. Email: {Email}", model.Email);
+                TempData["Error"] = "Şifre sıfırlama e-postası gönderilemedi.";
             }
 
             return View();
@@ -284,11 +265,9 @@ namespace Notifico.Controllers
         {
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
             {
-                _logger.LogWarning("Şifre sıfırlama linki hatalı veya eksik.");
+                TempData["Error"] = "Şifre sıfırlama linki hatalı veya eksik.";
                 return RedirectToAction("Index", "Home");
             }
-
-            _logger.LogInformation("Şifre sıfırlama formu açıldı. Email: {Email}", email);
             return View(new ResetPasswordViewModel { Token = token, Email = email });
         }
 
@@ -298,31 +277,26 @@ namespace Notifico.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Error"] = "Bilgiler eksik.";
                 return View(model);
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                _logger.LogWarning("Şifre sıfırlama başarısız: kullanıcı bulunamadı. Email: {Email}", model.Email);
-                TempData["ResetPasswordResult"] = "Şifre sıfırlama başarısız.";
+                TempData["Error"] = "Şifre sıfırlama başarısız.";
                 return View(model);
             }
 
             var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
             if (result.Succeeded)
             {
-                _logger.LogInformation("Şifre başarıyla sıfırlandı. UserId: {UserId}, Email: {Email}", user.Id, user.Email);
-                TempData["ResetPasswordResult"] = "Şifre başarıyla sıfırlandı. Giriş yapabilirsiniz.";
+                TempData["Success"] = "Şifre başarıyla sıfırlandı. Giriş yapabilirsiniz.";
                 return RedirectToAction("Login");
             }
             foreach (var error in result.Errors)
-            {
-                _logger.LogWarning("Şifre sıfırlama hatası: {Error} | UserId: {UserId}, Email: {Email}", error.Description, user.Id, user.Email);
-                ModelState.AddModelError("", error.Description);
-            }
+                TempData["Error"] = error.Description;
 
-            TempData["ResetPasswordResult"] = "Şifre sıfırlama başarısız.";
             return View(model);
         }
     }

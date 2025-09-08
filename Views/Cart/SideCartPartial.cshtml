@@ -37,5 +37,57 @@ else
     </div>
 }
 
+@section Scripts {
+    <script>
+        $(document).on('click', '.btn-decrease', function () {
+            var id = $(this).data('id');
+            $.post('/Cart/DecreaseQuantityAjax', { id: id }, function (result) {
+                if (result.success) {
+                    toastr.success('Ürün adedi azaltıldı');
+                    reloadSideCart();
+                } else {
+                    toastr.error(result.error || 'İşlem başarısız');
+                }
+            });
+        });
 
+        $(document).on('click', '.btn-increase', function () {
+            var id = $(this).data('id');
+            $.post('/Cart/IncreaseQuantityAjax', { id: id }, function (result) {
+                if (result.success) {
+                    toastr.success('Ürün adedi artırıldı');
+                    reloadSideCart();
+                } else {
+                    toastr.error(result.error || 'İşlem başarısız');
+                }
+            });
+        });
 
+        $(document).on('click', '.btn-remove', function () {
+            var id = $(this).data('id');
+            $.post('/Cart/RemoveFromCartAjax', { id: id }, function (result) {
+                if (result.success) {
+                    toastr.success('Ürün sepetten çıkarıldı');
+                    reloadSideCart();
+                } else {
+                    toastr.error(result.error || 'İşlem başarısız');
+                }
+            });
+        });
+
+        $('#sideCartClearBtn').click(function () {
+            $.post('/Cart/ClearCartAjax', function (result) {
+                if (result.success) {
+                    toastr.success('Sepet temizlendi');
+                    reloadSideCart();
+                } else {
+                    toastr.error('İşlem başarısız');
+                }
+            });
+        });
+
+        function reloadSideCart() {
+            $('#sideCartPartialContainer').load('/Cart/SideCartPartial');
+        }
+    </script>
+}

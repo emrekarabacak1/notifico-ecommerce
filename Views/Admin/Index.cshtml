@@ -2,9 +2,18 @@
     ViewData["Title"] = "Admin Paneli";
 }
 
-<h2>Admin Paneline Hoş Geldiniz!</h2>
-<p>Buradan ürünleri ekleyebilir, düzenleyebilir veya silebilirsiniz.</p>
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h2 class="mb-3 text-primary">Admin Paneline Hoş Geldiniz!</h2>
+        <p class="lead mb-4">
+            Buradan ürünleri ekleyebilir, düzenleyebilir veya silebilir, siparişleri yönetebilirsiniz.
+        </p>
 
-<a class="btn btn-primary mt-3" asp-controller="Admin" asp-action="ProductList">
-    Ürünler Tablosuna Git
-</a>
+        <a class="btn btn-primary btn-lg" asp-controller="Admin" asp-action="ProductList">
+            Ürünler Tablosuna Git
+        </a>
+        <a class="btn btn-outline-success btn-lg ms-3" asp-controller="Admin" asp-action="OrderList">
+            Siparişler Tablosuna Git
+        </a>
+    </div>
+</div>

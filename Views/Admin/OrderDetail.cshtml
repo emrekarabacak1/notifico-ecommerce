@@ -8,18 +8,12 @@
 }
 
 <div class="container mt-4">
-
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Sipariş Detayı</h2>
         <a asp-controller="Admin" asp-action="OrderList" class="btn btn-outline-secondary btn-sm">
             ← Listeye Dön
         </a>
     </div>
-
-    @if (TempData["StatusMessage"] is string msg && !string.IsNullOrWhiteSpace(msg))
-    {
-        <div class="alert alert-success" role="alert">@msg</div>
-    }
 
     @if (Model is null)
     {
@@ -118,12 +112,10 @@
                     <div class="col-md-6">
                         <label for="status" class="form-label">Yeni Statü</label>
                         <select id="status" name="status" class="form-select">
-                            @{
-                                foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
-                                {
-                                    var selected = Model.Status == s ? "selected" : "";
-                                    @:<option value="@( (int)s )" @selected>@s</option>
-                                }
+                            @foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
+                            {
+                                var isSelected = Model.Status == s ? "selected" : "";
+                                @Html.Raw($"<option value='{(int)s}' {isSelected}>{s}</option>")
                             }
                         </select>
                     </div>
@@ -142,6 +134,16 @@
     }
 </div>
 
-@section Scripts{
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $(function () {
+            var msg = '@TempData["StatusMessage"]';
+            if (msg) {
+                toastr.success(msg, "Başarılı", { timeOut: 2000 });
+            }
+        });
+    </script>
 }

@@ -1,89 +1,123 @@
-﻿@model IEnumerable<Notifico.Models.Product>
-@using Microsoft.AspNetCore.Identity
-@inject SignInManager<Notifico.Models.AppUser> SignInManager
-@inject UserManager<Notifico.Models.AppUser> UserManager
+﻿    @model IEnumerable<Notifico.Models.Product>
+    @using Microsoft.AspNetCore.Identity
+    @inject SignInManager<Notifico.Models.AppUser> SignInManager
+    @inject UserManager<Notifico.Models.AppUser> UserManager
 
-<h1>Ürünler</h1>
+    <h1>Ürünler</h1>
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-
-<table class="table align-middle">
-    <thead>
-        <tr>
-            <th>Adı</th>
-            <th>Açıklama</th>
-            <th>Fiyat</th>
-            <th>Stok</th>
-            <th>Kategori</th>
-            <th>Tarih</th>
-            <th>Resim</th>
-            <th>Sepet</th>
-            <th>Detay</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var p in Model)
-        {
-            <tr>
-                <td>
-                    <a asp-action="Details" asp-route-id="@p.Id">@p.Name</a>
-                </td>
-                <td>
-                    @(p.Description?.Length > 70
-                        ? p.Description.Substring(0, 70) + "..."
-                        : p.Description)
-                </td>
-                <td>@($"{p.Price:C}")</td>
-                <td>@p.Stock</td>
-                <td>@p.Category</td>
-                <td>@p.DateAdded.ToString("dd.MM.yyyy")</td>
-                <td>
-                    <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "/images/no-image.png" : p.ImageUrl)"
-                         alt="@(p.Name)"
-                         style="width:40px; height:40px; object-fit:cover; border-radius:6px;" />
-                </td>
-                <td>
-                    @if (SignInManager.IsSignedIn(User) && !User.IsInRole("Admin"))
-                    {
-                        <button type="button"
-                                class="btn btn-success btn-sm btn-add-to-cart"
-                                data-id="@p.Id"
-                        @(p.Stock == 0 ? "disabled" : "")
-                                title="@(p.Stock == 0 ? "Stokta yok" : "Sepete Ekle")">
-                            Sepete Ekle
-                        </button>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-info btn-sm">
-                        Detay
-                    </a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-@section Scripts {
-    <script>
-        $(document).on("click", ".btn-add-to-cart", function (e) {
-            e.preventDefault();
-            var pid = $(this).data("id");
-            $.post("/Cart/AddToCartAjax", { productId: pid }, function (res) {
-                if (res.success) {
-                    if (typeof reloadSideCart === "function") {
-                        reloadSideCart();
-                    }
-                    if (!$("#sideCartPanel").hasClass("active") && typeof openSideCart === "function") {
-                        openSideCart();
-                    }
-                } else {
-                    alert(res.error || "Ürün sepete eklenemedi");
+    <form method="get" class="row mb-4 g-2 align-items-end">
+        <div class="col-md-4">
+            <input type="text" name="search" class="form-control" placeholder="Ürün adı ile ara..." value="@ViewBag.Search" />
+        </div>
+        <div class="col-md-3">
+        <select name="category" class="form-select">
+            <option value="">Kategori seçiniz</option>
+            @foreach (var cat in (ViewBag.Categories as List<string> ?? new List<string>()))
+            {
+                if (ViewBag.SelectedCategory == cat)
+                {
+                    <option value="@cat" selected>@cat</option>
                 }
+                else
+                {
+                    <option value="@cat">@cat</option>
+                }
+            }
+        </select>
+
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" type="submit">
+                <i class="bi bi-search"></i> Ara
+            </button>
+        </div>
+        @if (!string.IsNullOrEmpty(ViewBag.Search as string) || !string.IsNullOrEmpty(ViewBag.SelectedCategory as string))
+        {
+            <div class="col-md-2">
+                <a href="@Url.Action("Index", "Product")" class="btn btn-secondary w-100">Temizle</a>
+            </div>
+        }
+    </form>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Adı</th>
+                <th>Açıklama</th>
+                <th>Fiyat</th>
+                <th>Stok</th>
+                <th>Kategori</th>
+                <th>Tarih</th>
+                <th>Resim</th>
+                <th>Sepet</th>
+                <th>Detay</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@p.Id">@p.Name</a>
+                    </td>
+                    <td>
+                        @(p.Description?.Length > 70
+                            ? p.Description.Substring(0, 70) + "..."
+                            : p.Description)
+                    </td>
+                    <td>@($"{p.Price:C}")</td>
+                    <td>@p.Stock</td>
+                    <td>@p.Category</td>
+                    <td>@p.DateAdded.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "/images/no-image.png" : p.ImageUrl)"
+                             alt="@(p.Name)"
+                             style="width:40px; height:40px; object-fit:cover; border-radius:6px;" />
+                    </td>
+                    <td>
+                        @if (SignInManager.IsSignedIn(User) && !User.IsInRole("Admin"))
+                        {
+                            <button type="button"
+                                    class="btn btn-success btn-sm btn-add-to-cart"
+                                    data-id="@p.Id"
+                            @(p.Stock == 0 ? "disabled" : "")
+                                    title="@(p.Stock == 0 ? "Stokta yok" : "Sepete Ekle")">
+                                Sepete Ekle
+                            </button>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-info btn-sm">
+                            Detay
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @section Scripts {
+        <script>
+            $(document).on("click", ".btn-add-to-cart", function (e) {
+                e.preventDefault();
+                var pid = $(this).data("id");
+                $.post("/Cart/AddToCartAjax", { productId: pid }, function (res) {
+                    if (res.success) {
+                        if (typeof reloadSideCart === "function") {
+                            reloadSideCart();
+                        }
+                        if (!$("#sideCartPanel").hasClass("active") && typeof openSideCart === "function") {
+                            openSideCart();
+                        }
+                    } else {
+                        alert(res.error || "Ürün sepete eklenemedi");
+                    }
+                });
             });
-        });
-    </script>
-}
+        </script>
+    }

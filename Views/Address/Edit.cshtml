@@ -1,15 +1,4 @@
 ﻿@model Notifico.Models.Address
-
-@if (ViewBag.ModelStateErrors != null)
-{
-    <div class="alert alert-danger">
-        @foreach (var err in (List<string>)ViewBag.ModelStateErrors)
-        {
-            <div>@err</div>
-        }
-    </div>
-}
-
 @{
     ViewData["Title"] = "Adres Düzenle";
 }
@@ -20,6 +9,7 @@
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="UserId" />
+
 
     <div class="mb-3">
         <label asp-for="Title" class="form-label"></label>
@@ -62,9 +52,10 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         let cityDistrictData = [];
-
         function fillCities(selectedCity) {
             var citySelect = document.getElementById('citySelect');
             citySelect.innerHTML = '<option value="">-- İl seçiniz --</option>';
@@ -72,13 +63,10 @@
                 var option = document.createElement('option');
                 option.value = city.text;
                 option.text = city.text;
-                if (selectedCity && selectedCity === city.text) {
-                    option.selected = true;
-                }
+                if (selectedCity && selectedCity === city.text) option.selected = true;
                 citySelect.appendChild(option);
             });
         }
-
         function fillDistricts(cityName, selectedDistrict) {
             var districtSelect = document.getElementById('districtSelect');
             districtSelect.innerHTML = '<option value="">-- İlçe seçiniz --</option>';
@@ -88,13 +76,10 @@
                 var option = document.createElement('option');
                 option.value = district.text;
                 option.text = district.text;
-                if (selectedDistrict && selectedDistrict === district.text) {
-                    option.selected = true;
-                }
+                if (selectedDistrict && selectedDistrict === district.text) option.selected = true;
                 districtSelect.appendChild(option);
             });
         }
-
         document.addEventListener("DOMContentLoaded", function () {
             fetch('/data/cityDistricts.json')
                 .then(response => response.json())
@@ -103,9 +88,7 @@
                     var initialCity = '@(Model.City ?? "")';
                     var initialDistrict = '@(Model.District ?? "")';
                     fillCities(initialCity);
-                    if (initialCity) {
-                        fillDistricts(initialCity, initialDistrict);
-                    }
+                    if (initialCity) fillDistricts(initialCity, initialDistrict);
                     document.getElementById('citySelect').addEventListener('change', function () {
                         fillDistricts(this.value, null);
                     });
@@ -114,5 +97,23 @@
                     console.error("Şehir-ilçe verisi yüklenemedi:", error);
                 });
         });
+
+        $(function () {
+        @if (TempData["Success"] != null)
+        {
+            <text>toastr.success("@TempData["Success"]", "Başarılı", { timeOut: 2000 }); </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>toastr.error("@TempData["Error"]", "Hata", { timeOut: 2500 }); </text>
+        }
+        @if (ViewBag.ModelStateErrors != null)
+        {
+            foreach (var err in (List<string>)ViewBag.ModelStateErrors)
+            {
+                <text>toastr.error("@err", "Hata", { timeOut: 3000 }); </text>
+            }
+        }
+                });
     </script>
 }

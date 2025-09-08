@@ -1,6 +1,10 @@
 ﻿@model Notifico.Models.Product
 
-<h2>@(Model?.Id > 0 ? "Ürünü Düzenle" : "Yeni Ürün")</h2>
+@{
+    ViewData["Title"] = Model?.Id > 0 ? "Ürünü Düzenle" : "Yeni Ürün";
+}
+
+<h2>@ViewData["Title"]</h2>
 
 <form asp-action="@(Model?.Id > 0 ? "EditProduct" : "AddProduct")" asp-controller="Admin" method="post" novalidate>
     @Html.AntiForgeryToken()
@@ -48,8 +52,35 @@
     <button type="submit" class="btn btn-primary">
         @(Model?.Id > 0 ? "Güncelle" : "Kaydet")
     </button>
+    <a asp-action="ProductList" asp-controller="Admin" class="btn btn-secondary ms-2">İptal</a>
 </form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $(function () {
+            var errors = [];
+            $(".text-danger").each(function () {
+                if ($(this).text().trim() !== "") {
+                    errors.push($(this).text().trim());
+                }
+            });
+            if (errors.length > 0) {
+                toastr.error(errors.join("<br>"), "Form Hataları", { timeOut: 3200, closeButton: true, progressBar: true });
+            }
+
+        @if (TempData["StatusMessage"] != null)
+        {
+            var msg = TempData["StatusMessage"].ToString().Replace("'", "\\'");
+            <text>toastr.success('@msg', 'Başarılı', { timeOut: 2000 }); </text>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            var msg = TempData["ErrorMessage"].ToString().Replace("'", "\\'");
+            <text>toastr.error('@msg', 'Hata', { timeOut: 2800 }); </text>
+        }
+                });
+    </script>
 }

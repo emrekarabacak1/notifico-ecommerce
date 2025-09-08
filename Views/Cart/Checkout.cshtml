@@ -15,10 +15,20 @@
                 <option value="">Adres seçiniz</option>
                 @foreach (var addr in Model.Addresses)
                 {
-                    <option value="@addr.Id">@addr.Title - @addr.FullAddress, @addr.District, @addr.City</option>
+                    if (Model.SelectedAddressId == addr.Id)
+                    {
+                        <option value="@addr.Id" selected="selected">
+                            @addr.Title - @addr.FullAddress, @addr.District, @addr.City
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@addr.Id">
+                            @addr.Title - @addr.FullAddress, @addr.District, @addr.City
+                        </option>
+                    }
                 }
             </select>
-
             <span asp-validation-for="SelectedAddressId" class="text-danger"></span>
         }
         else
@@ -61,4 +71,22 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $(function () {
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                    toastr.error("@TempData["Error"]", "Hata", { timeOut: 3000 });
+                </text>
+            }
+            @if (TempData["OrderSuccess"] != null)
+            {
+                <text>
+                    toastr.success("@TempData["OrderSuccess"]", "Başarılı", { timeOut: 2500 });
+                </text>
+            }
+        });
+    </script>
 }

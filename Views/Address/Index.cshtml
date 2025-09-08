@@ -4,15 +4,6 @@
 }
 <h2 class="mb-4">Adreslerim</h2>
 
-@if (ViewBag.Success != null)
-{
-    <div class="alert alert-success">@ViewBag.Success</div>
-}
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger">@ViewBag.Error</div>
-}
-
 <a asp-action="Add" class="btn btn-primary mb-3">+ Yeni Adres Ekle</a>
 
 @if (Model == null || !Model.Any())
@@ -71,4 +62,21 @@ else
             </tbody>
         </table>
     </div>
+}
+
+@section Scripts {
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $(function () {
+        @if (ViewBag.Success != null)
+        {
+            <text>toastr.success("@ViewBag.Success", "Başarılı", { timeOut: 2000 }); </text>
+        }
+        @if (ViewBag.Error != null)
+        {
+            <text>toastr.error("@ViewBag.Error", "Hata", { timeOut: 2500 }); </text>
+        }
+                });
+    </script>
 }
