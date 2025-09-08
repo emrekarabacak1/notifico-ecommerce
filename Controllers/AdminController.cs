@@ -39,39 +39,78 @@ public class AdminController : Controller
         return View(products);
     }
 
+
     [HttpGet]
     public async Task<IActionResult> EditProduct(int id)
     {
         var product = await _context.Products.FindAsync(id);
         if (product == null) return RedirectToAction("ProductList");
-        return View("ProductForm", product);
+
+        var model = new ProductFormViewModel
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Stock = product.Stock,
+            Category = product.Category,
+            ImageUrl = product.ImageUrl
+        };
+        return View("ProductForm", model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditProduct(Product product)
+    public async Task<IActionResult> EditProduct(ProductFormViewModel model)
     {
-        if (!ModelState.IsValid) return View(product);
+        if (!ModelState.IsValid)
+            return View("ProductForm", model);
 
-        var productInDb = await _context.Products.FirstOrDefaultAsync(p => p.Id == product.Id);
-        if (productInDb == null) return RedirectToAction("ProductList");
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == model.Id);
+        if (product == null) return RedirectToAction("ProductList");
 
-        if (await _context.Products.AnyAsync(p => p.Id != product.Id && p.Name.ToLower() == product.Name.ToLower()))
+        if (await _context.Products.AnyAsync(p => p.Id != model.Id && p.Name.ToLower() == model.Name.ToLower()))
         {
             ModelState.AddModelError("Name", "Bu isimde zaten başka bir ürün var.");
-            return View(product);
+            return View("ProductForm", model);
         }
 
-        productInDb.Name = product.Name;
-        productInDb.Description = product.Description;
-        productInDb.Price = product.Price;
-        productInDb.Stock = product.Stock;
-        productInDb.Category = product.Category;
-        productInDb.ImageUrl = product.ImageUrl;
+        string? imageUrl = product.ImageUrl;
+
+        if (model.ImageFile != null && model.ImageFile.Length > 0)
+        {
+            var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/products");
+            if (!Directory.Exists(uploadsDir))
+                Directory.CreateDirectory(uploadsDir);
+
+            var fileName = Guid.NewGuid().ToString("N") + Path.GetExtension(model.ImageFile.FileName);
+            var filePath = Path.Combine(uploadsDir, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.ImageFile.CopyToAsync(stream);
+            }
+
+            imageUrl = "/uploads/products/" + fileName;
+        }
+        else if (!string.IsNullOrWhiteSpace(model.ImageUrl))
+        {
+            imageUrl = model.ImageUrl;
+        }
+
+        product.Name = model.Name;
+        product.Description = model.Description;
+        product.Price = model.Price;
+        product.Stock = model.Stock;
+        product.Category = model.Category;
+        product.ImageUrl = imageUrl;
 
         await _context.SaveChangesAsync();
+
+        TempData["StatusMessage"] = "Ürün güncellendi.";
         return RedirectToAction("ProductList");
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -87,23 +126,64 @@ public class AdminController : Controller
     }
 
     [HttpGet]
-    public IActionResult AddProduct() => View("ProductForm", new Product());
+    public async Task<IActionResult> AddProduct()
+    {
+        return View("ProductForm", new ProductFormViewModel());
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddProduct(Product product)
+    public async Task<IActionResult> AddProduct(ProductFormViewModel model)
     {
-        if (!ModelState.IsValid) return View(product);
+        if (!ModelState.IsValid)
+            return View("ProductForm", model);
 
-        if (await _context.Products.AnyAsync(p => p.Name.ToLower() == product.Name.ToLower()))
+        // Aynı isimli başka ürün var mı?
+        if (await _context.Products.AnyAsync(p => p.Name.ToLower() == model.Name.ToLower()))
         {
             ModelState.AddModelError("Name", "Bu isimde zaten bir ürün var.");
-            return View(product);
+            return View("ProductForm", model);
         }
 
-        product.DateAdded = DateTime.UtcNow;
+        string? imageUrl = null;
+
+        if (model.ImageFile != null && model.ImageFile.Length > 0)
+        {
+            // Dosya yükleme
+            var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/products");
+            if (!Directory.Exists(uploadsDir))
+                Directory.CreateDirectory(uploadsDir);
+
+            var fileName = Guid.NewGuid().ToString("N") + Path.GetExtension(model.ImageFile.FileName);
+            var filePath = Path.Combine(uploadsDir, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.ImageFile.CopyToAsync(stream);
+            }
+
+            imageUrl = "/uploads/products/" + fileName;
+        }
+        else if (!string.IsNullOrWhiteSpace(model.ImageUrl))
+        {
+            imageUrl = model.ImageUrl;
+        }
+
+        var product = new Product
+        {
+            Name = model.Name,
+            Description = model.Description,
+            Price = model.Price,
+            Stock = model.Stock,
+            Category = model.Category,
+            ImageUrl = imageUrl,
+            DateAdded = DateTime.UtcNow
+        };
+
         await _context.Products.AddAsync(product);
         await _context.SaveChangesAsync();
+
+        TempData["StatusMessage"] = "Ürün eklendi.";
         return RedirectToAction("ProductList");
     }
 

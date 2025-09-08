@@ -1,4 +1,4 @@
-﻿@model Notifico.Models.Product
+﻿@model Notifico.Models.ProductFormViewModel
 
 @{
     Layout = "_AdminLayout";
@@ -86,7 +86,11 @@ media (max-width: 700px) {
             <i class="bi bi-plus-circle" style="color:#2563eb;font-size:1.17em;vertical-align:-0.15em"></i>
             @ViewData["Title"]
         </div>
-        <form asp-action="@(Model?.Id > 0 ? "EditProduct" : "AddProduct")" asp-controller="Admin" method="post" class="admin-form" novalidate>
+        <form asp-action="@(Model?.Id > 0 ? "EditProduct" : "AddProduct")"
+              asp-controller="Admin"
+              method="post"
+              enctype="multipart/form-data"
+              class="admin-form" novalidate>
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Id" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -116,9 +120,14 @@ media (max-width: 700px) {
                 <span asp-validation-for="Category" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="ImageUrl" class="form-label"></label>
+                <label asp-for="ImageUrl" class="form-label">Görsel URL</label>
                 <input asp-for="ImageUrl" class="form-control" type="url" placeholder="https://..." />
                 <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ImageFile" class="form-label">Veya Dosya Yükle</label>
+                <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
             <div class="admin-form-btn-row">
                 <button type="submit" class="admin-form-btn">

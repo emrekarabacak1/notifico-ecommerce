@@ -7,6 +7,7 @@ using Notifico.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Notifico.Controllers
 {
@@ -87,6 +88,16 @@ namespace Notifico.Controllers
 
             if (user.UserName != model.UserName)
             {
+                var userNameExists = await userManager.Users
+                    .AnyAsync(u => u.UserName == model.UserName && u.Id != user.Id);
+
+                if (userNameExists)
+                {
+                    ModelState.AddModelError("UserName", "Bu kullanıcı adı zaten alınmış. Lütfen farklı bir kullanıcı adı seçin.");
+                    logger.LogWarning("Kullanıcı adı zaten mevcut: {UserName}", model.UserName);
+                    return View(model);
+                }
+
                 var setUserNameResult = await userManager.SetUserNameAsync(user, model.UserName);
                 if (!setUserNameResult.Succeeded)
                 {
@@ -137,7 +148,7 @@ namespace Notifico.Controllers
             var defaultAddress = _context.Addresses.FirstOrDefault(a => a.UserId == userId && a.IsDefault);
             if (defaultAddress != null)
             {
-                defaultAddress.FullAddress = model.Address;  
+                defaultAddress.FullAddress = model.Address;
                 defaultAddress.City = model.City;
                 defaultAddress.District = model.District;
                 await _context.SaveChangesAsync();
@@ -283,7 +294,7 @@ namespace Notifico.Controllers
             var defaultAddress = _context.Addresses.FirstOrDefault(a => a.UserId == userId && a.IsDefault);
             if (defaultAddress != null)
             {
-                defaultAddress.FullAddress = model.Address; 
+                defaultAddress.FullAddress = model.Address;
                 defaultAddress.City = model.City;
                 defaultAddress.District = model.District;
                 await _context.SaveChangesAsync();
