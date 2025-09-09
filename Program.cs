@@ -3,6 +3,7 @@ using Notifico.Data;
 using Microsoft.AspNetCore.Identity;
 using Notifico.Models;
 using Serilog;
+using QuestPDF.Infrastructure;   
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSignalR();
 
+QuestPDF.Settings.License = LicenseType.Community; 
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -74,7 +77,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
