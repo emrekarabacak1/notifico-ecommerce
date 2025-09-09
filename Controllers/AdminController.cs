@@ -390,9 +390,32 @@ public class AdminController : Controller
             .Take(5)
             .ToListAsync();
 
+        var topProducts = await _context.OrderItems
+            .Include(oi => oi.Product)
+            .GroupBy(oi => new { oi.ProductId, oi.Product.Name })
+            .Select(g => new ProductSalesInfo
+            {
+                ProductName = g.Key.Name,
+                TotalSold = g.Sum(x => x.Quantity),
+                TotalRevenue = g.Sum(x => x.UnitPrice * x.Quantity)
+            })
+            .OrderByDescending(x => x.TotalSold)
+            .Take(5)
+            .ToListAsync();
+
+        var categorySales = await _context.OrderItems
+            .Include(oi => oi.Product)
+            .GroupBy(oi => oi.Product.Category)
+            .Select(g => new CategorySalesInfo
+            {
+                CategoryName = g.Key,
+                TotalRevenue = g.Sum(x => x.UnitPrice * x.Quantity)
+            })
+            .OrderByDescending(x => x.TotalRevenue)
+            .ToListAsync();
+
         var chartLabels = new List<string>();
         var chartData = new List<decimal>();
-
         for (int i = 5; i >= 0; i--)
         {
             var monthStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(-i);
@@ -416,9 +439,22 @@ public class AdminController : Controller
             TotalCustomerCount = totalCustomerCount,
             RecentOrders = recentOrders ?? new List<Order>(),
             ChartLabels = chartLabels ?? new List<string>(),
-            ChartData = chartData ?? new List<decimal>()
+            ChartData = chartData ?? new List<decimal>(),
+            TopProducts = topProducts ?? new List<ProductSalesInfo>(),
+            CategorySales = categorySales ?? new List<CategorySalesInfo>()
         };
 
         return View(dashboardView);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LowStockProducts()
+    {
+        var products = await _context.Products
+            .Where(p => p.Stock <= 10)
+            .OrderBy(p => p.Stock)
+            .ToListAsync();
+
+        return PartialView("_LowStockProductsPartial", products);
     }
 }

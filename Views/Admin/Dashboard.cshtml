@@ -8,124 +8,162 @@
 }
 
 @section Styles {
-<style>
-.dashboard-main-container {
-    margin: 0;
-    padding: 2.5rem 1.2rem 2rem 1.2rem;
-    background: #f7fafd;
-    min-height: 90vh;
-    width: 100%;
-    box-sizing: border-box;
-}
-.dashboard-title {
-    font-size: 2.3rem;
-    font-weight: 800;
-    color: #183261;
-    margin-bottom: 1.2rem;
-    letter-spacing: -0.02em;
-}
-.dashboard-cards-row {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 2.1rem;
-    flex-wrap: wrap;
-}
-.dashboard-info-card {
-    flex: 1 1 200px;
-    background: #fff;
-    border-radius: 1.2rem;
-    box-shadow: 0 4px 24px 0 rgba(70,110,200,0.08);
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 1rem 1.2rem;
-    min-width: 0;
-    min-height: 85px;
-}
-.dashboard-card-label {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #3b4866;
-    margin-bottom: 0.18rem;
-}
-.dashboard-card-value {
-    font-size: 1.85rem;
-    font-weight: 700;
-    color: #2171eb;
-}
-.dashboard-section-card {
-    background: #fff;
-    border-radius: 1.2rem;
-    box-shadow: 0 4px 24px 0 rgba(70,110,200,0.07);
-    width: 100%;
-    margin-bottom: 1.5rem;
-    padding: 0;
-    overflow: hidden;
-}
-.dashboard-card-header {
-    font-size: 1.08rem;
-    font-weight: 700;
-    color: #1b2b44;
-    padding: 1rem 1.15rem 0.5rem 1.15rem;
-    background: transparent;
-}
-.dashboard-card-body {
-    padding: 0 1.1rem 1.1rem 1.1rem;
-    width: 100%;
-    box-sizing: border-box;
-}
-.dashboard-orders-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: transparent;
-    font-size: 0.99rem;
-    table-layout: fixed;
-}
-.dashboard-orders-table th,
-.dashboard-orders-table td {
-    padding: 0.33rem 0.15rem;
-    vertical-align: middle;
-    border-bottom: 1px solid #eaeef7;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    text-align: left;
-}
-.dashboard-orders-table th:last-child,
-.dashboard-orders-table td:last-child {
-    text-align: center;
-}
-.dashboard-orders-table thead th {
-    background: #f7fafd;
-    font-weight: 700;
-    color: #324668;
-    font-size: 0.99rem;
-}
-.dashboard-orders-table tbody tr:last-child td {
-    border-bottom: none;
-}
-.badge-status {
-    display: inline-block;
-    min-width: 77px;
-    padding: 0.13rem 0.39rem;
-    border-radius: 1rem;
-    font-size: 0.97rem;
-    font-weight: 700;
-    text-align: center;
-    line-height: 1.17;
-    letter-spacing: 0.01em;
-}
-.badge-onay { background: #d5f7e2; color: #209a49; }
-.badge-iptal { background: #ffe6e4; color: #db3544; }
-.badge-bekle { background: #fff6db; color: #b29422; }
+    <style>
+        .dashboard-main-container {
+            margin: 0;
+            padding: 2.5rem 1.2rem 2rem 1.2rem;
+            background: #f7fafd;
+            min-height: 90vh;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-media (max-width: 900px) {
-    .dashboard-cards-row { flex-direction: column; gap: 0.7rem; }
-    .dashboard-title { font-size: 1.32rem; }
-    .dashboard-section-card, .dashboard-card-body { padding: 0.7rem; }
-}
-</style>
+        .dashboard-title {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: #183261;
+            margin-bottom: 1.2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .dashboard-cards-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2.1rem;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-info-card {
+            flex: 1 1 200px;
+            background: #fff;
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 24px 0 rgba(70,110,200,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 1rem 1.2rem;
+            min-width: 0;
+            min-height: 85px;
+        }
+
+        .dashboard-card-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #3b4866;
+            margin-bottom: 0.18rem;
+        }
+
+        .dashboard-card-value {
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: #2171eb;
+        }
+
+        .dashboard-section-card {
+            background: #fff;
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 24px 0 rgba(70,110,200,0.07);
+            width: 100%;
+            margin-bottom: 1.5rem;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .dashboard-card-header {
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: #1b2b44;
+            padding: 1rem 1.15rem 0.5rem 1.15rem;
+            background: transparent;
+        }
+
+        .dashboard-card-body {
+            padding: 0 1.1rem 1.1rem 1.1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .dashboard-orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+            font-size: 0.99rem;
+            table-layout: fixed;
+        }
+
+            .dashboard-orders-table th,
+            .dashboard-orders-table td {
+                padding: 0.33rem 0.15rem;
+                vertical-align: middle;
+                border-bottom: 1px solid #eaeef7;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                text-align: left;
+            }
+
+                .dashboard-orders-table th:last-child,
+                .dashboard-orders-table td:last-child {
+                    text-align: center;
+                }
+
+            .dashboard-orders-table thead th {
+                background: #f7fafd;
+                font-weight: 700;
+                color: #324668;
+                font-size: 0.99rem;
+            }
+
+            .dashboard-orders-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+        .badge-status {
+            display: inline-block;
+            min-width: 77px;
+            padding: 0.13rem 0.39rem;
+            border-radius: 1rem;
+            font-size: 0.97rem;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.17;
+            letter-spacing: 0.01em;
+        }
+
+        .badge-onay {
+            background: #d5f7e2;
+            color: #209a49;
+        }
+
+        .badge-iptal {
+            background: #ffe6e4;
+            color: #db3544;
+        }
+
+        .badge-bekle {
+            background: #fff6db;
+            color: #b29422;
+        }
+
+        media (max-width: 900px) {
+            .dashboard-cards-row
+
+        {
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.32rem;
+        }
+
+        .dashboard-section-card, .dashboard-card-body {
+            padding: 0.7rem;
+        }
+
+        }
+    </style>
 }
 
 <div class="dashboard-main-container">
@@ -150,6 +188,52 @@ media (max-width: 900px) {
         <div class="dashboard-card-header">Aylık Satış Grafiği</div>
         <div class="dashboard-card-body">
             <canvas id="salesChart" height="160"></canvas>
+        </div>
+    </div>
+
+    <div class="dashboard-section-card">
+        <div class="dashboard-card-header">Kategoriye Göre Satış Dağılımı</div>
+        <div class="dashboard-card-body">
+            <canvas id="categoryPieChart" height="160"></canvas>
+        </div>
+    </div>
+
+    <div class="dashboard-section-card">
+        <div class="dashboard-card-header">En Çok Satılan Ürünler</div>
+        <div class="dashboard-card-body">
+            @if (Model.TopProducts == null || !Model.TopProducts.Any())
+            {
+                <div class="text-muted py-2">Henüz satış yok.</div>
+            }
+            else
+            {
+                <table class="table table-sm align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Ürün</th>
+                            <th class="text-end">Satış Adedi</th>
+                            <th class="text-end">Toplam Satış</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.TopProducts)
+                        {
+                            <tr>
+                                <td>@item.ProductName</td>
+                                <td class="text-end">@item.TotalSold</td>
+                                <td class="text-end">@item.TotalRevenue.ToString("C", tr)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <div class="dashboard-section-card">
+        <div class="dashboard-card-header">Stokta Azalan Ürünler</div>
+        <div class="dashboard-card-body" id="lowStockProductsContainer">
+            <div class="text-center text-secondary">Yükleniyor...</div>
         </div>
     </div>
 
@@ -204,6 +288,7 @@ media (max-width: 900px) {
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const chartLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartLabels));
@@ -223,7 +308,7 @@ media (max-width: 900px) {
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false }},
+                plugins: { legend: { display: false } },
                 maintainAspectRatio: false,
                 scales: {
                     y: {
@@ -236,6 +321,31 @@ media (max-width: 900px) {
                     }
                 }
             }
+        });
+
+        const categoryLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategorySales?.Select(x => x.CategoryName).ToList() ?? new List<string>()));
+        const categoryData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategorySales?.Select(x => x.TotalRevenue).ToList() ?? new List<decimal>()));
+        const pieCtx = document.getElementById('categoryPieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryData,
+                    backgroundColor: [
+                        '#2563eb', '#14b8a6', '#facc15', '#ef4444', '#10b981', '#818cf8', '#eab308', '#e11d48'
+                    ],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'right' } },
+                maintainAspectRatio: false,
+            }
+        });
+
+        $(function () {
+            $("#lowStockProductsContainer").load("@Url.Action("LowStockProducts", "Admin")");
         });
     </script>
 }
