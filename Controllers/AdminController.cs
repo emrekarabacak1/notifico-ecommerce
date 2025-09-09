@@ -5,6 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Notifico.Data;
 using Notifico.Models;
+using Notifico.ViewModels;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using QuestPDF.Drawing;
 using System.Globalization;
 
 [Authorize(Roles = "Admin")]
@@ -19,6 +24,8 @@ public class AdminController : Controller
         _context = context;
         _userManager = userManager;
         _logger = logger;
+
+        QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
     }
 
     public async Task<IActionResult> Index()
@@ -38,7 +45,6 @@ public class AdminController : Controller
         _logger.LogInformation("Admin ürün listesi görüntülendi.");
         return View(products);
     }
-
 
     [HttpGet]
     public async Task<IActionResult> EditProduct(int id)
@@ -111,7 +117,6 @@ public class AdminController : Controller
         return RedirectToAction("ProductList");
     }
 
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteProduct(int id)
@@ -138,7 +143,6 @@ public class AdminController : Controller
         if (!ModelState.IsValid)
             return View("ProductForm", model);
 
-        // Aynı isimli başka ürün var mı?
         if (await _context.Products.AnyAsync(p => p.Name.ToLower() == model.Name.ToLower()))
         {
             ModelState.AddModelError("Name", "Bu isimde zaten bir ürün var.");
@@ -149,7 +153,6 @@ public class AdminController : Controller
 
         if (model.ImageFile != null && model.ImageFile.Length > 0)
         {
-            // Dosya yükleme
             var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/products");
             if (!Directory.Exists(uploadsDir))
                 Directory.CreateDirectory(uploadsDir);
@@ -209,6 +212,125 @@ public class AdminController : Controller
 
         if (order == null) return NotFound();
         return View(order);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DownloadOrderPdf(int id)
+    {
+        var order = await _context.Orders
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Product)
+            .Include(o => o.User)
+            .FirstOrDefaultAsync(o => o.Id == id);
+
+        if (order == null)
+            return NotFound();
+
+        string address = order.AddressSnapshot ?? order.Address?.FullAddress ?? "Adres bulunamadı";
+        string userName = order.User?.UserName ?? "Müşteri";
+
+        var fileName = $"Siparis_{order.Id}_{order.OrderDate:yyyyMMddHHmm}.pdf";
+        var pdfBytes = GenerateOrderPdf(order, address, userName);
+
+        return File(pdfBytes, "application/pdf", fileName);
+    }
+
+    private byte[] GenerateOrderPdf(Order order, string address, string userName)
+    {
+        using var stream = new MemoryStream();
+        var doc = Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Margin(30);
+                page.Size(PageSizes.A4);
+
+                page.Header().Row(row =>
+                {
+                    row.RelativeColumn().Text("SİPARİŞ FATURASI").FontSize(22).Bold().FontColor(Colors.Blue.Medium);
+                });
+
+                page.Content().Column(col =>
+                {
+                    col.Spacing(10);
+
+                    col.Item().Row(row =>
+                    {
+                        row.RelativeColumn().Text($"Sipariş No: {order.Id}").Bold();
+                        row.RelativeColumn().AlignRight().Text($"Tarih: {order.OrderDate:dd.MM.yyyy HH:mm}");
+                    });
+
+                    col.Item().Row(row =>
+                    {
+                        row.RelativeColumn().Text($"Müşteri: {userName}");
+                        row.RelativeColumn().AlignRight().Text($"Durum:").Bold();
+                        row.ConstantColumn(120).AlignRight().Text(GetOrderStatusText(order.Status))
+                            .FontColor(GetOrderStatusColor(order.Status))
+                            .SemiBold();
+                    });
+
+                    col.Item().Text($"Adres: {address}").FontSize(10);
+
+                    col.Item().PaddingTop(10).Text("Ürünler:").FontSize(14).Bold();
+
+                    col.Item().Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn(4); 
+                            columns.RelativeColumn(2); 
+                            columns.RelativeColumn(2); 
+                            columns.RelativeColumn(2); 
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Background(Colors.Grey.Lighten2).Text("Ürün").Bold();
+                            header.Cell().Background(Colors.Grey.Lighten2).Text("Adet").Bold();
+                            header.Cell().Background(Colors.Grey.Lighten2).Text("Birim Fiyat").Bold();
+                            header.Cell().Background(Colors.Grey.Lighten2).Text("Tutar").Bold();
+                        });
+
+                        foreach (var item in order.OrderItems)
+                        {
+                            table.Cell().Text(item.Product?.Name ?? "-");
+                            table.Cell().Text(item.Quantity.ToString());
+                            table.Cell().Text($"{item.UnitPrice:C}");
+                            table.Cell().Text($"{(item.Quantity * item.UnitPrice):C}");
+                        }
+                    });
+
+                    col.Item().PaddingTop(10).AlignRight().Text($"Toplam: {order.TotalAmount:C}")
+                        .FontSize(15).Bold().FontColor(Colors.Black);
+
+                });
+
+                page.Footer().AlignCenter().Text("Teşekkür ederiz!").FontSize(11).Italic();
+            });
+        });
+
+        doc.GeneratePdf(stream);
+        return stream.ToArray();
+
+        string GetOrderStatusText(OrderStatus status) => status switch
+        {
+            OrderStatus.Beklemede => "Beklemede",
+            OrderStatus.Onaylandı => "Onaylandı",
+            OrderStatus.KargoyaVerildi => "Kargoya Verildi",
+            OrderStatus.TeslimEdildi => "Teslim Edildi",
+            OrderStatus.IptalEdildi => "İptal Edildi",
+            _ => status.ToString()
+        };
+
+        string GetOrderStatusColor(OrderStatus status) => status switch
+        {
+            OrderStatus.Beklemede => Colors.Grey.Darken2,
+            OrderStatus.Onaylandı => Colors.Green.Darken2,
+            OrderStatus.KargoyaVerildi => Colors.Orange.Medium,
+            OrderStatus.TeslimEdildi => Colors.Blue.Darken1,
+            OrderStatus.IptalEdildi => Colors.Red.Accent2,
+            _ => Colors.Black
+        };
     }
 
     [HttpPost]

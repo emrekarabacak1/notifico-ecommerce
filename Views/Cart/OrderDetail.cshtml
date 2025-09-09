@@ -164,7 +164,12 @@ else
                             </table>
                         </div>
                         <div class="text-end mt-3">
-                            <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-outline-secondary order-detail-btn">Tüm Siparişlerim</a>
+                            <a href="@Url.Action("DownloadOrderPdf", "Cart", new { id = Model.Id })" class="btn btn-danger order-detail-btn me-2">
+                                <i class="bi bi-file-earmark-pdf"></i> Faturayı PDF İndir
+                            </a>
+                            <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-outline-secondary order-detail-btn">
+                                Tüm Siparişlerim
+                            </a>
                         </div>
                     </div>
                 </div>

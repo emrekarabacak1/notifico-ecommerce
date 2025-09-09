@@ -9,101 +9,167 @@
 }
 
 <style>
-.admin-orderdetail-main {
-    width: 100%;
-    max-width: 980px;
-    margin: 2.5rem auto 2.5rem auto;
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 4px 24px 0 rgba(60,110,180,0.09);
-    padding: 2.3rem 2.1rem 2.1rem 2.1rem;
-}
-.admin-order-header-row {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    margin-bottom: 1.6rem;
-}
-.admin-order-header-row .icon {
-    font-size: 2.1rem;
-    color: #2563eb;
-}
-.admin-order-header-row h2 {
-    font-size: 2.1rem;
-    font-weight: 800;
-    color: #183261;
-    margin: 0;
-}
-.admin-order-header-row .btn {
-    margin-left: auto;
-}
-.order-card-section {
-    background: #f8fafd;
-    border-radius: 13px;
-    box-shadow: 0 1px 10px 0 rgba(80,110,180,0.03);
-    padding: 1.1rem 1.3rem;
-    margin-bottom: 1.15rem;
-}
-.order-card-section .section-title {
-    font-weight: 700;
-    color: #153265;
-    font-size: 1.13rem;
-    margin-bottom: 0.77rem;
-    letter-spacing: -0.01em;
-}
-.order-info-flex {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2.1rem;
-    row-gap: 1.3rem;
-    align-items: flex-end;
-}
-.order-info-block {
-    min-width: 170px;
-    flex: 1;
-}
-.order-info-label { font-size: 0.99rem; color: #647093; margin-bottom: 0.14rem;}
-.order-info-value { font-weight: 700; color: #1a2550; font-size: 1.09rem;}
-.order-status-badge {
-    font-weight: 700;
-    border-radius: 8px;
-    padding: 0.31em 1.13em;
-    font-size: 0.98rem;
-    display: inline-block;
-    box-shadow: 0 1px 8px 0 rgba(180,180,180,0.10);
-    background: #fffbe7; color: #b48801; border: 1px solid #ffe49b;
-}
-.order-status-badge.onay { background: #d5f7e2; color: #209a49; border: 1px solid #71e7a2;}
-.order-status-badge.iptal { background: #ffe6e4; color: #db3544; border: 1px solid #fabfc7;}
-.order-table thead th {
-    background: #f4f8ff;
-    color: #193d71;
-    font-weight: 700;
-    border-bottom: 2px solid #e9f0fc;
-}
-.order-table td { vertical-align: middle; }
-.order-img { width: 48px; height: 48px; object-fit: cover; border-radius: 8px;}
-.order-status-update-form .form-select {
-    border-radius: 7px;
-    border: 1.2px solid #dbe5f4;
-    font-size: 1rem;
-    min-width: 165px;
-}
-.order-status-update-form .btn {
-    font-weight: 700;
-    border-radius: 9px;
-    padding: 0.48rem 1.4rem;
-    font-size: 1.07rem;
-    margin-left: 1rem;
-}
-media (max-width:1024px) {
-    .admin-orderdetail-main { max-width: 99vw; padding: 1.4rem 0.3rem;}
-}
-media (max-width:700px) {
-    .admin-orderdetail-main { max-width: 100vw; margin: 0; padding: 0.7rem 0.01rem; border-radius: 0;}
-    .order-card-section { padding: 0.7rem 0.05rem;}
-    .order-info-flex { flex-direction: column; gap: 0.8rem;}
-}
+    .admin-orderdetail-main {
+        width: 100%;
+        max-width: 980px;
+        margin: 2.5rem auto 2.5rem auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px 0 rgba(60,110,180,0.09);
+        padding: 2.3rem 2.1rem 2.1rem 2.1rem;
+    }
+
+    .admin-order-header-row {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 1.6rem;
+    }
+
+        .admin-order-header-row .icon {
+            font-size: 2.1rem;
+            color: #2563eb;
+        }
+
+        .admin-order-header-row h2 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: #183261;
+            margin: 0;
+        }
+
+        .admin-order-header-row .btn {
+            margin-left: auto;
+        }
+
+    .order-card-section {
+        background: #f8fafd;
+        border-radius: 13px;
+        box-shadow: 0 1px 10px 0 rgba(80,110,180,0.03);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1.15rem;
+    }
+
+        .order-card-section .section-title {
+            font-weight: 700;
+            color: #153265;
+            font-size: 1.13rem;
+            margin-bottom: 0.77rem;
+            letter-spacing: -0.01em;
+        }
+
+    .order-info-flex {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2.1rem;
+        row-gap: 1.3rem;
+        align-items: flex-end;
+    }
+
+    .order-info-block {
+        min-width: 170px;
+        flex: 1;
+    }
+
+    .order-info-label {
+        font-size: 0.99rem;
+        color: #647093;
+        margin-bottom: 0.14rem;
+    }
+
+    .order-info-value {
+        font-weight: 700;
+        color: #1a2550;
+        font-size: 1.09rem;
+    }
+
+    .order-status-badge {
+        font-weight: 700;
+        border-radius: 8px;
+        padding: 0.31em 1.13em;
+        font-size: 0.98rem;
+        display: inline-block;
+        box-shadow: 0 1px 8px 0 rgba(180,180,180,0.10);
+        background: #fffbe7;
+        color: #b48801;
+        border: 1px solid #ffe49b;
+    }
+
+        .order-status-badge.onay {
+            background: #d5f7e2;
+            color: #209a49;
+            border: 1px solid #71e7a2;
+        }
+
+        .order-status-badge.iptal {
+            background: #ffe6e4;
+            color: #db3544;
+            border: 1px solid #fabfc7;
+        }
+
+    .order-table thead th {
+        background: #f4f8ff;
+        color: #193d71;
+        font-weight: 700;
+        border-bottom: 2px solid #e9f0fc;
+    }
+
+    .order-table td {
+        vertical-align: middle;
+    }
+
+    .order-img {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .order-status-update-form .form-select {
+        border-radius: 7px;
+        border: 1.2px solid #dbe5f4;
+        font-size: 1rem;
+        min-width: 165px;
+    }
+
+    .order-status-update-form .btn {
+        font-weight: 700;
+        border-radius: 9px;
+        padding: 0.48rem 1.4rem;
+        font-size: 1.07rem;
+        margin-left: 1rem;
+    }
+
+    media (max-width:1024px) {
+        .admin-orderdetail-main
+
+    {
+        max-width: 99vw;
+        padding: 1.4rem 0.3rem;
+    }
+
+    }
+
+    media (max-width:700px) {
+        .admin-orderdetail-main
+
+    {
+        max-width: 100vw;
+        margin: 0;
+        padding: 0.7rem 0.01rem;
+        border-radius: 0;
+    }
+
+    .order-card-section {
+        padding: 0.7rem 0.05rem;
+    }
+
+    .order-info-flex {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    }
 </style>
 
 <div class="admin-orderdetail-main">
@@ -113,6 +179,13 @@ media (max-width:700px) {
         <a asp-controller="Admin" asp-action="OrderList" class="btn btn-outline-secondary btn-sm ms-auto">
             ← Listeye Dön
         </a>
+        @if (Model != null)
+        {
+            <a href="@Url.Action("DownloadOrderPdf", "Admin", new { id = Model.Id })"
+               class="btn btn-outline-danger btn-sm ms-2" target="_blank">
+                <i class="bi bi-file-earmark-pdf"></i> Faturayı PDF İndir
+            </a>
+        }
     </div>
     @if (Model is null)
     {
@@ -122,91 +195,99 @@ media (max-width:700px) {
     }
     else
     {
-    <div class="order-card-section mb-3">
-        <div class="section-title">Temel Bilgiler</div>
-        <div class="order-info-flex">
-            <div class="order-info-block">
-                <div class="order-info-label">Sipariş No</div>
-                <div class="order-info-value">#@Model.Id</div>
-            </div>
-            <div class="order-info-block">
-                <div class="order-info-label">Tarih</div>
-                <div class="order-info-value">@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</div>
-            </div>
-            <div class="order-info-block">
-                <div class="order-info-label">Toplam Tutar</div>
-                <div class="order-info-value">@Model.TotalAmount.ToString("C", tr)</div>
-            </div>
-            <div class="order-info-block">
-                <div class="order-info-label">Kullanıcı</div>
-                <div class="order-info-value">
-                    @(Model.User?.UserName ?? Model.UserId.ToString())
+        <div class="order-card-section mb-3">
+            <div class="section-title">Temel Bilgiler</div>
+            <div class="order-info-flex">
+                <div class="order-info-block">
+                    <div class="order-info-label">Sipariş No</div>
+                    <div class="order-info-value">#@Model.Id</div>
                 </div>
-            </div>
-            <div class="order-info-block">
-                <div class="order-info-label">Statü</div>
-                <div class="order-info-value">
-                    <span class="order-status-badge @(Model.Status.ToString() == "Onaylandı" ? "onay" : Model.Status.ToString() == "IptalEdildi" ? "iptal" : "")">
-                        @Model.Status.ToString()
-                    </span>
+                <div class="order-info-block">
+                    <div class="order-info-label">Tarih</div>
+                    <div class="order-info-value">@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</div>
+                </div>
+                <div class="order-info-block">
+                    <div class="order-info-label">Toplam Tutar</div>
+                    <div class="order-info-value">@Model.TotalAmount.ToString("C", tr)</div>
+                </div>
+                <div class="order-info-block">
+                    <div class="order-info-label">Kullanıcı</div>
+                    <div class="order-info-value">
+                        @(Model.User?.UserName ?? Model.UserId.ToString())
+                    </div>
+                </div>
+                <div class="order-info-block">
+                    <div class="order-info-label">Statü</div>
+                    <div class="order-info-value">
+                        <span class="order-status-badge @(Model.Status.ToString() == "Onaylandı" ? "onay" : Model.Status.ToString() == "IptalEdildi" ? "iptal" : "")">
+                            @Model.Status.ToString()
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="order-card-section mb-3">
-        <div class="section-title">Ürünler</div>
-        <div class="table-responsive">
-            <table class="table table-striped order-table">
-                <thead>
-                    <tr>
-                        <th>Görsel</th>
-                        <th>Ürün</th>
-                        <th class="text-end">Adet</th>
-                        <th class="text-end">Birim Fiyat</th>
-                        <th class="text-end">Satır Toplam</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var it in Model.OrderItems)
-                    {
-                        var unit = it.UnitPrice;
-                        var qty = it.Quantity;
-                        var line = unit * qty;
-                        var img = it.Product?.ImageUrl;
+        <div class="order-card-section mb-3">
+            <div class="section-title">Teslimat Adresi</div>
+            <div class="order-info-value" style="font-size:1.04rem;">
+                @(!string.IsNullOrWhiteSpace(Model.AddressSnapshot)
+                    ? Model.AddressSnapshot
+                    : (Model.Address?.FullAddress ?? "Adres bulunamadı."))
+            </div>
+        </div>
+        <div class="order-card-section mb-3">
+            <div class="section-title">Ürünler</div>
+            <div class="table-responsive">
+                <table class="table table-striped order-table">
+                    <thead>
                         <tr>
-                            <td>
-                                <img src="@(string.IsNullOrWhiteSpace(img) ? "/images/no-image.png" : img)" class="order-img" alt="" />
-                            </td>
-                            <td>@it.Product?.Name</td>
-                            <td class="text-end">@qty</td>
-                            <td class="text-end">@unit.ToString("C", tr)</td>
-                            <td class="text-end">@line.ToString("C", tr)</td>
+                            <th>Görsel</th>
+                            <th>Ürün</th>
+                            <th class="text-end">Adet</th>
+                            <th class="text-end">Birim Fiyat</th>
+                            <th class="text-end">Satır Toplam</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="order-card-section">
-        <div class="section-title">Statü Güncelle</div>
-        <form asp-controller="Admin" asp-action="UpdateOrderStatus" method="post" class="order-status-update-form d-flex flex-wrap align-items-center">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="id" value="@Model.Id" />
-            <div>
-                <select id="status" name="status" class="form-select">
-                    @foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
-                    {
-                        var isSelected = Model.Status == s ? "selected" : "";
-                        @Html.Raw($"<option value='{(int)s}' {isSelected}>{s}</option>")
-                    }
-                </select>
+                    </thead>
+                    <tbody>
+                        @foreach (var it in Model.OrderItems)
+                        {
+                            var unit = it.UnitPrice;
+                            var qty = it.Quantity;
+                            var line = unit * qty;
+                            var img = it.Product?.ImageUrl;
+                            <tr>
+                                <td>
+                                    <img src="@(string.IsNullOrWhiteSpace(img) ? "/images/no-image.png" : img)" class="order-img" alt="" />
+                                </td>
+                                <td>@it.Product?.Name</td>
+                                <td class="text-end">@qty</td>
+                                <td class="text-end">@unit.ToString("C", tr)</td>
+                                <td class="text-end">@line.ToString("C", tr)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-            <button type="submit" class="btn btn-primary">Güncelle</button>
-        </form>
-        <div class="form-text mt-2">
-            Mevcut statü: <strong>@Model.Status.ToString()</strong>
         </div>
-    </div>
+        <div class="order-card-section">
+            <div class="section-title">Statü Güncelle</div>
+            <form asp-controller="Admin" asp-action="UpdateOrderStatus" method="post" class="order-status-update-form d-flex flex-wrap align-items-center">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <div>
+                    <select id="status" name="status" class="form-select">
+                        @foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
+                        {
+                            var isSelected = Model.Status == s ? "selected" : "";
+                            @Html.Raw($"<option value='{(int)s}' {isSelected}>{s}</option>")
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Güncelle</button>
+            </form>
+            <div class="form-text mt-2">
+                Mevcut statü: <strong>@Model.Status.ToString()</strong>
+            </div>
+        </div>
     }
 </div>
 
