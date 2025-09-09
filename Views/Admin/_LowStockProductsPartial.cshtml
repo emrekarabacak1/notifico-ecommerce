@@ -1,0 +1,30 @@
+﻿@model IEnumerable<Notifico.Models.Product>
+
+@if (!Model.Any())
+{
+    <div class="text-muted py-2">Stokta azalan ürün bulunamadı.</div>
+}
+else
+{
+    <table class="table table-sm align-middle mb-0">
+        <thead>
+            <tr>
+                <th>Ürün</th>
+                <th>Kategori</th>
+                <th>Stok</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Category</td>
+                    <td>
+                        <span class="badge bg-danger">@item.Stock</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
