@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Notifico.Data;
-using System.Security.Claims;
 using Notifico.Models;
+using Notifico.Services;
+using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 
 namespace Notifico.Controllers
@@ -11,45 +10,33 @@ namespace Notifico.Controllers
     [Authorize]
     public class AddressController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IAddressService _addressService;
         private readonly ILogger<AddressController> _logger;
 
-        public AddressController(ApplicationDbContext context, ILogger<AddressController> logger)
+        public AddressController(IAddressService addressService, ILogger<AddressController> logger)
         {
-            _context = context;
+            _addressService = addressService;
             _logger = logger;
         }
 
         private bool IsAdmin() => User.IsInRole("Admin");
+        private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         public async Task<IActionResult> Index()
         {
-            if (IsAdmin())
-            {
-                _logger.LogWarning("Admin user tried to access Address/Index. Access denied. UserId: {UserId}", User.FindFirstValue(ClaimTypes.NameIdentifier));
-                return Forbid();
-            }
+            if (IsAdmin()) return Forbid();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var addresses = await _context.Addresses
-                .Where(a => a.UserId == userId)
-                .OrderByDescending(a => a.IsDefault)
-                .ToListAsync();
+            var addresses = await _addressService.GetUserAddressesAsync(UserId);
 
             ViewBag.Success = TempData["Success"];
             ViewBag.Error = TempData["Error"];
-            _logger.LogInformation("User {UserId} listed their addresses.", userId);
             return View(addresses);
         }
 
         [HttpGet]
         public IActionResult Add()
         {
-            if (IsAdmin())
-            {
-                _logger.LogWarning("Admin user tried to access Address/Add. Access denied. UserId: {UserId}", User.FindFirstValue(ClaimTypes.NameIdentifier));
-                return Forbid();
-            }
+            if (IsAdmin()) return Forbid();
             return View(new Address());
         }
 
@@ -57,49 +44,20 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Address address)
         {
-            if (IsAdmin())
-            {
-                _logger.LogWarning("Admin user tried to post Address/Add. Access denied. UserId: {UserId}", User.FindFirstValue(ClaimTypes.NameIdentifier));
-                return Forbid();
-            }
+            if (IsAdmin()) return Forbid();
 
             ModelState.Remove("UserId");
             ModelState.Remove("User");
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            address.UserId = userId;
+            address.UserId = UserId;
 
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                ViewBag.ModelStateErrors = errors.Select(e => e.ErrorMessage).ToList();
-                _logger.LogWarning("Address/Add: Invalid model for user {UserId}: {@Errors}", userId, errors);
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                ViewBag.ModelStateErrors = errors;
                 return View(address);
             }
 
-            if (address.IsDefault)
-            {
-                var existingDefaults = await _context.Addresses.Where(a => a.UserId == userId && a.IsDefault).ToListAsync();
-                foreach (var item in existingDefaults)
-                    item.IsDefault = false;
-            }
-
-            _context.Add(address);
-            await _context.SaveChangesAsync();
-
-            if (address.IsDefault)
-            {
-                var user = await _context.Users.FindAsync(userId);
-                if (user != null)
-                {
-                    user.Address = address.FullAddress;
-                    user.City = address.City;
-                    user.District = address.District;
-                    await _context.SaveChangesAsync();
-                }
-            }
-
-            _logger.LogInformation("User {UserId} added new address. AddressId: {AddressId}", userId, address.Id);
+            await _addressService.AddAddressAsync(address);
             TempData["Success"] = "Adres başarıyla eklendi.";
             return RedirectToAction(nameof(Index));
         }
@@ -107,22 +65,14 @@ namespace Notifico.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            if (IsAdmin())
-            {
-                _logger.LogWarning("Admin user tried to access Address/Edit. Access denied. UserId: {UserId}", User.FindFirstValue(ClaimTypes.NameIdentifier));
-                return Forbid();
-            }
+            if (IsAdmin()) return Forbid();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var address = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+            var address = await _addressService.GetByIdAsync(id, UserId);
             if (address == null)
             {
                 TempData["Error"] = "Adres bulunamadı veya erişiminiz yok.";
-                _logger.LogWarning("User {UserId} tried to edit address {AddressId} which does not exist or unauthorized.", userId, id);
                 return RedirectToAction(nameof(Index));
             }
-
-            _logger.LogInformation("User {UserId} is editing address {AddressId}.", userId, id);
             return View(address);
         }
 
@@ -130,61 +80,18 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Address address)
         {
-            if (IsAdmin())
-            {
-                _logger.LogWarning("Admin user tried to post Address/Edit. Access denied. UserId: {UserId}", User.FindFirstValue(ClaimTypes.NameIdentifier));
-                return Forbid();
-            }
+            if (IsAdmin()) return Forbid();
 
             ModelState.Remove("UserId");
             ModelState.Remove("User");
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var addressDb = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == address.Id && a.UserId == userId);
-            if (addressDb == null)
+            var result = await _addressService.UpdateAddressAsync(address, UserId);
+            if (!result)
             {
-                TempData["Error"] = "Adres bulunamadı veya erişiminiz yok.";
-                _logger.LogWarning("User {UserId} tried to edit address {AddressId} which does not exist or unauthorized.", userId, address.Id);
+                TempData["Error"] = "Adres güncellenemedi veya bulunamadı.";
                 return RedirectToAction(nameof(Index));
             }
 
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                ViewBag.ModelStateErrors = errors.Select(e => e.ErrorMessage).ToList();
-                _logger.LogWarning("Address/Edit: Invalid model for user {UserId}, address {AddressId}: {@Errors}", userId, address.Id, errors);
-                return View(address);
-            }
-
-            addressDb.Title = address.Title;
-            addressDb.FullAddress = address.FullAddress;
-            addressDb.City = address.City;
-            addressDb.District = address.District;
-            addressDb.ZipCode = address.ZipCode;
-
-            if (address.IsDefault)
-            {
-                var existingDefaults = await _context.Addresses.Where(a => a.UserId == userId && a.IsDefault && a.Id != address.Id).ToListAsync();
-                foreach (var item in existingDefaults)
-                    item.IsDefault = false;
-            }
-            addressDb.IsDefault = address.IsDefault;
-
-            await _context.SaveChangesAsync();
-
-            if (addressDb.IsDefault)
-            {
-                var user = await _context.Users.FindAsync(userId);
-                if (user != null)
-                {
-                    user.Address = addressDb.FullAddress;
-                    user.City = addressDb.City;
-                    user.District = addressDb.District;
-                    await _context.SaveChangesAsync();
-                }
-            }
-
-            _logger.LogInformation("User {UserId} updated address {AddressId}.", userId, address.Id);
             TempData["Success"] = "Adres güncellendi.";
             return RedirectToAction(nameof(Index));
         }
@@ -193,33 +100,15 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            if (IsAdmin())
-            {
-                _logger.LogWarning("Admin user tried to post Address/Delete. Access denied. UserId: {UserId}", User.FindFirstValue(ClaimTypes.NameIdentifier));
-                return Forbid();
-            }
+            if (IsAdmin()) return Forbid();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var address = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
-            if (address == null)
+            var result = await _addressService.DeleteAddressAsync(id, UserId);
+            if (!result)
             {
-                _logger.LogWarning("User {UserId} tried to delete address {AddressId} which does not exist or unauthorized.", userId, id);
-                return NotFound();
-            }
-
-            bool usedInOrders = await _context.Orders.AnyAsync(o => o.AddressId == address.Id);
-
-            if (usedInOrders)
-            {
-                TempData["Error"] = "Bu adres geçmişte bir siparişte kullanıldığı için silinemez.";
-                _logger.LogWarning("User {UserId} tried to delete address {AddressId}, but it's used in orders.", userId, id);
+                TempData["Error"] = "Adres silinemedi. Siparişte kullanılmış olabilir veya bulunamadı.";
                 return RedirectToAction(nameof(Index));
             }
 
-            _context.Addresses.Remove(address);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("User {UserId} deleted address {AddressId}.", userId, id);
             TempData["Success"] = "Adres başarıyla silindi.";
             return RedirectToAction(nameof(Index));
         }
@@ -228,50 +117,15 @@ namespace Notifico.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetDefault(int id)
         {
-            if (IsAdmin())
-            {
-                _logger.LogWarning("Admin user tried to post Address/SetDefault. Access denied. UserId: {UserId}", User.FindFirstValue(ClaimTypes.NameIdentifier));
-                return Forbid();
-            }
+            if (IsAdmin()) return Forbid();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var addresses = await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
-            Address? selectedDefault = null;
-            foreach (var address in addresses)
+            var result = await _addressService.SetDefaultAddressAsync(id, UserId);
+            if (!result)
             {
-                if (address.Id == id)
-                {
-                    address.IsDefault = true;
-                    selectedDefault = address;
-                }
-                else
-                {
-                    address.IsDefault = false;
-                }
-            }
-
-            if (selectedDefault == null)
-            {
-                TempData["Error"] = "Adres bulunamadı.";
-                _logger.LogWarning("User {UserId} tried to set default address {AddressId} which does not exist.", userId, id);
+                TempData["Error"] = "Adres bulunamadı veya default yapılamadı.";
                 return RedirectToAction(nameof(Index));
             }
 
-            var user = await _context.Users.FindAsync(userId);
-            if (user != null)
-            {
-                user.Address = selectedDefault.FullAddress;
-                user.City = selectedDefault.City;
-                user.District = selectedDefault.District;
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                await _context.SaveChangesAsync();
-            }
-
-            _logger.LogInformation("User {UserId} set address {AddressId} as default and updated profile address.", userId, id);
             TempData["Success"] = "Varsayılan adres ayarlandı ve profil adresiniz de güncellendi.";
             return RedirectToAction(nameof(Index));
         }

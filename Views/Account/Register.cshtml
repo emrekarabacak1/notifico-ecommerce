@@ -5,19 +5,26 @@
 }
 
 <style>
-    body, html { height: 100%; margin: 0; padding: 0; }
+    body, html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
     .register-page-single-bg {
         min-height: 100vh;
-        background: #f7fafd; 
+        background: #f7fafd;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: row;
     }
+
     .register-left-panel, .register-form-panel {
-        background: none !important; 
+        background: none !important;
         box-shadow: none !important;
     }
+
     .register-left-panel {
         flex: 1.05;
         display: flex;
@@ -27,10 +34,12 @@
         max-width: 440px;
         padding-right: 3vw;
     }
+
     .register-left-content {
         max-width: 350px;
         padding: 2.2rem 2rem 2rem 0;
     }
+
     .register-logo {
         font-size: 2.1rem;
         font-weight: bold;
@@ -41,6 +50,7 @@
         align-items: center;
         gap: 0.7rem;
     }
+
     .register-title {
         font-size: 2.1rem;
         font-weight: 800;
@@ -49,12 +59,14 @@
         letter-spacing: -0.02em;
         line-height: 1.1;
     }
+
     .register-desc {
         font-size: 1.1rem;
         color: #68749b;
         font-weight: 500;
         margin-bottom: 0.2rem;
     }
+
     .register-form-panel {
         flex: 2;
         display: flex;
@@ -63,27 +75,32 @@
         min-width: 320px;
         padding-left: 3vw;
     }
+
     .register-form-inner {
         width: 100%;
         max-width: 570px;
         margin: 2vw auto;
     }
+
     .form-row {
         display: flex;
         gap: 1.1rem;
     }
+
     .form-group {
         margin-bottom: 1.15rem;
         flex: 1 1 0;
         display: flex;
         flex-direction: column;
     }
+
     label {
         font-weight: 600;
         color: #37446d;
         font-size: 1rem;
         margin-bottom: 0.23rem;
     }
+
     .form-control, .form-select, textarea {
         border-radius: 0.8rem;
         border: 1.4px solid #d4e0f5;
@@ -92,12 +109,16 @@
         background: #fcfcff;
         transition: border .15s;
     }
-    .form-control:focus, .form-select:focus, textarea:focus {
-        border-color: #7aa7e7;
-        box-shadow: 0 0 0 2px #e5f0ff;
-        background: #f4f9ff;
+
+        .form-control:focus, .form-select:focus, textarea:focus {
+            border-color: #7aa7e7;
+            box-shadow: 0 0 0 2px #e5f0ff;
+            background: #f4f9ff;
+        }
+
+    .text-danger {
+        font-size: 0.93rem;
     }
-    .text-danger { font-size: 0.93rem; }
 
     .register-submit-row {
         display: flex;
@@ -107,6 +128,7 @@
         gap: 1.3rem;
         flex-wrap: wrap;
     }
+
     .register-btn {
         background: #2563eb;
         color: #fff;
@@ -118,9 +140,11 @@
         transition: background .18s;
         box-shadow: 0 2px 10px 0 rgba(47,101,208,0.09);
     }
-    .register-btn:hover {
-        background: #153265;
-    }
+
+        .register-btn:hover {
+            background: #153265;
+        }
+
     .register-login-link {
         color: #2563eb;
         font-weight: 600;
@@ -130,34 +154,77 @@
         border-radius: 1.2rem;
         transition: background 0.18s, color 0.18s;
     }
-    .register-login-link:hover {
-        background: #eaf2ff;
-        color: #153265;
-        text-decoration: underline;
-    }
+
+        .register-login-link:hover {
+            background: #eaf2ff;
+            color: #153265;
+            text-decoration: underline;
+        }
 
     media (max-width: 1100px) {
-        .register-left-panel, .register-form-panel { padding-right: 1vw; padding-left: 1vw; }
-        .register-form-inner { max-width: 95vw; }
+        .register-left-panel, .register-form-panel
+
+    {
+        padding-right: 1vw;
+        padding-left: 1vw;
     }
+
+    .register-form-inner {
+        max-width: 95vw;
+    }
+
+    }
+
     media (max-width: 900px) {
-        .register-page-single-bg { flex-direction: column; }
-        .register-left-panel, .register-form-panel {
-            min-width: 0;
-            max-width: 100vw;
-            padding: 0;
-            justify-content: center;
-        }
-        .register-left-content { padding: 2.2rem 1rem 1.2rem 1rem; max-width: 98vw;}
-        .register-form-inner { margin: 2vw auto; }
+        .register-page-single-bg
+
+    {
+        flex-direction: column;
     }
+
+    .register-left-panel, .register-form-panel {
+        min-width: 0;
+        max-width: 100vw;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .register-left-content {
+        padding: 2.2rem 1rem 1.2rem 1rem;
+        max-width: 98vw;
+    }
+
+    .register-form-inner {
+        margin: 2vw auto;
+    }
+
+    }
+
     media (max-width: 700px) {
-        .form-row { flex-direction: column; gap: 0.1rem;}
+        .form-row
+
+    {
+        flex-direction: column;
+        gap: 0.1rem;
     }
+
+    }
+
     media (max-width: 500px) {
-        .register-title { font-size: 1.25rem; }
-        .register-desc { font-size: 0.96rem; }
-        .register-form-inner { margin: 1vw auto; }
+        .register-title
+
+    {
+        font-size: 1.25rem;
+    }
+
+    .register-desc {
+        font-size: 0.96rem;
+    }
+
+    .register-form-inner {
+        margin: 1vw auto;
+    }
+
     }
 </style>
 

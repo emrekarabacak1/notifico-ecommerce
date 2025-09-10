@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Notifico.Data;
-using Notifico.Models;
+using Notifico.Services;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
@@ -11,12 +9,12 @@ namespace Notifico.Controllers
     [Authorize]
     public class ProductController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IProductService _productService;
         private readonly ILogger<ProductController> _logger;
 
-        public ProductController(ApplicationDbContext context, ILogger<ProductController> logger)
+        public ProductController(IProductService productService, ILogger<ProductController> logger)
         {
-            _context = context;
+            _productService = productService;
             _logger = logger;
         }
 
@@ -37,29 +35,13 @@ namespace Notifico.Controllers
 
             _logger.LogInformation("Product/Index: User (ID: {UserId}) viewed product list.", userId);
 
-            var query = _context.Products.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(search))
-                query = query.Where(p => p.Name.ToLower().Contains(search.ToLower()));
-
-            if (!string.IsNullOrWhiteSpace(category))
-                query = query.Where(p => p.Category.ToLower() == category.ToLower());
-
-            var categories = await _context.Products
-                .Select(p => p.Category)
-                .Distinct()
-                .OrderBy(c => c)
-                .ToListAsync();
+            var categories = await _productService.GetAllCategoriesAsync();
             ViewBag.Categories = categories;
             ViewBag.SelectedCategory = category;
             ViewBag.Search = search;
 
-            var products = await query.ToListAsync();
-
-            var favoriteIds = await _context.FavoriteProducts
-                .Where(f => f.UserId == userId)
-                .Select(f => f.ProductId)
-                .ToListAsync();
+            var products = await _productService.GetAllProductsAsync(search, category);
+            var favoriteIds = await _productService.GetFavoriteProductIdsAsync(userId);
             ViewBag.FavoriteIds = favoriteIds;
 
             return View(products);
@@ -75,15 +57,14 @@ namespace Notifico.Controllers
                 return Forbid();
             }
 
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _productService.GetProductByIdAsync(id);
             if (product == null)
             {
                 _logger.LogWarning("Product/Details: User (ID: {UserId}) tried to access non-existent product (ProductId: {ProductId})", userId, id);
                 return NotFound();
             }
 
-            var isFavorite = await _context.FavoriteProducts
-                .AnyAsync(f => f.UserId == userId && f.ProductId == id);
+            var isFavorite = await _productService.IsProductFavoriteAsync(userId, id);
             ViewBag.IsFavorite = isFavorite;
 
             _logger.LogInformation("Product/Details: User (ID: {UserId}) viewed product (ProductId: {ProductId})", userId, id);
@@ -99,25 +80,11 @@ namespace Notifico.Controllers
             if (userId == null)
                 return Unauthorized();
 
-            var existing = await _context.FavoriteProducts
-                .FirstOrDefaultAsync(f => f.UserId == userId && f.ProductId == id);
+            await _productService.ToggleFavoriteAsync(userId, id);
 
-            if (existing == null)
-            {
-                _context.FavoriteProducts.Add(new FavoriteProduct
-                {
-                    UserId = userId,
-                    ProductId = id,
-                    DateAdded = DateTime.UtcNow
-                });
-                TempData["Success"] = "Ürün favorilere eklendi!";
-            }
-            else
-            {
-                _context.FavoriteProducts.Remove(existing);
-                TempData["Info"] = "Ürün favorilerden kaldırıldı!";
-            }
-            await _context.SaveChangesAsync();
+            var isFavorite = await _productService.IsProductFavoriteAsync(userId, id);
+            TempData["Success"] = isFavorite ? "Ürün favorilere eklendi!" : "Ürün favorilerden kaldırıldı!";
+
             return Redirect(Request.Headers["Referer"].ToString());
         }
 
@@ -125,12 +92,7 @@ namespace Notifico.Controllers
         public async Task<IActionResult> MyFavorites()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var favorites = await _context.FavoriteProducts
-                .Where(f => f.UserId == userId)
-                .Include(f => f.Product)
-                .OrderByDescending(f => f.DateAdded)
-                .ToListAsync();
-
+            var favorites = await _productService.GetUserFavoritesAsync(userId);
             return View("FavoriteList", favorites);
         }
     }

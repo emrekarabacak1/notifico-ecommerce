@@ -1,65 +1,47 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Notifico.Data;
 using Notifico.Models;
+using Notifico.Services;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 namespace Notifico.Controllers
 {
     [Authorize]
     public class ProfileController : Controller
     {
-        private readonly UserManager<AppUser> userManager;
-        private readonly ILogger<ProfileController> logger;
-        private readonly ApplicationDbContext _context;
+        private readonly IProfileService _profileService;
+        private readonly ILogger<ProfileController> _logger;
 
-        public ProfileController(
-            UserManager<AppUser> userManager,
-            ILogger<ProfileController> logger,
-            ApplicationDbContext context)
+        public ProfileController(IProfileService profileService, ILogger<ProfileController> logger)
         {
-            this.userManager = userManager;
-            this.logger = logger;
-            this._context = context;
+            _profileService = profileService;
+            _logger = logger;
         }
 
         private bool IsAdmin() => User.IsInRole("Admin");
+        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             if (IsAdmin())
             {
-                logger.LogWarning("Admin rolündeki kullanıcı profil görüntülemeye çalıştı. User: {User}", User.Identity?.Name);
+                _logger.LogWarning("Admin rolündeki kullanıcı profil görüntülemeye çalıştı. User: {User}", User.Identity?.Name);
                 return Forbid();
             }
 
-            var user = await userManager.GetUserAsync(User);
-            if (user == null)
+            var userId = GetUserId();
+            var model = await _profileService.GetProfileViewModelAsync(userId);
+
+            if (model == null)
             {
-                logger.LogWarning("Kullanıcı profil görüntülerken bulunamadı. User: {User}", User.Identity?.Name);
+                _logger.LogWarning("Kullanıcı profil görüntülerken bulunamadı. User: {User}", User.Identity?.Name);
                 return NotFound();
             }
 
-            logger.LogInformation("Kullanıcı profil sayfası görüntülendi. UserId: {UserId}", user.Id);
-
-            var model = new ProfileViewModel
-            {
-                UserName = user.UserName,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                BirthDate = user.BirthDate,
-                Address = user.Address,
-                City = user.City,
-                District = user.District
-            };
+            _logger.LogInformation("Kullanıcı profil sayfası görüntülendi. UserId: {UserId}", userId);
             return View(model);
         }
 
@@ -69,93 +51,32 @@ namespace Notifico.Controllers
         {
             if (IsAdmin())
             {
-                logger.LogWarning("Admin rolündeki kullanıcı profil güncelleme denedi. User: {User}", User.Identity?.Name);
+                _logger.LogWarning("Admin rolündeki kullanıcı profil güncelleme denedi. User: {User}", User.Identity?.Name);
                 return Forbid();
             }
 
             if (!ModelState.IsValid)
             {
-                logger.LogWarning("Profil güncelleme formu geçersiz gönderildi.");
+                _logger.LogWarning("Profil güncelleme formu geçersiz gönderildi.");
                 return View(model);
             }
 
-            var user = await userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                logger.LogWarning("Kullanıcı profil güncellerken bulunamadı. User: {User}", User.Identity?.Name);
-                return NotFound();
-            }
+            var userId = GetUserId();
+            var result = await _profileService.UpdateProfileAsync(userId, model);
 
-            if (user.UserName != model.UserName)
+            if (!result.Succeeded)
             {
-                var userNameExists = await userManager.Users
-                    .AnyAsync(u => u.UserName == model.UserName && u.Id != user.Id);
-
-                if (userNameExists)
+                foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError("UserName", "Bu kullanıcı adı zaten alınmış. Lütfen farklı bir kullanıcı adı seçin.");
-                    logger.LogWarning("Kullanıcı adı zaten mevcut: {UserName}", model.UserName);
-                    return View(model);
+                    ModelState.AddModelError("", error.Description);
+                    _logger.LogWarning("Profil güncelleme hatası: {Error}", error.Description);
                 }
-
-                var setUserNameResult = await userManager.SetUserNameAsync(user, model.UserName);
-                if (!setUserNameResult.Succeeded)
-                {
-                    foreach (var error in setUserNameResult.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                        logger.LogWarning("Kullanıcı adı değişikliği hatası: {Error}", error.Description);
-                    }
-                    return View(model);
-                }
-                logger.LogInformation("Kullanıcı adı değiştirildi. Eski: {Old}, Yeni: {New}, UserId: {UserId}", user.UserName, model.UserName, user.Id);
+                return View(model);
             }
 
-            if (user.Email != model.Email)
-            {
-                var setEmailResult = await userManager.SetEmailAsync(user, model.Email);
-                if (!setEmailResult.Succeeded)
-                {
-                    foreach (var error in setEmailResult.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                        logger.LogWarning("Eposta değişikliği hatası: {Error}", error.Description);
-                    }
-                    return View(model);
-                }
-                logger.LogInformation("Kullanıcı eposta adresi değiştirildi. Eski: {Old}, Yeni: {New}, UserId: {UserId}", user.Email, model.Email, user.Id);
-            }
+            await _profileService.UpdateDefaultAddressAsync(userId, model.Address, model.City, model.District);
 
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.PhoneNumber = model.PhoneNumber;
-            user.Address = model.Address;
-            user.City = model.City;
-            user.District = model.District;
-
-            if (model.BirthDate.HasValue)
-            {
-                user.BirthDate = DateTime.SpecifyKind(model.BirthDate.Value, DateTimeKind.Utc);
-            }
-            else
-            {
-                user.BirthDate = null;
-            }
-
-            await userManager.UpdateAsync(user);
-
-            var userId = user.Id;
-            var defaultAddress = _context.Addresses.FirstOrDefault(a => a.UserId == userId && a.IsDefault);
-            if (defaultAddress != null)
-            {
-                defaultAddress.FullAddress = model.Address;
-                defaultAddress.City = model.City;
-                defaultAddress.District = model.District;
-                await _context.SaveChangesAsync();
-            }
-
-            logger.LogInformation("Profil bilgileri güncellendi. UserId: {UserId}", user.Id);
-
+            _logger.LogInformation("Profil bilgileri güncellendi. UserId: {UserId}", userId);
             TempData["ProfileSuccess"] = "Profil bilgileriniz güncellendi.";
             return RedirectToAction("Index");
         }
@@ -165,11 +86,11 @@ namespace Notifico.Controllers
         {
             if (IsAdmin())
             {
-                logger.LogWarning("Admin rolündeki kullanıcı şifre değiştirme sayfasına ulaşmaya çalıştı.");
+                _logger.LogWarning("Admin rolündeki kullanıcı şifre değiştirme sayfasına ulaşmaya çalıştı.");
                 return Forbid();
             }
 
-            logger.LogInformation("Şifre değiştirme sayfası görüntülendi. User: {User}", User.Identity?.Name);
+            _logger.LogInformation("Şifre değiştirme sayfası görüntülendi. User: {User}", User.Identity?.Name);
             return View();
         }
 
@@ -179,28 +100,22 @@ namespace Notifico.Controllers
         {
             if (IsAdmin())
             {
-                logger.LogWarning("Admin rolündeki kullanıcı şifre değiştirmeye çalıştı.");
+                _logger.LogWarning("Admin rolündeki kullanıcı şifre değiştirmeye çalıştı.");
                 return Forbid();
             }
 
             if (!ModelState.IsValid)
             {
-                logger.LogWarning("Şifre değiştirme formu hatalı gönderildi.");
+                _logger.LogWarning("Şifre değiştirme formu hatalı gönderildi.");
                 return View(model);
             }
 
-            var user = await userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                logger.LogWarning("Şifre değiştirirken kullanıcı bulunamadı. User: {User}", User.Identity?.Name);
-                return NotFound();
-            }
-
-            var result = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            var userId = GetUserId();
+            var result = await _profileService.ChangePasswordAsync(userId, model.OldPassword, model.NewPassword);
 
             if (result.Succeeded)
             {
-                logger.LogInformation("Kullanıcı şifresini değiştirdi. UserId: {UserId}", user.Id);
+                _logger.LogInformation("Kullanıcı şifresini değiştirdi. UserId: {UserId}", userId);
                 TempData["Success"] = "Şifreniz başarıyla güncellendi";
                 return RedirectToAction("Index");
             }
@@ -209,7 +124,7 @@ namespace Notifico.Controllers
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
-                    logger.LogWarning("Şifre değiştirme hatası: {Error}", error.Description);
+                    _logger.LogWarning("Şifre değiştirme hatası: {Error}", error.Description);
                 }
                 return View(model);
             }
@@ -220,31 +135,20 @@ namespace Notifico.Controllers
         {
             if (IsAdmin())
             {
-                logger.LogWarning("Admin rolündeki kullanıcı profil düzenleme sayfasına erişmeye çalıştı.");
+                _logger.LogWarning("Admin rolündeki kullanıcı profil düzenleme sayfasına erişmeye çalıştı.");
                 return Forbid();
             }
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await userManager.FindByIdAsync(userId);
+            var userId = GetUserId();
+            var model = await _profileService.GetProfileEditViewModelAsync(userId);
 
-            if (user == null)
+            if (model == null)
             {
-                logger.LogWarning("Profil düzenleme için kullanıcı bulunamadı. UserId: {UserId}", userId);
+                _logger.LogWarning("Profil düzenleme için kullanıcı bulunamadı. UserId: {UserId}", userId);
                 return NotFound();
             }
 
-            logger.LogInformation("Profil düzenleme sayfası açıldı. UserId: {UserId}", user.Id);
-
-            var model = new ProfileEditViewModel
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                BirthDate = user.BirthDate,
-                Address = user.Address,
-                City = user.City,
-                District = user.District
-            };
+            _logger.LogInformation("Profil düzenleme sayfası açıldı. UserId: {UserId}", userId);
             return View(model);
         }
 
@@ -254,54 +158,32 @@ namespace Notifico.Controllers
         {
             if (IsAdmin())
             {
-                logger.LogWarning("Admin rolündeki kullanıcı profil düzenleme denedi.");
+                _logger.LogWarning("Admin rolündeki kullanıcı profil düzenleme denedi.");
                 return Forbid();
             }
 
             if (!ModelState.IsValid)
             {
-                logger.LogWarning("Profil düzenleme formu hatalı gönderildi.");
+                _logger.LogWarning("Profil düzenleme formu hatalı gönderildi.");
                 return View(model);
             }
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await userManager.FindByIdAsync(userId);
+            var userId = GetUserId();
+            var result = await _profileService.UpdateProfileEditAsync(userId, model);
 
-            if (user == null)
+            if (!result.Succeeded)
             {
-                logger.LogWarning("Profil düzenlerken kullanıcı bulunamadı. UserId: {UserId}", userId);
-                return NotFound();
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                    _logger.LogWarning("Profil düzenleme hatası: {Error}", error.Description);
+                }
+                return View(model);
             }
 
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.PhoneNumber = model.PhoneNumber;
-            user.Address = model.Address;
-            user.City = model.City;
-            user.District = model.District;
+            await _profileService.UpdateDefaultAddressAsync(userId, model.Address, model.City, model.District);
 
-            if (model.BirthDate.HasValue)
-            {
-                user.BirthDate = DateTime.SpecifyKind(model.BirthDate.Value, DateTimeKind.Utc);
-            }
-            else
-            {
-                user.BirthDate = null;
-            }
-
-            await userManager.UpdateAsync(user);
-
-            var defaultAddress = _context.Addresses.FirstOrDefault(a => a.UserId == userId && a.IsDefault);
-            if (defaultAddress != null)
-            {
-                defaultAddress.FullAddress = model.Address;
-                defaultAddress.City = model.City;
-                defaultAddress.District = model.District;
-                await _context.SaveChangesAsync();
-            }
-
-            logger.LogInformation("Profil düzenleme tamamlandı. UserId: {UserId}", user.Id);
-
+            _logger.LogInformation("Profil düzenleme tamamlandı. UserId: {UserId}", userId);
             TempData["ProfileSuccess"] = "Profil bilgileriniz güncellendi.";
             return RedirectToAction("Index");
         }

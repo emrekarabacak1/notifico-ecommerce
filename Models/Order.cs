@@ -18,7 +18,7 @@ namespace Notifico.Models
         public Address Address { get; set; }               
 
         [MaxLength(512)]
-        public string AddressSnapshot { get; set; }        
+        public string AddressSnapshot { get; set; }
 
     }
 }
