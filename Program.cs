@@ -3,8 +3,9 @@ using Notifico.Data;
 using Microsoft.AspNetCore.Identity;
 using Notifico.Models;
 using Serilog;
-using QuestPDF.Infrastructure;   
-
+using QuestPDF.Infrastructure;
+using Notifico.Services;
+using Notifico.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 var logDirectory = Path.Combine(Directory.GetCurrentDirectory(), "logs");
@@ -21,6 +22,23 @@ builder.Host.UseSerilog();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 builder.Services.AddTransient<EmailHelper>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<IAddressService, AddressService>();
+
+
+
+
+
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {

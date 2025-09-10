@@ -14,6 +14,7 @@
         margin: 2.7rem auto 2.1rem auto;
         border: 1.2px solid #e3e9f6;
     }
+
     .profile-edit-title {
         font-size: 1.56rem;
         font-weight: 900;
@@ -22,11 +23,13 @@
         text-align: center;
         letter-spacing: -0.01em;
     }
+
     .profile-edit-form .form-label {
         font-weight: 700;
         color: #37446d;
         font-size: 1.03rem;
     }
+
     .profile-edit-form .form-control, .profile-edit-form .form-select, .profile-edit-form textarea {
         border-radius: 0.9rem;
         border: 1.3px solid #dbe7f7;
@@ -35,15 +38,21 @@
         background: #fcfcff;
         transition: border .15s;
     }
-    .profile-edit-form .form-control:focus, .profile-edit-form .form-select:focus {
-        border-color: #82a8ef;
-        box-shadow: 0 0 0 2px #e5f0ff;
-        background: #f4f9ff;
-    }
+
+        .profile-edit-form .form-control:focus, .profile-edit-form .form-select:focus {
+            border-color: #82a8ef;
+            box-shadow: 0 0 0 2px #e5f0ff;
+            background: #f4f9ff;
+        }
+
     .profile-edit-form .form-group {
         margin-bottom: 1.17rem;
     }
-    .profile-edit-form .text-danger { font-size: 0.99rem; }
+
+    .profile-edit-form .text-danger {
+        font-size: 0.99rem;
+    }
+
     .profile-edit-btn-row {
         display: flex;
         align-items: center;
@@ -51,6 +60,7 @@
         justify-content: flex-end;
         margin-top: 0.9rem;
     }
+
     .profile-edit-btn {
         border-radius: 1.8rem !important;
         padding: 0.62rem 2.15rem !important;
@@ -59,6 +69,7 @@
         box-shadow: 0 1px 9px 0 rgba(80,110,180,0.09);
         border: none;
     }
+
     .profile-edit-btn-cancel {
         border-radius: 1.6rem !important;
         font-weight: 700;
@@ -68,16 +79,30 @@
         border: none;
         transition: background 0.17s;
     }
-    .profile-edit-btn-cancel:hover {
-        background: #e0eafd;
-        color: #163268;
-    }
+
+        .profile-edit-btn-cancel:hover {
+            background: #e0eafd;
+            color: #163268;
+        }
+
     media (max-width: 600px) {
-        .profile-edit-bg { padding: 1.1rem 0.6rem 1.1rem 0.6rem; }
-        .profile-edit-title { font-size: 1.12rem; }
-        .profile-edit-btn-row { flex-direction: column; align-items: stretch; gap: 0.6rem;}
+        .profile-edit-bg
+
+    {
+        padding: 1.1rem 0.6rem 1.1rem 0.6rem;
     }
-</style>
+
+    .profile-edit-title {
+        font-size: 1.12rem;
+    }
+
+    .profile-edit-btn-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.6rem;
+    }
+
+    }</style>
 
 <div class="profile-edit-bg">
     <div class="profile-edit-title">Profil Bilgilerini Düzenle</div>
@@ -192,6 +217,6 @@
         {
             <text>toastr.error("@TempData["Error"]", "Hata", { timeOut: 3000 }); </text>
         }
-        });
+                });
     </script>
 }

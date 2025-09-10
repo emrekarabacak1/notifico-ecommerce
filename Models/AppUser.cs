@@ -13,5 +13,6 @@ namespace Notifico.Models
         public ICollection<FavoriteProduct> FavoriteProducts { get; set; } = new List<FavoriteProduct>();
 
 
+
     }
 }
